@@ -26,3 +26,6 @@ build/
 *.tmp
 *.temp
 
+# Private files (not for public access or version control)
+private/
+

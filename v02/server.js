@@ -4,6 +4,11 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3003;
 
+// Block access to private folder
+app.use('/private', (req, res) => {
+  res.status(403).send('Access Forbidden');
+});
+
 // Serve static files from public directory
 app.use(express.static(path.join(__dirname, 'public')));
 
