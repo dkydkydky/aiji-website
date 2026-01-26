@@ -24,6 +24,8 @@
     <video class="video-header-player" autoplay muted loop playsinline>
       <source src="assets/videos/AIJI_Website_Video_Header_v01.mp4" type="video/mp4">
     </video>
+    <!-- Overlay that fades from transparent to background color -->
+    <div class="video-header-overlay"></div>
     <div class="video-header-content-wrapper">
       <div class="video-header-logo">
         <img src="assets/images/AIJI_Logo_Full_White.svg" alt="AI Jobs Institute" class="logo-full-svg">
@@ -64,44 +66,46 @@
     <a href="#signup" class="nav-cta">Get Updates</a>
   </div>
 
-  <!-- Hero Section -->
+  <!-- Hero Section / Our Purpose -->
   <header class="hero" id="hero">
-    <!-- Light pink horizontal band -->
-    <div class="hero-pink-band"></div>
-    
-    <!-- Label: Our Purpose (left side, vertically centered) -->
-    <div class="hero-element hero-label" data-element="label">
+    <!-- Label: Our Purpose (left side, vertically centered) - ALWAYS VISIBLE -->
+    <div class="hero-label" data-element="label">
       Our Purpose
     </div>
     
     <!-- Main Content Container -->
     <div class="hero-content">
-      <!-- Image 01 -->
-      <div class="hero-element hero-image hero-image-01" data-element="image01">
-        <img src="assets/images/AIJI_Image_OurPurpose_01.png" alt="Our Purpose" class="hero-image-img" id="hero-image-01-img">
+      <!-- STEP 1: Text: "Pursuit AI Jobs Institute..." with Image 01 behind -->
+      <div class="hero-step hero-step-1" data-step="1">
+        <div class="hero-text-pursuit-wrapper">
+          <img src="assets/images/AIJI_Image_OurPurpose_01.png" alt="Our Purpose" class="hero-image-pursuit-bg">
+          <div class="hero-text-pursuit">
+            <span class="hero-text-pursuit-bold">Pursuit AI Jobs Institute is the nation's first AI workforce hub.</span> We're pioneering how America prepares everyone for the AI economy by training talent, supporting businesses, and creating pathways to our fullest potential and opportunities.
+          </div>
+        </div>
       </div>
       
-      <!-- Text: "We harness our collective power..." -->
-      <div class="hero-element hero-text-collective" data-element="text-collective">
-        We harness our collective power to build an AI-powered future that benefits all of us.
+      <!-- STEP 2: Text: "We harness our collective power..." -->
+      <div class="hero-step hero-step-2" data-step="2">
+        <div class="hero-text-collective">
+          We harness our collective power to build an AI-powered future that benefits all of us.
+        </div>
       </div>
       
-      <!-- Title Section: Rotating words + "for All of Us." -->
-      <div class="hero-element hero-title-wrapper" data-element="title-wrapper">
-        <h1 class="hero-element hero-title-line2" data-element="title-line2">
-          <span class="rotating-word" id="rotating-word">AI Workforce</span>
-        </h1>
-        <h1 class="hero-element hero-title-line3" data-element="title-line3">for All of Us.</h1>
-      </div>
-      
-      <!-- Image 02 (Vertical Orientation) -->
-      <div class="hero-element hero-image hero-image-02" data-element="image02">
-        <img src="assets/images/AIJI_Image_OurPurpose_02.png" alt="Our Purpose" class="hero-image-img hero-image-vertical" id="hero-image-02-img">
-      </div>
-      
-      <!-- Text: "Pursuit AI Jobs Institute..." -->
-      <div class="hero-element hero-text-pursuit" data-element="text-pursuit">
-        Pursuit AI Jobs Institute is the nation's first AI workforce hub, pioneering how America prepares everyone for the AI economy. We train talent, support businesses, and create pathways to our fullest potential and opportunities.
+      <!-- STEP 3: Three lines with Image 02 behind -->
+      <div class="hero-step hero-step-3" data-step="3">
+        <div class="hero-title-with-image">
+          <!-- Image 02 as background -->
+          <img src="assets/images/AIJI_Image_OurPurpose_02.png" alt="Our Purpose" class="hero-image-bg">
+          
+          <!-- Three lines on top -->
+          <div class="hero-title-wrapper">
+            <h1 class="hero-title-line2">
+              <span class="rotating-word" id="rotating-word">AI Workforce</span>
+            </h1>
+            <h1 class="hero-title-line3">for All of Us.</h1>
+          </div>
+        </div>
       </div>
     </div>
   </header>

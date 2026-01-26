@@ -12,8 +12,1016 @@ This file tracks all changes made to the AIJI website with version numbers for e
 
 ## Version History
 
-### v2.1.55 - 2025-01-25
+### v103 - 2026-01-26
 **Status: ✅ Current**
+
+**Note: Switched to simplified incremental versioning (v103, v104, v105...)**
+
+---
+
+### v2.1.102 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Prevent Wrapper Show During Snap-Back**
+- ✅ Added global `isSnappingBack` flag
+- ✅ Set flag to `true` when snap-back animation starts
+- ✅ Modified `handleVideoHeaderVisible()` to check flag
+- ✅ Prevents Intersection Observer from showing wrapper during snap-back
+- ✅ Flag resets after 600ms (when snap animation completes)
+
+**The Problem:**
+- During snap-back scroll, Intersection Observer detected video header visible
+- Called `handleVideoHeaderVisible()` which set wrapper to visible
+- This overrode our hide, causing phrase to appear during animation
+
+**The Solution:**
+- `isSnappingBack` flag blocks wrapper visibility during snap-back
+- Wrapper stays hidden throughout entire snap animation
+- Only becomes visible after `resetLogoToOriginal()` fade-in
+
+**Files Modified:**
+- `public/script.js` - Added flag, updated handleVideoHeaderVisible()
+
+---
+
+### v2.1.101 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Query Wrapper Directly for Snap-Back Hide**
+- ✅ Changed from scope variable to direct DOM query
+- ✅ `document.querySelector('.video-header-content-wrapper')` instead of `contentWrapper`
+- ✅ Ensures we're targeting the correct element every time
+- ✅ More reliable hide during snap-back scroll animation
+
+**Files Modified:**
+- `public/script.js` - Changed to direct wrapper query
+
+---
+
+### v2.1.100 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Hide Wrapper During Snap-Back Scroll**
+- ✅ Added immediate wrapper hide when snap-back scroll starts
+- ✅ Hide happens BEFORE `window.scrollTo()` animation
+- ✅ Sets `transition: none`, `opacity: 0`, `visibility: hidden`
+- ✅ Prevents phrase from being visible during scroll animation
+- ✅ Wrapper stays hidden until `resetLogoToOriginal()` completes and fades in
+
+**Timeline:**
+1. User scrolls up from Our Purpose
+2. Snap-back detected → hide wrapper instantly
+3. Smooth scroll animation to top (wrapper hidden throughout)
+4. Scroll reaches 0 → `resetLogoToOriginal()` called
+5. Layout composed → fade in with correct stacked layout
+
+**Files Modified:**
+- `public/script.js` - Added wrapper hide before snap-back scroll
+
+---
+
+### v2.1.99 - 2026-01-26
+**Status: Previous**
+
+**Fixed: No Line Break + Proper Fade In**
+- ✅ Changed stacked text from `white-space: normal` back to `nowrap`
+- ✅ Phrase no longer line-breaks on initial load or stacked mode
+- ✅ Added `visibility: hidden` at start (in addition to opacity)
+- ✅ Disable transitions during composition (`transition: none`)
+- ✅ Clear custom font-size on text reset
+- ✅ Three reflows: remove stacked, add stacked, final composition check
+- ✅ Re-enable transition and fade in (`opacity 0.3s ease`)
+- ✅ Smooth 300ms fade-in after layout is 100% complete
+
+**Sequence:**
+1. Hide wrapper instantly (no transition, opacity 0, visibility hidden)
+2. Reset all elements
+3. Check and apply stacked layout
+4. Force final reflow
+5. Make visible and fade opacity from 0 to 1
+
+**Files Modified:**
+- `public/styles.css` - Changed white-space, added opacity transition
+- `public/script.js` - Added visibility hidden, transition control, fade-in
+
+---
+
+### v2.1.98 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Text Clipping + Synchronous Layout**
+- ✅ Removed `overflow: hidden` and `text-overflow: clip` (was cutting off period)
+- ✅ Changed to `overflow: visible` to show all text
+- ✅ Changed `max-width: calc(100% - 34px)` back to `100%`
+- ✅ Adjusted padding-right to match padding-left (19px)
+- ✅ Removed ALL `requestAnimationFrame` calls in reset function
+- ✅ Everything now happens synchronously before paint
+- ✅ Added second `void wrapper.offsetHeight` after stacked class applied
+
+**Fixes:**
+- Period no longer cut off
+- No visible jump/movement of phrase
+- Text fully visible with proper padding
+- Layout calculated and applied before ANY render
+
+**Files Modified:**
+- `public/styles.css` - Fixed overflow and max-width
+- `public/script.js` - Made all layout changes synchronous
+
+---
+
+### v2.1.97 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Hide-Then-Show for Clean Layout + Text Overflow**
+- ✅ Added `wrapper.style.opacity = '0'` at start of reset
+- ✅ Layout calculation happens while hidden (no visual movement)
+- ✅ Added mobile detection (`window.innerWidth <= 768`) to force stacked mode
+- ✅ Added text sizing calculation for stacked mode
+- ✅ Show wrapper after layout is correct (`opacity = '1'`)
+- ✅ Fixed text overflow: changed `max-width: 100%` to `calc(100% - 34px)`
+- ✅ Added `overflow: hidden` and `word-wrap: break-word` to prevent cutoff
+
+**Fixes:**
+- No more logo movement from right to left
+- Phrase doesn't get cut off on right side
+- Stacked layout applied before elements visible
+- Clean snap-back with no flashing or repositioning
+
+**Files Modified:**
+- `public/script.js` - Added hide/show wrapper logic, mobile detection, text sizing
+- `public/styles.css` - Fixed text max-width and overflow
+
+---
+
+### v2.1.96 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Immediate Stacked Layout on Snap Back**
+- ✅ Removed async resize event dispatch (was causing 50ms delay/flash)
+- ✅ Added synchronous stacked layout check directly in `resetLogoToOriginal()`
+- ✅ Layout check runs BEFORE browser paints, preventing visual flash
+- ✅ Checks if logo and text overlap immediately after reset
+- ✅ Adds stacked class instantly if needed
+
+**How it works:**
+1. Logo moves back to wrapper
+2. Stacked class removed + force reflow
+3. Immediately measure logo and text positions
+4. If overlap detected → add stacked class right away
+5. Browser paints with correct layout (no flash)
+
+**Files Modified:**
+- `public/script.js` - Replaced setTimeout with synchronous layout check
+
+---
+
+### v2.1.95 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Re-trigger Layout Check After Logo Reset**
+- ✅ Added resize event dispatch after `resetLogoToOriginal()` completes
+- ✅ 50ms delay ensures DOM has updated before layout check runs
+- ✅ This re-runs `checkLayout()` which re-applies stacked mode if needed
+- ✅ Fixes issue where stacked class was removed but not re-added on mobile
+
+**How it works:**
+1. Logo resets to original state (removes stacked class)
+2. After 50ms, dispatches a resize event
+3. Resize listener triggers `checkLayout()`
+4. `checkLayout()` detects mobile dimensions and re-adds stacked class
+5. Logo and phrase stack correctly
+
+**Files Modified:**
+- `public/script.js` - Added resize event dispatch in resetLogoToOriginal()
+
+---
+
+### v2.1.94 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Mobile Stacked Layout Z-Index Issue**
+- ✅ Added `z-index: 1` to `.video-header-text` (default)
+- ✅ Added `z-index: 1000` to `.video-header-content-wrapper.stacked .video-header-text`
+- ✅ Logo has `z-index: 1001` and logo img has `z-index: 1002`
+- ✅ Phrase now properly stacks BEHIND logo in mobile layout
+- ✅ Fixes overlap issue where phrase appeared on top of logo
+
+**Z-Index Hierarchy (Stacked Mode):**
+- Text: 1000 (bottom)
+- Logo container: 1001 (middle)
+- Logo img: 1002 (top)
+
+**Files Modified:**
+- `public/styles.css` - Added z-index to video-header-text styles
+
+---
+
+### v2.1.93 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Logo State Preservation When Snapping Back**
+- ✅ Changed reset condition from `<= 10` to `=== 0` (exact position only)
+- ✅ Logo only resets when at absolute scroll position 0
+- ✅ Added guard for 0-10px range to prevent premature reset
+- ✅ Logo now maintains proper state when snapping back from Our Purpose
+- ✅ Works correctly on mobile dimensions
+
+**Logic:**
+- `scrollY === 0` → Reset logo to original
+- `0 < scrollY <= 10` → Do nothing (transitional zone)
+- `scrollY > 10` → Continue normal scroll animation
+
+**Files Modified:**
+- `public/script.js` - Updated checkScroll() reset condition
+
+---
+
+### v2.1.92 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Logo/Phrase Reset on Mobile Dimensions**
+- ✅ Simplified `animateLogoBack()` function
+- ✅ Now uses CSS transition instead of requestAnimationFrame
+- ✅ Properly resets transform to `translateY(-50%)` then removes inline styles
+- ✅ Fixes positioning issues when returning to header at mobile dimensions
+- ✅ Works correctly with both desktop and stacked mobile layouts
+
+**Changes:**
+- Replaced complex RAF animation with simple CSS transition
+- Immediate transform application with 300ms transition
+- Clean timeout-based cleanup after animation
+
+**Files Modified:**
+- `public/script.js` - Rewrote animateLogoBack() function
+
+---
+
+### v2.1.91 - 2026-01-26
+**Status: Previous**
+
+**Changed: Increased Minimum Font Size**
+- ✅ Changed min font size from 1.25rem (20px) to 2rem (32px)
+- ✅ Font size now: `clamp(2rem, 3.5vw, 2.875rem)`
+- ✅ Ensures paragraph is always at least 32px on all screen sizes
+
+**Font Size Range:**
+- **Min:** 2rem (32px)
+- **Preferred:** 3.5vw (responsive)
+- **Max:** 2.875rem (46px)
+
+**Files Modified:**
+- `public/styles.css` - Updated .hero-text-pursuit font-size clamp
+
+---
+
+### v2.1.90 - 2026-01-26
+**Status: Previous**
+
+**Changed: Image Right-Aligned to Content Area**
+- ✅ Image now right-aligned to edge of content area (1200px max-width)
+- ✅ Changed positioning from `left: 50%` to `right: 0`
+- ✅ Updated transform from `translate(-50%, -50%)` to `translateY(-50%)`
+- ✅ Set `transform-origin: center right` for proper rotation anchor
+- ✅ Respects the 25px container padding on both sides
+
+**Transform now:**
+- `transform: translateY(-50%) rotate(-90deg) scale(0.8);`
+- `transform-origin: center right;`
+
+**Files Modified:**
+- `public/styles.css` - Updated .hero-image-pursuit-bg positioning
+
+---
+
+### v2.1.89 - 2026-01-26
+**Status: Previous**
+
+**Fixed: True Vertical Centering**
+- ✅ Reverted to `min-height: 100vh` (full viewport)
+- ✅ Removed `margin-top: 36px`
+- ✅ Added balanced padding: `padding-top: 36px; padding-bottom: 36px;`
+- ✅ Flexbox centering now works correctly with equal padding top/bottom
+
+**Changes:**
+- Back to full viewport height calculation
+- Equal padding creates true visual center
+
+**Files Modified:**
+- `public/styles.css` - Updated .hero-step:first-child centering
+
+---
+
+### v2.1.88 - 2026-01-26
+**Status: Previous**
+
+**Updated: Paragraph Text & Semi-Bold First Sentence**
+- ✅ Updated paragraph text with new wording
+- ✅ Changed "pioneering how" to "We're pioneering how"
+- ✅ Changed "We train" to "by training"
+- ✅ Made first sentence semi-bold (font-weight: 600)
+- ✅ Added `.hero-text-pursuit-bold` class with font-variation-settings: "wght" 600
+
+**New Text:**
+- Bold: "Pursuit AI Jobs Institute is the nation's first AI workforce hub."
+- Regular: "We're pioneering how America prepares everyone for the AI economy by training talent, supporting businesses, and creating pathways to our fullest potential and opportunities."
+
+**Files Modified:**
+- `public/index.html` - Updated paragraph text and added span for bold
+- `public/styles.css` - Added .hero-text-pursuit-bold style
+
+---
+
+### v2.1.87 - 2026-01-26
+**Status: Previous**
+
+**Changed: Tighter Line Spacing**
+- ✅ Reduced line-height from 1.7 to 1.3
+- ✅ Lines now closer together (30% extra space vs 70%)
+- ✅ More compact, tighter paragraph appearance
+
+**Files Modified:**
+- `public/styles.css` - Updated .hero-text-pursuit line-height
+
+---
+
+### v2.1.86 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Adjusted Vertical Centering**
+- ✅ Removed `padding-top: 72px` (was pushing content up)
+- ✅ Added `margin-top: 36px` (half of nav height for better balance)
+- ✅ Keeps `min-height: calc(100vh - 72px)` for proper viewport calculation
+- ✅ Content should now center better in available space
+
+**Changes:**
+- Replaced `padding-top: 72px` with `margin-top: 36px`
+
+**Files Modified:**
+- `public/styles.css` - Updated .hero-step:first-child spacing
+
+---
+
+### v2.1.85 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Center Content Between Nav and Bottom**
+- ✅ Adjusted first hero step to account for nav height (72px)
+- ✅ Changed `min-height: 100vh` to `calc(100vh - 72px)`
+- ✅ Added `padding-top: 72px` to push content down
+- ✅ Content now centers vertically in available space below nav
+
+**Changes:**
+- `.hero-step:first-child` now:
+  - `min-height: calc(100vh - 72px)`
+  - `padding-top: 72px`
+
+**Files Modified:**
+- `public/styles.css` - Updated .hero-step:first-child sizing
+
+---
+
+### v2.1.84 - 2026-01-26
+**Status: Previous**
+
+**Changed: Image Size Reduced to 80%**
+- ✅ Added `scale(0.8)` to image transform
+- ✅ Image now 80% of original size
+- ✅ Maintains centering, rotation, and positioning
+
+**Transform now:**
+- `transform: translate(-50%, -50%) rotate(-90deg) scale(0.8);`
+
+**Files Modified:**
+- `public/styles.css` - Updated .hero-image-pursuit-bg transform
+
+---
+
+### v2.1.83 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Dynamic Section Heights**
+- ✅ First hero step now has `height: auto` for dynamic sizing
+- ✅ Keeps `min-height: 100vh` to ensure minimum viewport height
+- ✅ Added `margin-bottom: 4rem` to first step for spacing
+- ✅ Added `min-height: 400px` to pursuit wrapper to contain image
+- ✅ Section will now grow to contain all elements
+
+**Changes:**
+- `.hero-step:first-child` - added `height: auto`, `position: relative`, adjusted margins
+- `.hero-text-pursuit-wrapper` - added `min-height: 400px`
+
+**Files Modified:**
+- `public/styles.css` - Updated hero-step and wrapper heights
+
+---
+
+### v2.1.82 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Image Bleeding into Video Header**
+- ✅ Changed `.hero` from `overflow: visible` to `overflow: hidden`
+- ✅ Image now clipped at hero section boundaries
+- ✅ Prevents image from seeping into video header above
+
+**Files Modified:**
+- `public/styles.css` - Updated .hero overflow property
+
+---
+
+### v2.1.81 - 2026-01-26
+**Status: Previous**
+
+**Changed: Rotated Image 01**
+- ✅ Rotated image 90 degrees counter-clockwise
+- ✅ Added `rotate(-90deg)` to transform
+- ✅ Combined with existing translate for proper centering
+
+**Transform now:**
+- `transform: translate(-50%, -50%) rotate(-90deg);`
+
+**Files Modified:**
+- `public/styles.css` - Updated .hero-image-pursuit-bg transform
+
+---
+
+### v2.1.80 - 2026-01-26
+**Status: Previous**
+
+**Added: Image 01 Behind Paragraph**
+- ✅ Added `AIJI_Image_OurPurpose_01.png` behind the paragraph
+- ✅ Image is vertically oriented (height: 80vh, max-height: 900px)
+- ✅ Positioned absolutely, centered with transform
+- ✅ Uses `object-fit: contain` to maintain aspect ratio
+- ✅ Text layered on top with z-index: 1
+- ✅ Image has 90% opacity for subtle effect
+
+**CSS Changes:**
+- `.hero-image-pursuit-bg` - new class for background image
+- `.hero-text-pursuit-wrapper` - now uses flexbox
+- `.hero-text-pursuit` - added relative positioning and z-index
+
+**Files Modified:**
+- `public/index.html` - Added img element in hero-step-1
+- `public/styles.css` - Added image background styles
+
+---
+
+### v2.1.79 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Paragraph True Center Position**
+- ✅ Removed top padding from .hero section (was 120px)
+- ✅ Changed padding from `120px 0 150px` to `0 0 150px`
+- ✅ Paragraph now truly centers vertically in viewport
+- ✅ First step's flexbox centering now works correctly
+
+**Files Modified:**
+- `public/styles.css` - Removed top padding from .hero
+
+---
+
+### v2.1.78 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Center Paragraph Vertically**
+- ✅ First hero step now centers vertically in viewport
+- ✅ Uses flexbox centering (align-items + justify-content)
+- ✅ Set min-height: 100vh on first step
+- ✅ Works regardless of browser size
+
+**Changes:**
+- `.hero-step:first-child` now has:
+  - `min-height: 100vh`
+  - `display: flex`
+  - `align-items: center`
+  - `justify-content: center`
+  - `margin-top: 0` (removed 6rem)
+
+**Files Modified:**
+- `public/styles.css` - Updated .hero-step:first-child styles
+
+---
+
+### v2.1.77 - 2026-01-26
+**Status: Previous**
+
+**Removed: Pink Line Under Video**
+- ✅ Removed `.hero-pink-band` element from HTML
+- ✅ Removed `.hero-pink-band` CSS styles
+- ✅ Clean transition between video header and Our Purpose section
+
+**Files Modified:**
+- `public/index.html` - Removed hero-pink-band div
+- `public/styles.css` - Removed hero-pink-band styles
+
+---
+
+### v2.1.76 - 2026-01-26
+**Status: Previous**
+
+**Removed: Snap Back Debounce Delay**
+- ✅ Removed 150ms delay - now snaps instantly when conditions met
+- ✅ Same immediate behavior as downward snap
+- ✅ Added `isManualScrolling` flag to prevent snap loops
+- ✅ 600ms cooldown after snap completes
+
+**New Logic:**
+- Video visible → instant snap to header (no delay)
+- Cooldown prevents multiple rapid snaps
+- Matches the feel of the downward snap behavior
+
+**Files Modified:**
+- `public/script.js` - Removed setTimeout, added isManualScrolling flag
+
+---
+
+### v2.1.75 - 2026-01-26
+**Status: Previous**
+
+**Changed: Visibility-Based Snap Back**
+- ✅ Removed 50% threshold logic
+- ✅ New rule: If ANY part of video header is visible → snap back to header
+- ✅ Simpler, more intuitive behavior
+- ✅ No more direction checking needed
+
+**New Logic:**
+- Video visible in viewport (scrollY < videoHeaderHeight) → snap to top
+- Video completely out of view → stay at Our Purpose
+- 150ms debounce after scroll stops
+
+**Files Modified:**
+- `public/script.js` - Simplified snap-back logic to visibility-based only
+
+---
+
+### v2.1.74 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Swipe Detection + Snap Back Behavior**
+- ✅ Fixed swipe detection when returning to header - removed hasDetectedSwipe check in wheel event
+- ✅ Added snap-back behavior when scrolling between header and Our Purpose
+- ✅ Prevents partial scroll states (like in screenshot)
+- ✅ Scroll direction detection for smart snapping
+
+**Snap Back Logic:**
+- If scrolling UP and < 50% through video → snaps back to header (top)
+- If scrolling DOWN and > 50% through video → snaps forward to Our Purpose
+- 150ms debounce after scroll stops
+- Smooth scroll animation
+
+**Swipe Fix:**
+- Removed `hasDetectedSwipe` check from wheel event condition
+- Now only checks: `currentScroll === 0 && !isAnimating && !hasDetectedSwipe`
+- Flags reset properly when reaching exact top position
+
+**Files Modified:**
+- `public/script.js` - Fixed wheel event logic, added snap-back scroll listener
+
+---
+
+### v2.1.73 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Swipe Detection After Scrolling Back**
+- ✅ Added flag reset when scrolling back to top (scroll position 0)
+- ✅ Resets `hasDetectedSwipe` and `swipeDirection` flags
+- ✅ Clears content wrapper transform when returning to header
+- ✅ Swipe gestures now work correctly after returning from Our Purpose section
+
+**How it works:**
+- When `window.scrollY === 0` and not animating:
+  - Reset `hasDetectedSwipe = false`
+  - Reset `swipeDirection = 0`
+  - Clear content wrapper styles
+- Allows swipe detection to work again on return to header
+
+**Files Modified:**
+- `public/script.js` - Added scroll listener to reset flags at scroll position 0
+
+---
+
+### v2.1.72 - 2026-01-26
+**Status: Previous**
+
+**Increased Text Width:**
+- ✅ Changed max-width from 600px to 1000px
+- ✅ Text can now span wider on larger screens
+
+**Files Modified:**
+- `public/styles.css` - Updated .hero-text-pursuit-wrapper max-width to 1000px
+
+---
+
+### v2.1.71 - 2026-01-26
+**Status: Previous**
+
+**Larger Responsive Font Size:**
+- ✅ Changed to `clamp(1.25rem, 3.5vw, 2.875rem)`
+- ✅ Min size: 1.25rem (20px) on small screens
+- ✅ Max size: 2.875rem (46px) on large screens
+- ✅ Scales fluidly with viewport width (3.5vw)
+
+**Files Modified:**
+- `public/styles.css` - Updated .hero-text-pursuit font-size
+
+---
+
+### v2.1.70 - 2026-01-26
+**Status: Previous**
+
+**Responsive Font Size:**
+- ✅ Changed from fixed `1.125rem` to responsive `clamp(1rem, 2.5vw, 1.25rem)`
+- ✅ Min size: 1rem (16px) on small screens
+- ✅ Max size: 1.25rem (20px) on large screens
+- ✅ Scales fluidly with viewport width (2.5vw)
+
+**Files Modified:**
+- `public/styles.css` - Updated .hero-text-pursuit font-size to use clamp()
+
+---
+
+### v2.1.69 - 2026-01-26
+**Status: Previous**
+
+**Our Purpose Section - First Element:**
+- ✅ Removed background from "Pursuit AI Jobs Institute..." text
+- ✅ Removed Image 01 (no longer displayed)
+- ✅ Text now displays directly on page background (#FFF3E9)
+- ✅ Updated to use Fractul font family
+- ✅ Clean, simple text presentation (1.125rem, line-height 1.7)
+
+**Changes:**
+- Removed `.hero-image-with-text` image display
+- Removed background, border-radius, backdrop-filter from text
+- Renamed wrapper to `.hero-text-pursuit-wrapper` for clarity
+- Set font to `"fractul-variable", sans-serif` with font-weight 400
+- Centered text, max-width 600px
+
+**Files Modified:**
+- `public/index.html` - Simplified HTML structure, removed image element
+- `public/styles.css` - Removed background styling, updated font to Fractul
+
+---
+
+### v2.1.68 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Scroll Position Lock**
+- ✅ Aggressive/large swipes now stop exactly at Our Purpose top
+- ✅ Added final position lock: `window.scrollTo(0, targetPosition)` after animation
+- ✅ Prevents all wheel events during animation (`isAnimating` check)
+- ✅ Added scroll listener that corrects position if it overshoots
+- ✅ Regardless of swipe strength, always lands at exact target
+
+**How it works:**
+1. During swipe detection: All wheel events are prevented
+2. During animation: All wheel events are prevented  
+3. Animation completes: Final `scrollTo()` ensures exact position
+4. Scroll listener: Catches any overshoot and corrects to `videoHeaderHeight`
+
+**Technical Changes:**
+- Added `preventDefault()` for all wheel events when `isAnimating || hasDetectedSwipe`
+- Added final `window.scrollTo(0, targetPosition)` after animation completes
+- Added scroll event listener that locks position if > videoHeaderHeight during animation
+
+**Files Modified:**
+- `public/script.js` - Added multiple safeguards to prevent overscroll
+
+---
+
+### v2.1.67 - 2026-01-26
+**Status: Previous**
+
+**Video Transition Improvement:**
+- ✅ Added overlay element on top of video with page background color (#FFF3E9)
+- ✅ Changed from fading video opacity to fading overlay opacity
+- ✅ Video stays at full opacity throughout - overlay covers it instead
+- ✅ Overlay fades from 0% to 100% opacity as page scrolls
+
+**How it works:**
+- Video plays at full brightness throughout
+- Overlay sits on top (z-index: 2, above video)
+- As page scrolls (10% - 80% of video height):
+  - Overlay opacity: 0 → 1
+  - Creates effect of video fading to background color
+- Smoother, more natural transition
+
+**Technical Implementation:**
+- Added `.video-header-overlay` div in HTML
+- CSS: `background: #FFF3E9; opacity: 0; z-index: 2;`
+- JavaScript: Fades overlay.style.opacity from 0 to 1 (instead of video from 1 to 0)
+
+**Files Modified:**
+- `public/index.html` - Added video-header-overlay div
+- `public/styles.css` - Added .video-header-overlay styles
+- `public/script.js` - Changed fade logic to target overlay instead of video
+
+---
+
+### v2.1.66 - 2026-01-26
+**Status: Previous**
+
+**Timing Adjustment:**
+- ✅ Removed 50ms pause between logo movement and snap
+- ✅ Snap now starts immediately after logo/phrase finish moving
+- ✅ More fluid, continuous animation
+
+**New Timing:**
+- Phase 1 (logo/phrase): 300ms
+- Pause: 0ms (removed)
+- Phase 2 (snap): 600ms
+- Total: ~900ms
+
+**Files Modified:**
+- `public/script.js` - Removed setTimeout pause, direct call to startPageTransition()
+
+---
+
+### v2.1.65 - 2026-01-26
+**Status: Previous**
+
+**Refined Swipe Behavior:**
+- ✅ Video stays fully visible during swipe - no fading or moving
+- ✅ Logo/phrase movement reduced to subtle 30px (was 150px)
+- ✅ Video only fades when actually scrolling through the page (scroll > 0)
+- ✅ At position 0 (during swipe), video stays at full opacity
+
+**Animation Sequence:**
+1. **User swipes up on video**
+   - Video stays in place (no fade, no movement)
+   - Logo/phrase move up slightly (30px, 300ms)
+   
+2. **Snap triggers** (after 50ms pause)
+   - Entire video section scrolls up
+   - Video fades as it leaves viewport
+   - Our Purpose snaps to top (600ms)
+
+**Technical Changes:**
+- Reduced logo/phrase translate from -150px to -30px
+- Added condition to video fade: only when `currentScroll > 0`
+- Video opacity locked at 1.0 when at top position
+- Faster subtle movement duration (300ms)
+
+**Result:**
+More subtle, refined interaction - logo/phrase hint at movement, then the full transition happens.
+
+**Files Modified:**
+- `public/script.js` - Reduced movement distance, fixed video fade timing
+
+---
+
+### v2.1.64 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Swipe-Triggered Animation (Not Tied to Trackpad)**
+- ✅ Logo/phrase movement is NO LONGER tied to trackpad movement
+- ✅ First swipe motion **immediately triggers** smooth animation
+- ✅ Animation runs independently - continuous smooth motion to top
+- ✅ No stuttering or stopping when fingers leave trackpad
+
+**How it works now:**
+1. **User starts swiping up** → Animation immediately begins
+2. **Logo/phrase smoothly glide to top** (400ms ease-out-cubic)
+3. **Brief pause** (100ms)
+4. **Page transitions** to Our Purpose (600ms)
+5. User's finger position doesn't matter - animation is autonomous
+
+**Key Changes:**
+- Removed `handleVideoScroll()` function that tracked finger position
+- Removed `videoScrollAmount` tracking variable
+- First wheel event with `deltaY > 0` immediately triggers full animation
+- Logo/phrase animate from current position to -150px translate
+- Single detection per swipe with `hasDetectedSwipe` flag
+- Animation is completely independent of continued trackpad input
+
+**Result:**
+One smooth, continuous animation from start to finish. No tracking of finger position, no intermediate states - just trigger and animate.
+
+**Files Modified:**
+- `public/script.js` - Complete simplification of initSectionSnapping()
+
+---
+
+### v2.1.63 - 2026-01-26
+**Status: Previous**
+
+**Seamless Two-Phase Animation:**
+- ✅ Logo and phrase now complete their journey to top BEFORE snap begins
+- ✅ No more stopping/stuttering when fingers leave trackpad
+- ✅ Three distinct phases with smooth transitions:
+
+**Animation Sequence:**
+1. **During Swipe:** Logo/phrase move with your fingers (up to 150px)
+2. **Phase 1 (300ms):** Logo/phrase smoothly complete movement to top position
+3. **Brief Pause (50ms):** Moment of anticipation
+4. **Phase 2 (500ms):** Entire video section slides up, Our Purpose snaps in
+
+**Technical Changes:**
+- Split `snapToHero()` into two animation phases
+- Phase 1: Completes logo/phrase movement with ease-out easing (300ms)
+- 50ms pause between phases for visual clarity
+- Phase 2: Page scroll animation (500ms)
+- Increased max translate distance from 100px to 150px for more dramatic effect
+
+**Visual Flow:**
+- User swipes → Logo/phrase follow finger
+- User releases → Logo/phrase smoothly glide to top
+- Brief beat → Entire section transitions
+
+**Files Modified:**
+- `public/script.js` - Rewrote snapToHero() with sequential phase animations
+
+---
+
+### v2.1.62 - 2026-01-26
+**Status: Previous**
+
+**Two-Phase Scroll Animation:**
+- ✅ **Phase 1 (During Swipe):** Only logo and "AI for All of Us" phrase move up as you scroll
+- ✅ **Phase 2 (After Release):** Video slides up and Our Purpose snaps into place
+- ✅ Video and page stay locked in place while you're swiping
+- ✅ Page scroll is temporarily disabled during video scroll interaction
+
+**How it works:**
+1. **User swipes up on video header**
+   - Page scroll is locked (body overflow hidden)
+   - Only logo and phrase translate upward (up to 100px)
+   - Video background stays fixed in place
+   
+2. **User releases (stops scrolling)**
+   - If swiped up: Entire video section smoothly scrolls up, Our Purpose snaps to top (600ms)
+   - If swiped down: Logo/phrase smoothly return to original position (400ms)
+   - Page scroll is unlocked
+
+**Technical Implementation:**
+- Intercepts `wheel` events on video header with `preventDefault()`
+- Locks body scroll with `position: fixed` during interaction
+- Tracks scroll amount within video (max 300px virtual scroll)
+- Translates content wrapper based on scroll progress
+- Custom animations for both snap and reset using `requestAnimationFrame`
+
+**Files Modified:**
+- `public/script.js` - Complete rewrite of initSectionSnapping() with two-phase animation
+
+---
+
+### v2.1.61 - 2026-01-26
+**Status: Previous**
+
+**Simplified Snapping:**
+- ✅ Removed all thresholds - pure direction-based snapping
+- ✅ **ANY upward swipe** motion → immediately snaps to Our Purpose top
+- ✅ **ANY downward swipe** motion → immediately snaps back to video top
+- ✅ No more threshold calculations or minimum distance requirements
+- ✅ Instant commitment based solely on swipe direction
+
+**How it works:**
+- In transition zone (between video and Our Purpose)
+- User swipes UP (scrolls down) → smooth snap to Our Purpose
+- User swipes DOWN (scrolls up) → smooth snap back to video
+- No thresholds to cross - direction is the only factor
+
+**Technical Changes:**
+- Removed `videoThreshold` and `heroThreshold` calculations
+- Simplified logic: `scrollDirection === 1` → snap to hero, `scrollDirection === -1` → snap to video
+- Same smooth 600ms ease-out-cubic animation
+
+**Files Modified:**
+- `public/script.js` - Removed threshold logic, pure direction-based snapping
+
+---
+
+### v2.1.60 - 2026-01-26
+**Status: Previous**
+
+**Major Improvements:**
+- ✅ Fixed snap behavior - now direction-based and consistent regardless of swipe strength
+- ✅ Smooth custom animation using `requestAnimationFrame` with ease-out-cubic easing
+- ✅ No more jarring stop-then-snap motion - continuous smooth scroll to target
+- ✅ Intelligent thresholds based on scroll direction:
+  - **Scrolling DOWN**: Pass 30% of video → snap to Our Purpose
+  - **Scrolling UP**: Go below 70% of video → snap back to video top
+- ✅ Faster response time (100ms vs 150ms)
+
+**How it works now:**
+1. **Light swipe up** (>30% threshold) → smoothly snaps to Our Purpose top
+2. **Light swipe down** from Our Purpose (<70% threshold) → smoothly snaps back to video
+3. **Any swipe strength** triggers the same smooth animation
+4. Uses custom `requestAnimationFrame` animation (600ms duration) instead of browser's smooth scroll
+5. Ease-out-cubic easing for natural, smooth deceleration
+
+**Technical Details:**
+- Direction-aware thresholds (30% down / 70% up)
+- Custom animation loop with easing function
+- Faster snap detection (100ms idle time)
+- Consistent behavior regardless of scroll velocity
+
+**Files Modified:**
+- `public/script.js` - Completely rewrote initSectionSnapping() with direction-based logic
+
+---
+
+### v2.1.59 - 2026-01-26
+**Status: Previous**
+
+**Major Fix:**
+- ✅ Implemented programmatic section snapping with JavaScript
+- ✅ Changed CSS from `scroll-snap-type: mandatory` to `proximity` (less aggressive baseline)
+- ✅ Added intelligent JavaScript snap detection that triggers after scroll stops
+- ✅ Snaps to nearest section within 150ms of scroll ending
+- ✅ Smooth scroll animation to snap target with `behavior: 'smooth'`
+
+**How it works:**
+1. User scrolls/swipes from video header
+2. When scroll stops (150ms idle), JavaScript detects nearest section
+3. If section is close (within 50% of viewport height), smooth snap to section top
+4. Prevents snap conflicts with 800ms cooldown
+
+**Technical Implementation:**
+- `scroll-snap-type: y proximity` on body (backup behavior)
+- JavaScript `initSectionSnapping()` function handles intelligent snapping
+- Detects scroll end with debounced timeout
+- Calculates closest section and snaps with `window.scrollTo()`
+
+**Files Modified:**
+- `public/styles.css` - Changed mandatory to proximity, moved snap-type to body
+- `public/script.js` - Added initSectionSnapping() function with smart snap detection
+
+---
+
+### v2.1.58 - 2026-01-26
+**Status: Previous**
+
+**Fixes:**
+- ✅ Fixed snap scrolling - one swipe from header video now immediately snaps Our Purpose section to top
+- ✅ Moved `scroll-snap-type: y mandatory` from body to html element for proper snap behavior
+- ✅ Added `scroll-snap-stop: always` enforcement on video-header and hero sections
+- ✅ Video header locked to exactly 100vh (min/max height) to prevent expansion
+- ✅ Removed conflicting scroll-behavior settings that interfered with snapping
+- ✅ Adjusted hero padding from 150px to 120px top for better alignment
+
+**Technical Changes:**
+- `scroll-snap-type` now on `html` element instead of `body`
+- Video header: `height: 100vh; min-height: 100vh; max-height: 100vh;`
+- Hero section: `scroll-snap-align: start; scroll-snap-stop: always;`
+- Removed duplicate html scroll settings that caused conflicts
+
+**Files Modified:**
+- `public/styles.css` - Updated scroll snap configuration and section heights
+
+---
+
+### v2.1.57 - 2026-01-26
+**Status: Previous**
+
+**Fixes:**
+- ✅ Fixed section snapping - sections now snap properly when scrolling
+- ✅ Changed all sections from fixed `height: 100vh` to dynamic `min-height: 100vh` + `height: auto`
+- ✅ Each section now adjusts to its content height while maintaining minimum viewport height
+- ✅ Changed overflow from `auto` to `visible` to prevent nested scrolling issues
+- ✅ Added proper spacing to hero steps (4rem between, 6rem at top/bottom)
+- ✅ Next section no longer appears at bottom while scrolling within current section
+
+**Technical Changes:**
+- All sections use `min-height: 100vh` instead of fixed `height: 100vh`
+- Sections expand naturally based on content with `height: auto`
+- `overflow: visible` prevents scroll containers within scroll containers
+- Snap points work correctly with dynamic heights
+
+**Files Modified:**
+- `public/styles.css` - Updated all section height and overflow properties
+
+---
+
+### v2.1.56 - 2026-01-26
+**Status: Previous**
+
+**Major Features:**
+- ✅ Implemented two-layer scroll system: section-level snapping + within-section lazy reveals
+- ✅ Video header fades out smoothly as you swipe up to next section
+- ✅ "Our Purpose" section with sequential lazy scroll reveals
+- ✅ Hidden scrollbar throughout entire site (no visible scrollbar)
+- ✅ Restructured "Our Purpose" content with correct reveal order:
+  1. Image 01 with "Pursuit AI Jobs Institute..." text overlaid
+  2. "We harness our collective power..." text
+  3. Three lines with Image 02 behind them
+- ✅ "Our Purpose" label stays fixed at vertical center throughout section
+
+**Reveal Sequence:**
+- Elements appear one by one as you scroll within the "Our Purpose" section
+- Video fades to opacity 0 as it scrolls off screen (30%-90% scroll range)
+- Logo and nav animations remain intact from previous versions
+
+**Files Modified:**
+- `public/index.html` - Restructured hero section HTML with new step-based layout
+- `public/styles.css` - Added scrollbar hiding, new hero step styles, image overlay styles
+- `public/script.js` - Implemented lazy scroll reveal system and video fade transitions
+
+---
+
+### v2.1.55 - 2025-01-25
+**Status: Previous**
 
 **Configuration:**
 - ✅ Port set to 3003 (default)
