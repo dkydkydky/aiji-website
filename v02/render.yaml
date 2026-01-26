@@ -1,0 +1,14 @@
+# Render Blueprint for AI Jobs Institute Website
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: aiji-website
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+    healthCheckPath: /health
+
