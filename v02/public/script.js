@@ -38,13 +38,17 @@ document.addEventListener('DOMContentLoaded', () => {
   
   initSectionSnapping();
   initSectionTransitions();
+  initRotatingWords(); // Must be before initHeroSwipeStates
+  initHeroSwipeStates();
   initLazyScrollReveal();
   initLogoAnimation();
   initVideoHeaderLayout();
-  initRotatingWords();
   initScrollEffects();
   initFormHandling();
   initAnimations();
+  initActiveNavTracking();
+  initLogoClick();
+  initResponsiveResize();
 });
 
 /**
@@ -246,6 +250,377 @@ function initSectionSnapping() {
 }
 
 /**
+ * Hero Swipe States - Progressive element reveal within What We Do section
+ */
+function initHeroSwipeStates() {
+  const heroSection = document.querySelector('.hero');
+  const step1 = document.querySelector('.hero-step-1');
+  const step2 = document.querySelector('.hero-step-2');
+  const step3 = document.querySelector('.hero-step-3');
+  
+  if (!heroSection || !step1 || !step2 || !step3) return;
+  
+  // Initiative items and descriptions for sub-states
+  const initiativeItems = document.querySelectorAll('.hero-initiative-item');
+  const initiativeDescs = document.querySelectorAll('.hero-initiative-desc');
+  
+  let currentState = 1; // Main states: 1, 2, 3
+  let currentSubState = 1; // Sub-states for initiatives: 1, 2, 3, 4
+  let isAnimating = false;
+  let isSubStateLocked = false; // Lock during gesture
+  let subStateUnlockTimer = null; // Timer to unlock after gesture ends
+  let isInHeroSection = false;
+  let lastWheelTime = 0;
+  let sectionEntryTime = 0; // Track when section becomes visible
+  let stateChangeTime = 0; // Track when state changes to prevent rapid transitions
+  const maxState = 3; // Total main states
+  const maxSubState = 4; // Total sub-states in state 3
+  
+  // Initially show only step 1
+  step1.classList.add('active');
+  step2.classList.remove('active');
+  step3.classList.remove('active');
+  
+  // Initialize initiatives - first one active
+  function updateInitiativeSubState(subState) {
+    initiativeItems.forEach((item, index) => {
+      if (index + 1 === subState) {
+        item.classList.add('active');
+      } else {
+        item.classList.remove('active');
+      }
+    });
+    initiativeDescs.forEach((desc, index) => {
+      if (index + 1 === subState) {
+        desc.classList.add('active');
+      } else {
+        desc.classList.remove('active');
+      }
+    });
+  }
+  
+  // Set initial sub-state
+  updateInitiativeSubState(1);
+  
+  // Detect when user enters hero section
+  const heroObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && entry.intersectionRatio > 0.8) {
+        isInHeroSection = true;
+        sectionEntryTime = Date.now(); // Mark entry time
+        // Reset to state 1 when entering from top
+        if (window.scrollY < heroSection.offsetTop + 100) {
+          currentState = 1;
+          step1.classList.add('active');
+          step1.style.opacity = '1';
+          step1.style.transform = 'translateY(0)';
+          step2.classList.remove('active');
+          step3.classList.remove('active');
+          currentSubState = 1;
+          updateInitiativeSubState(1);
+          
+          // Stop rotating words when resetting to state 1
+          if (window.stopRotatingWords) {
+            window.stopRotatingWords();
+          }
+        }
+      } else {
+        isInHeroSection = false;
+        // Stop rotating words when leaving section
+        if (window.stopRotatingWords) {
+          window.stopRotatingWords();
+        }
+      }
+    });
+  }, { threshold: [0.5, 0.8] });
+  
+  heroObserver.observe(heroSection);
+  
+  // Handle wheel events on hero section
+  heroSection.addEventListener('wheel', (e) => {
+    const now = Date.now();
+    
+    // Debounce - prevent multiple rapid triggers
+    if (now - lastWheelTime < 100) {
+      e.preventDefault();
+      return;
+    }
+    
+    // CRITICAL: Ignore ALL wheel events for 800ms after section becomes visible
+    // This prevents auto-advance from scroll momentum/snap completion
+    if (now - sectionEntryTime < 800) {
+      e.preventDefault();
+      return;
+    }
+    
+    // Prevent rapid state changes - require cooldown between state transitions
+    // Same cooldown for sub-states to ensure stopping at each category
+    const requiredCooldown = (currentState >= 2) ? 1000 : 500;
+    const timeSinceStateChange = now - stateChangeTime;
+    if (timeSinceStateChange < requiredCooldown) {
+      e.preventDefault();
+      console.log(`Cooldown active (${timeSinceStateChange}ms / ${requiredCooldown}ms required), ignoring wheel event`);
+      return;
+    }
+    
+    if (isAnimating || !isInHeroSection) {
+      if (isAnimating) e.preventDefault();
+      return;
+    }
+    
+    const scrollingDown = e.deltaY > 0;
+    const scrollingUp = e.deltaY < 0;
+    
+    if (scrollingDown) {
+      e.preventDefault();
+      lastWheelTime = now;
+      
+      if (currentState < maxState) {
+        // Advance to next main state
+        advanceState();
+      } else if (currentState === maxState && currentSubState < maxSubState) {
+        // In state 3, advance sub-state - immediate response
+        if (isSubStateLocked) {
+          resetSubStateUnlockTimer();
+          return;
+        }
+        advanceSubState();
+      } else if (currentState === maxState && currentSubState === maxSubState) {
+        // Last sub-state → Exit to Builders (also check lock to prevent skipping)
+        if (isSubStateLocked) {
+          resetSubStateUnlockTimer();
+          return;
+        }
+        console.log('Transitioning to Builders section');
+        exitHeroSection();
+      }
+      return;
+    } else if (scrollingUp) {
+      lastWheelTime = now;
+      
+      if (currentState === maxState && currentSubState > 1) {
+        // In state 3, regress sub-state - immediate response
+        if (isSubStateLocked) {
+          resetSubStateUnlockTimer();
+          e.preventDefault();
+          return;
+        }
+        e.preventDefault();
+        regressSubState();
+      } else if (currentState > 1) {
+        // Go back to previous main state
+        e.preventDefault();
+        regressState();
+      } else if (currentState === 1) {
+        // At state 1, allow scroll to go back to video header
+        // Don't prevent default - let natural scroll happen
+        console.log('At state 1, allowing scroll to header');
+      }
+    }
+  }, { passive: false });
+  
+  // Reset the unlock timer - called on each wheel event during gesture
+  function resetSubStateUnlockTimer() {
+    if (subStateUnlockTimer) {
+      clearTimeout(subStateUnlockTimer);
+    }
+    // Unlock after 200ms of no wheel events (gesture ended)
+    subStateUnlockTimer = setTimeout(() => {
+      isSubStateLocked = false;
+      console.log('Sub-state unlocked - ready for next gesture');
+    }, 200);
+  }
+  
+  function advanceSubState() {
+    isSubStateLocked = true;
+    currentSubState++;
+    updateInitiativeSubState(currentSubState);
+    console.log('Advanced to sub-state:', currentSubState);
+    resetSubStateUnlockTimer();
+  }
+  
+  function regressSubState() {
+    isSubStateLocked = true;
+    currentSubState--;
+    updateInitiativeSubState(currentSubState);
+    console.log('Regressed to sub-state:', currentSubState);
+    resetSubStateUnlockTimer();
+  }
+  
+  function advanceState() {
+    console.log('advanceState called, currentState:', currentState, 'isAnimating:', isAnimating);
+    if (isAnimating) return;
+    isAnimating = true;
+    
+    if (currentState === 1) {
+      // State 1 → 2: Fade out paragraph, fade in "We harness" + rotating words
+      console.log('Transitioning 1 → 2');
+      step1.style.opacity = '0';
+      step1.style.transform = 'translateY(-40px)';
+      
+      setTimeout(() => {
+        step1.classList.remove('active');
+        console.log('Step 1 removed, adding step 2');
+        
+        // Reset step 2 styles before making it active
+        step2.style.opacity = '';
+        step2.style.transform = '';
+        step2.classList.add('active');
+        
+        currentState = 2;
+        stateChangeTime = Date.now();
+        
+        // Start rotating words after a brief delay
+        setTimeout(() => {
+          if (window.startRotatingWords) {
+            window.startRotatingWords();
+          }
+          isAnimating = false;
+        }, 100);
+      }, 600);
+      
+    } else if (currentState === 2) {
+      // State 2 → 3: Fade out step 2, show initiatives (step 3)
+      console.log('Transitioning 2 → 3');
+      
+      // Stop rotating words
+      if (window.stopRotatingWords) {
+        window.stopRotatingWords();
+      }
+      
+      step2.style.opacity = '0';
+      step2.style.transform = 'translateY(-40px)';
+      
+      setTimeout(() => {
+        step2.classList.remove('active');
+        step2.style.opacity = '';
+        step2.style.transform = '';
+        
+        // Show step 3 with initiatives
+        step3.style.opacity = '';
+        step3.style.transform = '';
+        step3.classList.add('active');
+        
+        // Reset sub-state to 1
+        currentSubState = 1;
+        updateInitiativeSubState(1);
+        
+        currentState = 3;
+        stateChangeTime = Date.now();
+        console.log('State 3 active (initiatives)');
+        
+        isAnimating = false;
+      }, 600);
+    }
+  }
+  
+  function exitHeroSection() {
+    if (isAnimating) return;
+    isAnimating = true;
+    
+    console.log('Exiting hero section, fading all content');
+    
+    // Fade out all active steps
+    step1.style.opacity = '0';
+    step1.style.transform = 'translateY(-40px)';
+    step2.style.opacity = '0';
+    step2.style.transform = 'translateY(-40px)';
+    step3.style.opacity = '0';
+    step3.style.transform = 'translateY(-40px)';
+    
+    // After fade out, scroll to Builders section
+    setTimeout(() => {
+      const buildersSection = document.querySelector('.builder-stories');
+      if (buildersSection) {
+        const targetScroll = buildersSection.offsetTop;
+        window.scrollTo({
+          top: targetScroll,
+          behavior: 'smooth'
+        });
+      }
+      
+      // Reset hero section for next time
+      setTimeout(() => {
+        step1.classList.remove('active');
+        step2.classList.remove('active');
+        step3.classList.remove('active');
+        step1.style.opacity = '';
+        step1.style.transform = '';
+        step2.style.opacity = '';
+        step2.style.transform = '';
+        step3.style.opacity = '';
+        step3.style.transform = '';
+        currentState = 1;
+        currentSubState = 1;
+        updateInitiativeSubState(1);
+        isAnimating = false;
+      }, 600);
+    }, 600);
+  }
+  
+  function regressState() {
+    console.log('regressState called, currentState:', currentState, 'isAnimating:', isAnimating);
+    if (isAnimating) return;
+    isAnimating = true;
+    
+    if (currentState === 3) {
+      // State 3 → 2: Fade out initiatives (step3), show step2
+      console.log('Transitioning 3 → 2');
+      step3.style.opacity = '0';
+      step3.style.transform = 'translateY(40px)';
+      
+      setTimeout(() => {
+        step3.classList.remove('active');
+        step3.style.opacity = '';
+        step3.style.transform = '';
+        
+        // Show step 2
+        step2.style.opacity = '';
+        step2.style.transform = '';
+        step2.classList.add('active');
+        
+        // Restart rotating words
+        if (window.startRotatingWords) {
+          window.startRotatingWords();
+        }
+        
+        currentState = 2;
+        stateChangeTime = Date.now();
+        console.log('Back to state 2');
+        isAnimating = false;
+      }, 600);
+      
+    } else if (currentState === 2) {
+      // State 2 → 1: Fade out step2, fade in paragraph
+      console.log('Transitioning 2 → 1');
+      step2.style.opacity = '0';
+      step2.style.transform = 'translateY(40px)';
+      
+      // Stop rotating words animation
+      if (window.stopRotatingWords) {
+        window.stopRotatingWords();
+      }
+      
+      setTimeout(() => {
+        step2.classList.remove('active');
+        step2.style.opacity = '';
+        step2.style.transform = '';
+        
+        // Reset and activate step 1
+        step1.style.opacity = '';
+        step1.style.transform = '';
+        step1.classList.add('active');
+        
+        currentState = 1;
+        stateChangeTime = Date.now();
+        console.log('Back to state 1');
+        isAnimating = false;
+      }, 600);
+    }
+  }
+}
+
+/**
  * Section Transitions - Handle snap scrolling and fade effects between sections
  */
 function initSectionTransitions() {
@@ -361,30 +736,8 @@ function handleVideoHeaderHidden(videoHeader) {
  * Lazy Scroll Reveal - Content within sections appears as you scroll
  */
 function initLazyScrollReveal() {
-  // Hero section - reveal steps sequentially as you scroll within the section
-  const heroSteps = document.querySelectorAll('.hero-step');
-  
-  if (heroSteps.length > 0) {
-    const heroObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('revealed');
-          // Don't unobserve - allow re-reveal on scroll back
-        } else {
-          // Optional: fade out when scrolling away
-          // entry.target.classList.remove('revealed');
-        }
-      });
-    }, {
-      root: null,
-      threshold: 0.3,
-      rootMargin: '-100px 0px -100px 0px'
-    });
-    
-    heroSteps.forEach(step => {
-      heroObserver.observe(step);
-    });
-  }
+  // Hero section - now controlled by initHeroSwipeStates(), skip lazy reveal
+  // (Hero steps are now managed by the swipe state machine)
   
   // Always keep hero label visible
   const heroLabel = document.querySelector('.hero-label');
@@ -720,8 +1073,8 @@ function initLogoAnimation() {
       videoHeaderLogo.style.position = 'fixed';
       videoHeaderLogo.style.top = `${topPadding}px`;
       videoHeaderLogo.style.left = '15px';
-      videoHeaderLogo.style.transform = 'scale(1.5)';
-      videoHeaderLogo.style.transformOrigin = 'top left';
+      videoHeaderLogo.style.transform = 'scale(1.6)';
+      videoHeaderLogo.style.transformOrigin = 'left center';
       videoHeaderLogo.style.zIndex = '1001';
     }
     
@@ -872,67 +1225,156 @@ function initVideoHeaderLayout() {
 /**
  * Rotating words animation for hero title
  */
+let rotatingWordsInterval = null;
+
 function initRotatingWords() {
   const rotatingWordEl = document.getElementById('rotating-word');
   if (!rotatingWordEl) return;
   
   const words = [
-    'AI Workforce',
+    'AI Jobs',
     'AI-Powered World',
-    'a Bright Future',
+    'Bright Futures',
     'Transformation',
     'Insightful Data',
     'Opportunity',
+    'AI Workforce',
     'Innovation',
-    'a New Beginning',
+    'New Beginnings',
     'Community',
     'Progress'
   ];
   
-  const directions = [
-    'direction-left', 'direction-right', 'direction-up', 'direction-down',
-    'direction-up-left', 'direction-up-right', 'direction-down-left', 'direction-down-right'
-  ];
-  
   let currentIndex = 0;
+  let isTransitioning = false;
   
+  // Generate random coordinates for disperse animation
+  function getRandomCoordinates() {
+    const x = (Math.random() - 0.5) * 1200; // -600px to 600px
+    const y = (Math.random() - 0.5) * 1200;
+    return { x, y };
+  }
+  
+  // Shuffle array to get random order
+  function shuffle(array) {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+  
+  // Build word with letters appearing in random order
   function buildWord(word) {
     rotatingWordEl.innerHTML = '';
     const letters = word.split('');
+    const letterElements = [];
     
-    letters.forEach((char) => {
+    // Create all letter elements first
+    letters.forEach((char, index) => {
       if (char === ' ') {
         const space = document.createElement('span');
         space.innerHTML = '&nbsp;';
+        space.style.display = 'inline-block';
+        space.style.width = '0.3em';
         rotatingWordEl.appendChild(space);
+        letterElements.push(null); // Placeholder for spaces
       } else {
         const letterSpan = document.createElement('span');
         letterSpan.className = 'rotating-word-letter';
         letterSpan.textContent = char;
-        letterSpan.classList.add(directions[Math.floor(Math.random() * directions.length)]);
-        letterSpan.style.animationDelay = '0s';
+        letterSpan.style.opacity = '0';
         rotatingWordEl.appendChild(letterSpan);
-        
-        requestAnimationFrame(() => {
-          letterSpan.classList.add('animate-in');
-        });
+        letterElements.push(letterSpan);
       }
+    });
+    
+    // Animate letters in random order
+    const letterIndices = letterElements
+      .map((el, idx) => el ? idx : null)
+      .filter(idx => idx !== null);
+    const randomOrder = shuffle(letterIndices);
+    
+    randomOrder.forEach((index, i) => {
+      setTimeout(() => {
+        const letter = letterElements[index];
+        letter.style.transition = 'opacity 0.15s ease';
+        letter.style.opacity = '1';
+      }, i * 50); // 50ms delay between each letter
     });
   }
   
+  // Disperse current word and build next word simultaneously
   function rotateWord() {
-    rotatingWordEl.style.opacity = '0';
+    if (isTransitioning) return;
+    isTransitioning = true;
+    
+    // Get all current letters
+    const currentLetters = Array.from(rotatingWordEl.querySelectorAll('.rotating-word-letter'));
+    const randomOrder = shuffle([...Array(currentLetters.length).keys()]);
+    
+    // Disperse current word (teleport - no transition)
+    randomOrder.forEach((index, i) => {
+      setTimeout(() => {
+        const letter = currentLetters[index];
+        if (letter) {
+          const coords = getRandomCoordinates();
+          letter.style.transition = 'none'; // No animation - instant teleport
+          letter.style.transform = `translate(${coords.x}px, ${coords.y}px)`;
+        }
+      }, i * 30);
+    });
+    
+    // Start building next word after short delay (overlapping transition)
     setTimeout(() => {
       currentIndex = (currentIndex + 1) % words.length;
-      rotatingWordEl.style.opacity = '1';
       buildWord(words[currentIndex]);
-    }, 300);
+      
+      // Reset transition flag after animation completes
+      setTimeout(() => {
+        isTransitioning = false;
+      }, 1000);
+    }, 400); // Start building next word while current is still dispersing
   }
   
-  rotatingWordEl.style.opacity = '1';
+  // Expose functions for external control
+  window.startRotatingWords = function() {
+    console.log('startRotatingWords called, interval exists:', !!rotatingWordsInterval);
+    if (rotatingWordsInterval) {
+      console.log('Already running, returning');
+      return; // Already running
+    }
+    
+    // Ensure the element is visible and ready
+    rotatingWordEl.style.opacity = '1';
+    rotatingWordEl.style.visibility = 'visible';
+    rotatingWordEl.style.display = 'inline-block';
+    rotatingWordEl.style.transition = 'opacity 0.3s ease';
+    
+    // Force a reflow to ensure styles are applied
+    rotatingWordEl.offsetHeight;
+    
+    console.log('Building initial word:', words[currentIndex]);
+    // Build the word and start rotation
+    buildWord(words[currentIndex]);
+    
+    console.log('Starting interval');
+    rotatingWordsInterval = setInterval(rotateWord, 2000);
+  };
+  
+  window.stopRotatingWords = function() {
+    console.log('stopRotatingWords called');
+    if (rotatingWordsInterval) {
+      clearInterval(rotatingWordsInterval);
+      rotatingWordsInterval = null;
+      console.log('Interval cleared');
+    }
+  };
+  
+  // Initial build so text is there (but hidden until step 2 is active)
+  console.log('Initial rotating words setup');
   buildWord(words[0]);
-  rotatingWordEl.style.transition = 'opacity 0.3s ease';
-  setInterval(rotateWord, 3000);
 }
 
 /**
@@ -1135,3 +1577,115 @@ document.addEventListener('mousemove', (e) => {
     }
   }
 });
+
+/**
+ * Active Nav Tracking - Highlights nav items when in their section
+ */
+function initActiveNavTracking() {
+  const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+  const sections = [];
+  
+  // Build array of sections with their corresponding nav links
+  navLinks.forEach(link => {
+    const href = link.getAttribute('href');
+    const sectionId = href.substring(1); // Remove #
+    const section = document.getElementById(sectionId);
+    if (section) {
+      sections.push({ link, section });
+    }
+  });
+  
+  if (sections.length === 0) return;
+  
+  // Check which section is currently in view
+  function updateActiveNav() {
+    const scrollPosition = window.scrollY + window.innerHeight / 2;
+    
+    let activeSection = null;
+    
+    sections.forEach(({ link, section }) => {
+      const sectionTop = section.offsetTop;
+      const sectionBottom = sectionTop + section.offsetHeight;
+      
+      // Check if scroll position is within this section
+      if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+        activeSection = link;
+      }
+      
+      // Remove active class from all
+      link.classList.remove('active');
+    });
+    
+    // Add active class to current section's link
+    if (activeSection) {
+      activeSection.classList.add('active');
+    }
+  }
+  
+  // Listen for scroll events
+  window.addEventListener('scroll', updateActiveNav, { passive: true });
+  
+  // Initial check
+  updateActiveNav();
+}
+
+/**
+ * Logo Click Handler - Scroll to top when logo is clicked
+ */
+function initLogoClick() {
+  // Find all logo elements (video header logo and any at-top logo)
+  const logos = document.querySelectorAll('.video-header-logo, .logo-full, .nav-logo');
+  
+  logos.forEach(logo => {
+    logo.style.cursor = 'pointer';
+    
+    logo.addEventListener('click', (e) => {
+      e.preventDefault();
+      
+      // Smooth scroll to top
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  });
+}
+
+/**
+ * Responsive Resize Handler - Ensure content readjusts on browser resize
+ */
+function initResponsiveResize() {
+  let resizeTimeout;
+  
+  function handleResize() {
+    // Clear existing timeout
+    clearTimeout(resizeTimeout);
+    
+    // Debounce resize event (wait 150ms after user stops resizing)
+    resizeTimeout = setTimeout(() => {
+      // Get the first hero step (paragraph section)
+      const heroStep = document.querySelector('.hero-step:first-child');
+      const wrapper = document.querySelector('.hero-text-pursuit-wrapper');
+      
+      if (heroStep && wrapper) {
+        // Force recalculation of centering
+        heroStep.style.minHeight = '100vh';
+        
+        // Force reflow
+        void heroStep.offsetHeight;
+        
+        // Ensure flexbox centering is applied
+        heroStep.style.display = 'flex';
+        heroStep.style.alignItems = 'center';
+        heroStep.style.justifyContent = 'center';
+      }
+      
+      // Also trigger video header layout check for mobile stacking
+      const layoutCheckEvent = new Event('resize');
+      window.dispatchEvent(layoutCheckEvent);
+    }, 150);
+  }
+  
+  // Listen for window resize
+  window.addEventListener('resize', handleResize);
+}

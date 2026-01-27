@@ -79,7 +79,7 @@ html {
 }
 
 body {
-  scroll-snap-type: y proximity;
+  scroll-snap-type: y mandatory;
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.6;
@@ -303,6 +303,22 @@ body.logo-at-top .nav.hidden-on-video {
   transform: translateX(-10px);
 }
 
+/* Animated underline for active nav item */
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #000000;
+  transition: width 0.3s ease;
+}
+
+.nav-links a.active::after {
+  width: 100%;
+}
+
 .nav.logo-at-top .nav-links a {
   opacity: 1;
   transform: translateX(0);
@@ -519,7 +535,7 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 
 .video-header-logo {
   position: relative;
-  transform: translateY(-5px) scale(1.5);
+  transform: translateY(-7px) scale(1.6);
   transform-origin: left center;
   margin-left: -2px;
   pointer-events: auto;
@@ -724,19 +740,22 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 .hero {
   position: relative;
   min-height: 100vh;
-  height: auto;
+  height: 100vh;
+  max-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  padding: 0 0 150px;
+  padding: 0;
+  background-color: #FFF3E9;
   color: #000000;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
   overflow: hidden;
   box-sizing: border-box;
   margin: 0;
   z-index: 2;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  scroll-snap-stop: always;
 }
 
 /* Base class for all hero elements - allows easy targeting */
@@ -746,7 +765,7 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 
 /* Light pink horizontal band */
 
-/* Hero Label (Our Purpose) - Left side, vertically centered */
+/* Hero Label (Our Purpose) - Left side, vertically centered - HIDDEN */
 .hero-label,
 .label-meta-hero {
   position: absolute;
@@ -758,7 +777,8 @@ body > .video-header-logo:not(.animating):not(.at-top) {
   font-size: 0.75rem;
   color: #000000;
   z-index: 10;
-  opacity: var(--hero-label-opacity);
+  opacity: 0;
+  visibility: hidden;
   transition: var(--hero-label-transition);
   transition-delay: var(--hero-label-delay);
 }
@@ -768,45 +788,233 @@ body > .video-header-logo:not(.animating):not(.at-top) {
   z-index: 2;
   text-align: center;
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 var(--container-padding);
+  height: 100%;
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0;
-  min-height: 100%;
   visibility: visible;
   opacity: 1;
 }
 
 /* Hero steps - lazy reveal on scroll */
 .hero-step {
+  position: absolute;
+  top: 72px; /* Start below nav */
+  left: 0;
   width: 100%;
+  height: calc(100vh - 72px); /* Height minus nav */
   opacity: 0;
   transform: translateY(40px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
-  margin: 4rem 0;
-  padding: 2rem 0;
-}
-
-.hero-step:first-child {
-  margin-top: 0;
-  margin-bottom: 4rem;
-  min-height: 100vh;
-  height: auto;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  margin: 0;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  padding-top: 36px;
-  padding-bottom: 36px;
+  box-sizing: border-box;
+  pointer-events: none;
 }
 
-.hero-step:last-child {
-  margin-bottom: 6rem;
+.hero-step.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Step 1: Paragraph - centered */
+.hero-step-1 {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* Step 2: Rotating words - centered */
+.hero-step-2 {
+  align-items: center;
+  justify-content: center;
+}
+
+/* Step 3: Initiatives - centered in content area */
+
+/* Hero Step 2: New layout with "We harness" at top, word animation at bottom */
+.hero-step-2-layout {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 100px; /* Space between headline and word animation */
+  padding: 60px 0;
+  box-sizing: border-box;
+}
+
+.hero-text-collective-top {
+  font-family: "fractul-variable", sans-serif;
+  font-variation-settings: "wght" 400;
+  font-size: clamp(2.5rem, 4vw, 4rem); /* 40px - 64px */
+  line-height: 1.1;
+  color: #000000;
+  font-weight: 400;
+  text-align: center;
+  max-width: 1400px;
+  padding: 0 var(--container-padding);
+  z-index: 2;
+  box-sizing: border-box;
+}
+
+/* Responsive padding for slide 2 headline */
+@media (min-width: 601px) and (max-width: 1400px) {
+  .hero-text-collective-top {
+    padding: 0 80px;
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1400px) {
+  .hero-text-collective-top {
+    padding: 0 120px;
+  }
+}
+
+.hero-title-wrapper-bottom {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+/* Hero Step 3: Initiatives with two columns - centered in content area */
+.hero-step-3 {
+  align-items: center;
+  justify-content: center;
+  padding: 0 40px;
+}
+
+.hero-initiatives-wrapper {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--container-padding);
+  box-sizing: border-box;
+}
+
+/* Responsive padding for slide 3 */
+@media (min-width: 601px) and (max-width: 1024px) {
+  .hero-initiatives-wrapper {
+    padding: 0 25px;
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1400px) {
+  .hero-initiatives-wrapper {
+    padding: 0 120px;
+  }
+}
+
+.hero-initiatives-headline {
+  font-family: "fractul-variable", sans-serif;
+  font-size: clamp(2.5rem, 4vw, 4rem); /* 40px - 64px */
+  font-weight: 400;
+  line-height: 1.1;
+  color: #000;
+  text-align: center;
+  margin: 0 0 100px 0;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 var(--container-padding);
+  box-sizing: border-box;
+}
+
+/* Responsive padding for slide 3 headline */
+@media (min-width: 601px) and (max-width: 1400px) {
+  .hero-initiatives-headline {
+    padding: 0 80px;
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1400px) {
+  .hero-initiatives-headline {
+    padding: 0 120px;
+  }
+}
+
+.hero-initiatives-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: start;
+}
+
+.hero-initiatives-left {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.hero-initiative-item {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  font-family: "fractul-variable", sans-serif;
+  transition: color 0.3s ease;
+  color: #ccc; /* Greyed out by default */
+  cursor: default;
+  text-align: left;
+}
+
+.hero-initiative-item.active {
+  color: #000; /* Black when active */
+}
+
+.hero-initiative-num {
+  font-size: clamp(1.125rem, 1.8vw, 1.8rem); /* Proportional to name (60%) */
+  font-weight: 400;
+  min-width: 40px;
+}
+
+.hero-initiative-name {
+  font-size: clamp(1.875rem, 3vw, 3rem); /* 75% of header: 30px - 48px */
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.hero-initiatives-right {
+  position: relative;
+  min-height: 200px; /* Prevent collapse when descriptions are absolute */
+}
+
+.hero-initiative-desc {
+  font-family: "fractul-variable", sans-serif;
+  font-size: clamp(1.875rem, 3vw, 3rem); /* 75% of header: 30px - 48px */
+  line-height: 1.3;
+  color: #333;
+  text-align: left;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: opacity 0.4s ease;
+}
+
+.hero-initiative-desc.active {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .hero-initiatives-two-col {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  
+  .hero-text-collective-top {
+    padding: 0 20px;
+  }
 }
 
 .hero-step.revealed {
@@ -825,6 +1033,7 @@ body > .video-header-logo:not(.animating):not(.at-top) {
   text-align: center;
   display: flex;
   flex-direction: column;
+  transform: translateY(-75px);
   align-items: center;
   gap: 0;
 }
@@ -846,11 +1055,11 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 
 .hero-title-line2 {
   font-family: "fractul-variable", sans-serif;
-  font-variation-settings: "wght" 400;
-  font-size: clamp(3.5rem, 8vw, 5.5rem);
-  font-weight: 400;
+  font-variation-settings: "wght" 600;
+  font-size: clamp(3rem, 4.8vw, 4.8rem); /* 120% of base: 48px - 77px */
+  font-weight: 600;
   font-style: italic;
-  line-height: 1.3;
+  line-height: 1.1;
   letter-spacing: -0.03em;
   color: #000000;
   margin: 0;
@@ -860,15 +1069,26 @@ body > .video-header-logo:not(.animating):not(.at-top) {
   transition-delay: var(--hero-title-line2-delay);
 }
 
-.hero-title-line3 {
+.hero-title-line-top {
   font-family: "fractul-variable", sans-serif;
-  font-variation-settings: "wght" 600;
-  font-size: clamp(24px, 8vw, 42px);
-  font-weight: 600;
-  line-height: 1.3;
+  font-variation-settings: "wght" 400;
+  font-size: clamp(3.5rem, 8vw, 5.5rem); /* Same size as rotating words */
+  font-weight: 400;
+  line-height: 1.1;
   letter-spacing: -0.03em;
   color: #000000;
   margin: 0;
+}
+
+.hero-title-line3 {
+  font-family: "fractul-variable", sans-serif;
+  font-variation-settings: "wght" 400;
+  font-size: clamp(2.5rem, 4vw, 4rem); /* 40px - 64px */
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: #000000;
+  margin: 10px 0 0 0; /* Gap above */
   opacity: var(--hero-title-line3-opacity);
   transform: var(--hero-title-line3-transform);
   transition: var(--hero-title-line3-transition);
@@ -877,59 +1097,14 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 
 .rotating-word {
   display: inline-block;
+  position: relative;
 }
 
 .rotating-word-letter {
   display: inline-block;
   opacity: 0;
   position: relative;
-  transition: transform 0.6s ease, opacity 0.6s ease;
-}
-
-.rotating-word-letter.animate-in {
-  animation: letterBuildIn 0.6s ease forwards;
-}
-
-@keyframes letterBuildIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-    transform: translate(0, 0);
-  }
-}
-
-.rotating-word-letter.direction-left {
-  transform: translateX(-50px);
-}
-
-.rotating-word-letter.direction-right {
-  transform: translateX(50px);
-}
-
-.rotating-word-letter.direction-up {
-  transform: translateY(-30px);
-}
-
-.rotating-word-letter.direction-down {
-  transform: translateY(30px);
-}
-
-.rotating-word-letter.direction-up-left {
-  transform: translate(-30px, -30px);
-}
-
-.rotating-word-letter.direction-up-right {
-  transform: translate(30px, -30px);
-}
-
-.rotating-word-letter.direction-down-left {
-  transform: translate(-30px, 30px);
-}
-
-.rotating-word-letter.direction-down-right {
-  transform: translate(30px, 30px);
+  will-change: transform, opacity;
 }
 
 @keyframes fadeInUp {
@@ -1015,26 +1190,82 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 .hero-text-pursuit-wrapper {
   position: relative;
   width: 100%;
-  max-width: 1000px;
+  max-width: 1400px;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 400px;
+  padding: 0 var(--container-padding);
+  box-sizing: border-box;
+}
+
+/* Add more padding for mid-range sizes */
+@media (min-width: 601px) and (max-width: 1400px) {
+  .hero-text-pursuit-wrapper {
+    padding: 0 80px;
+  }
+}
+
+/* Even more padding for larger mid-range */
+@media (min-width: 1025px) and (max-width: 1400px) {
+  .hero-text-pursuit-wrapper {
+    padding: 0 120px;
+  }
 }
 
 .hero-image-pursuit-bg {
   position: absolute;
   top: 50%;
-  right: 0;
-  transform: translateY(-50%) rotate(-90deg) scale(0.8);
+  right: clamp(150px, calc(-10vw + 300px), 250px); /* Moved another 100px to the left */
+  transform: translateY(-50%) rotate(-90deg) scale(clamp(0.6, 0.8, 1));
   transform-origin: center right;
   width: auto;
-  height: 80vh;
-  max-height: 900px;
+  height: clamp(37.5vh, 50vh, 53vh); /* 25% bigger */
   object-fit: contain;
   z-index: 0;
   opacity: 0.9;
+}
+
+.hero-image-pursuit-top-left {
+  position: absolute;
+  top: -150px;
+  left: -180px;
+  width: auto;
+  height: clamp(30vh, 40vh, 50vh); /* Scale between 30-50vh based on viewport */
+  object-fit: contain;
+  z-index: 0;
+  opacity: 0.9;
+  transform: rotate(90deg);
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .hero-image-pursuit-bg {
+    right: -100px; /* Push more off screen */
+    height: 50vh; /* Smaller on mobile */
+    transform: translateY(-50%) rotate(-90deg) scale(0.5); /* Much smaller */
+    opacity: 0.6; /* More transparent */
+  }
+  
+  .hero-image-pursuit-top-left {
+    height: 25vh; /* Smaller on mobile */
+    top: -80px;
+    left: -80px;
+    opacity: 0.6; /* More transparent */
+  }
+}
+
+/* Responsive adjustments for larger screens */
+@media (min-width: 1600px) {
+  .hero-image-pursuit-bg {
+    right: 200px; /* Keep visible on large screens */
+    height: 70vh;
+  }
+  
+  .hero-image-pursuit-top-left {
+    height: 45vh;
+  }
 }
 
 .hero-text-pursuit {
@@ -1042,8 +1273,8 @@ body > .video-header-logo:not(.animating):not(.at-top) {
   z-index: 1;
   font-family: "fractul-variable", sans-serif;
   font-variation-settings: "wght" 400;
-  font-size: clamp(2rem, 3.5vw, 2.875rem);
-  line-height: 1.3;
+  font-size: clamp(2.5rem, 4vw, 4rem); /* 40px - 64px */
+  line-height: 1.1;
   color: #000000;
   font-weight: 400;
   text-align: center;
@@ -1055,16 +1286,48 @@ body > .video-header-logo:not(.animating):not(.at-top) {
   font-weight: 600;
 }
 
-/* Hero Step 2: Collective power text */
+/* Hero Step 3: Collective power text - at bottom */
 .hero-text-collective {
-  font-size: 1.25rem;
-  line-height: 1.8;
+  position: relative;
+  z-index: 1;
+  font-family: "fractul-variable", sans-serif;
+  font-variation-settings: "wght" 400;
+  font-size: clamp(2.25rem, 3.5vw, 2.875rem);
+  line-height: 1.3;
   color: #000000;
+  font-weight: 400;
   margin: 0;
-  max-width: 700px;
+  max-width: 1400px;
   width: 100%;
   text-align: center;
-  padding: 2rem;
+  padding: 0 var(--container-padding);
+  transform: translateY(-75px);
+  box-sizing: border-box;
+}
+
+/* Responsive padding for collective text */
+@media (min-width: 601px) and (max-width: 1400px) {
+  .hero-text-collective {
+    padding: 0 80px;
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1400px) {
+  .hero-text-collective {
+    padding: 0 120px;
+  }
+}
+
+/* Mobile styles for text elements */
+@media (max-width: 768px) {
+  .hero-text-pursuit,
+  .hero-text-collective {
+    padding: 0 20px;
+  }
+  
+  .hero-text-collective {
+    transform: translateY(-50px);
+  }
 }
 
 /* Hero Step 3: Three lines with Image 02 behind */
@@ -1085,11 +1348,11 @@ body > .video-header-logo:not(.animating):not(.at-top) {
   left: 50%;
   transform: translate(-50%, -50%);
   width: auto;
-  max-width: 100%;
-  height: auto;
-  max-height: 500px;
+  max-width: none;
+  height: 75vh;
+  max-height: 75vh;
   object-fit: contain;
-  opacity: 0.6;
+  opacity: 1.0;
   z-index: 1;
 }
 
@@ -1238,6 +1501,7 @@ body > .video-header-logo:not(.animating):not(.at-top) {
   scroll-snap-align: start;
   scroll-snap-stop: always;
   box-sizing: border-box;
+  margin-top: 0;
 }
 
 .builder-stories::before {

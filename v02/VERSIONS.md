@@ -12,8 +12,1677 @@ This file tracks all changes made to the AIJI website with version numbers for e
 
 ## Version History
 
-### v103 - 2026-01-26
+### v209 - 2026-01-27
 **Status: ✅ Current**
+
+**Fixed: Slide 3 Content Vertical Centering**
+- ✅ Removed duplicate `.hero-step-3` definition
+- ✅ Removed top/bottom padding that was pushing content off-center
+- ✅ Content now properly centered in area between nav and bottom of viewport
+
+**Files Modified:**
+- `public/styles.css` - Fixed `.hero-step-3` padding and centering
+
+---
+
+### v208 - 2026-01-27
+**Status: Previous**
+
+**Updated: Header Logo Position**
+- ✅ Logo moved up by 2px: `translateY(-5px)` → `translateY(-7px)`
+
+**Files Modified:**
+- `public/styles.css` - Updated `.video-header-logo` transform
+
+---
+
+### v207 - 2026-01-27
+**Status: Previous**
+
+**Updated: Header Logo Scale Adjustment**
+- ✅ Logo scale changed from 1.65 to 1.6
+
+**Files Modified:**
+- `public/styles.css` - Updated `.video-header-logo` transform
+- `public/script.js` - Updated logo animation scale
+
+---
+
+### v206 - 2026-01-27
+**Status: Previous**
+
+**Updated: Header Logo Size**
+- ✅ Logo scaled to 110% of previous size: `scale(1.5)` → `scale(1.65)`
+- ✅ Transform origin set to `left center`
+- ✅ Updated animation in JavaScript to match
+
+**Files Modified:**
+- `public/styles.css` - Updated `.video-header-logo` transform
+- `public/script.js` - Updated logo animation scale and transform-origin
+
+---
+
+### v205 - 2026-01-27
+**Status: Previous**
+
+**Updated: Slide 2 Gap Adjustment**
+- ✅ Gap between rotating words and "for All of Us." reduced from 20px to 10px
+
+**Files Modified:**
+- `public/styles.css` - Updated `.hero-title-line3` margin
+
+---
+
+### v204 - 2026-01-27
+**Status: Previous**
+
+**Updated: Slide 2 Rotating Words Styling**
+- ✅ Rotating words font size increased to 120%: `clamp(3rem, 4.8vw, 4.8rem)` (48-77px)
+- ✅ Added 20px gap between rotating words and "for All of Us."
+
+**Files Modified:**
+- `public/styles.css` - Updated `.hero-title-line2` font-size and `.hero-title-line3` margin
+
+---
+
+### v203 - 2026-01-27
+**Status: Previous**
+
+**Fixed: Slide 3 Content Jump When Changing Categories**
+- ✅ Removed `position: relative` from active description (was causing layout reflow)
+- ✅ All descriptions now stay `position: absolute` - only opacity changes
+- ✅ Added `min-height: 200px` to `.hero-initiatives-right` to prevent container collapse
+
+**Files Modified:**
+- `public/styles.css` - Fixed `.hero-initiative-desc.active` and `.hero-initiatives-right`
+
+---
+
+### v202 - 2026-01-27
+**Status: Previous**
+
+**Fixed: Slide 3 Category 04 Being Skipped**
+- ✅ Added lock check to exit condition (when on sub-state 4)
+- ✅ Prevents rapid wheel events from skipping category 04 and going straight to Builders
+
+**Files Modified:**
+- `public/script.js` - Added `isSubStateLocked` check before `exitHeroSection()`
+
+---
+
+### v201 - 2026-01-27
+**Status: Previous**
+
+**Updated: Slide 3 Headline Margin**
+- ✅ Gap between headline and table changed from 60px to 100px
+
+**Files Modified:**
+- `public/styles.css` - Updated margin-bottom on `.hero-initiatives-headline`
+
+---
+
+### v200 - 2026-01-27
+**Status: Previous**
+
+**Updated: Slide 3 Header Text**
+- ✅ Changed to: "Four pillars. One vision. This is how we're building the future of work."
+
+**Files Modified:**
+- `public/index.html` - Updated `.hero-initiatives-headline` text
+
+---
+
+### v199 - 2026-01-27
+**Status: Previous**
+
+**Updated: Slide 3 Description Alignment**
+- ✅ Description text now left-aligned
+
+**Files Modified:**
+- `public/styles.css` - Added `text-align: left` to `.hero-initiative-desc`
+
+---
+
+### v198 - 2026-01-27
+**Status: Previous**
+
+**Updated: Slide 3 Categories & Description Font Size**
+- ✅ Category names: 75% of header → `clamp(1.875rem, 3vw, 3rem)` (30-48px)
+- ✅ Description: 75% of header → `clamp(1.875rem, 3vw, 3rem)` (30-48px)
+- ✅ Numbers: Proportionally reduced → `clamp(1.125rem, 1.8vw, 1.8rem)`
+
+**Files Modified:**
+- `public/styles.css` - Updated `.hero-initiative-name`, `.hero-initiative-desc`, `.hero-initiative-num`
+
+---
+
+### v197 - 2026-01-27
+**Status: Previous**
+
+**Fixed: Slide 3 Headline Width**
+- ✅ Changed `.hero-initiatives-headline` max-width from 800px to 1400px to match Slides 1 & 2
+
+**Files Modified:**
+- `public/styles.css` - Updated max-width for `.hero-initiatives-headline`
+
+---
+
+### v196 - 2026-01-27
+**Status: Previous**
+
+**Updated: Slide 3 Headline Padding**
+- ✅ Added responsive padding to `.hero-initiatives-headline` matching Slides 1 & 2
+- ✅ Base: 25px, 601-1400px: 80px, 1025-1400px: 120px
+
+**Files Modified:**
+- `public/styles.css` - Added padding and responsive rules for `.hero-initiatives-headline`
+
+---
+
+### v195 - 2026-01-27
+**Status: Previous**
+
+**Updated: Slide 3 Spacing Adjustments**
+- ✅ Gap between categories (01-04) reduced from 24px to 12px
+- ✅ Padding left/right for 601-1024px range changed from 80px to 25px
+
+**Files Modified:**
+- `public/styles.css` - Updated `.hero-initiatives-left` gap and responsive padding
+
+---
+
+### v194 - 2026-01-27
+**Status: Previous**
+
+**Updated: Initiative Categories Styling**
+- ✅ Category names now same font size as header: `clamp(2.5rem, 4vw, 4rem)` (40px - 64px)
+- ✅ All categories left-aligned
+- ✅ Numbers proportionally sized: `clamp(1.5rem, 3vw, 2rem)`
+- ✅ Font weight changed to 400 for consistency
+
+**Files Modified:**
+- `public/styles.css` - Updated `.hero-initiative-name`, `.hero-initiative-num`, `.hero-initiatives-left`
+
+---
+
+### v193 - 2026-01-27
+**Status: Previous**
+
+**Fixed: Sub-State - Immediate Response Approach**
+- ✅ Transition starts IMMEDIATELY on first touch
+- ✅ Locks during gesture, ignores all subsequent events
+- ✅ Unlocks after 200ms of no wheel events (gesture complete)
+- ✅ No delay - instant response to swipe
+
+**Files Modified:**
+- `public/script.js` - Replaced debounce with immediate-lock approach
+
+---
+
+### v192 - 2026-01-27
+**Status: Previous**
+
+**Fixed: Sub-State Skipping Issue (v3) - Debounce Approach**
+- ✅ Implemented proper debounce for sub-state changes
+- ✅ Waits 150ms for scroll events to stop before executing
+- ✅ Only ONE sub-state change per swipe gesture regardless of aggressiveness
+- ✅ Added 600ms lock after execution
+
+**Files Modified:**
+- `public/script.js` - Added `queueSubStateChange` debounce function
+
+---
+
+### v191 - 2026-01-27
+**Status: Previous**
+
+**Fixed: Sub-State Skipping Issue (v2)**
+- ✅ Added separate `isSubStateAnimating` lock for sub-states
+- ✅ Increased sub-state lock to 800ms
+- ✅ Added explicit checks before sub-state function calls
+- ✅ Sub-states now properly stop at each category
+
+**Files Modified:**
+- `public/script.js` - Improved sub-state locking mechanism
+
+---
+
+### v190 - 2026-01-27
+**Status: Previous**
+
+**Fixed: Sub-State Skipping Issue**
+- ✅ Added animation lock to sub-state functions (400ms)
+- ✅ Prevents skipping through categories - now stops at each one
+- ✅ Adjusted cooldown to 1000ms for consistency
+
+**Files Modified:**
+- `public/script.js` - Added isAnimating lock to advanceSubState and regressSubState
+
+---
+
+### v189 - 2026-01-27
+**Status: Previous**
+
+**Fixed: Sub-State Cooldown Delay**
+- ✅ Reduced cooldown for sub-states (initiatives) from 1500ms to 300ms
+- ✅ Cycling through 01-04 is now much faster
+- ✅ Main state transitions still have 1500ms cooldown
+
+**Files Modified:**
+- `public/script.js` - Reduced sub-state cooldown
+
+---
+
+### v188 - 2026-01-27
+**Status: Previous**
+
+**Fixed: Scroll Back to Header from State 1**
+- ✅ When at state 1 and scrolling up, no longer prevents default scroll
+- ✅ Allows natural scroll back to video header
+
+**Files Modified:**
+- `public/script.js` - Fixed scroll handling for state 1
+
+---
+
+### v187 - 2026-01-27
+**Status: Previous**
+
+**Applied: Consistent Responsive Padding to Slides 2 & 3**
+- ✅ Applied same padding logic from slide 1 to slides 2 and 3
+- ✅ Base: `var(--container-padding)` (25px)
+- ✅ 601px - 1400px: `80px`
+- ✅ 1025px - 1400px: `120px`
+- ✅ Updated max-width to 1400px for consistency
+
+**Files Modified:**
+- `public/styles.css` - Added responsive padding to `.hero-text-collective-top` and `.hero-initiatives-wrapper`
+
+---
+
+### v186 - 2026-01-27
+**Status: Previous**
+
+**Adjusted: Slide 2 Gap**
+- ✅ Increased gap between headline and word animation from 40px to 100px
+
+**Files Modified:**
+- `public/styles.css` - Updated gap in `.hero-step-2-layout`
+
+---
+
+### v185 - 2026-01-27
+**Status: Previous**
+
+**Centered: Slide 2 Content**
+- ✅ Changed layout from `space-between` to `center`
+- ✅ Both elements now grouped in center of content area
+- ✅ Added 40px gap between headline and word animation
+
+**Files Modified:**
+- `public/styles.css` - Updated `.hero-step-2-layout` to center content
+
+---
+
+### v184 - 2026-01-27
+**Status: Previous**
+
+**Adjusted: Slide 2 Spacing**
+- ✅ Closed gap between headline and word animation by 150px
+- ✅ Added `margin-bottom: -75px` to headline
+- ✅ Added `margin-top: -75px` to word animation stack
+
+**Files Modified:**
+- `public/styles.css` - Added negative margins to close gap
+
+---
+
+### v183 - 2026-01-27
+**Status: Previous**
+
+**Updated: Word Animation Stack**
+- ✅ Removed "We Build" from the animation stack
+- ✅ Applied same font size to rotating words and "for All of Us" (`clamp(2.5rem, 4vw, 4rem)`)
+
+**Files Modified:**
+- `public/index.html` - Removed "We Build" line
+- `public/styles.css` - Updated font-size for `.hero-title-line2` and `.hero-title-line3`
+
+---
+
+### v182 - 2026-01-27
+**Status: Previous**
+
+**Updated: Headline Font Size Upper Range**
+- ✅ All three headlines now use `clamp(2.5rem, 4vw, 4rem)` (40px - 64px)
+- ✅ Increased max font size from 46px to 64px
+
+**Files Modified:**
+- `public/styles.css` - Updated font-size clamp for all three headlines
+
+---
+
+### v181 - 2026-01-27
+**Status: Previous**
+
+**Updated: Headline Styling Consistency**
+- ✅ All three headlines now use line-height: 1.1
+- ✅ Removed mobile font-size overrides for slides 1 and 2
+- ✅ All headlines now use same size on mobile (40px - 46px)
+
+**Files Modified:**
+- `public/styles.css` - Updated line-height, removed mobile font-size overrides
+
+---
+
+### v180 - 2026-01-27
+**Status: Previous**
+
+**Unified: Headline Font Sizes (40px - 46px)**
+- ✅ All three slide headlines now use `clamp(2.5rem, 3.5vw, 2.875rem)`
+- ✅ Consistent sizing across Slide 1, 2, and 3
+
+**Files Modified:**
+- `public/styles.css` - Updated font-size for `.hero-text-pursuit`, `.hero-text-collective-top`, `.hero-initiatives-headline`
+
+---
+
+### v179 - 2026-01-27
+**Status: Previous**
+
+**Updated: "What We Do" Section Headlines**
+- Slide 1: "Pursuit AI Jobs Institute is America's first AI workforce hub, pioneering how we prepare for the AI economy."
+- Slide 2: "We harness our collective power to build an AI future that uplifts everyone."
+- Slide 3: "Four pillars. One vision. Building the future of work."
+
+**Files Modified:**
+- `public/index.html` - Updated all three slide headlines
+
+---
+
+### v178 - 2026-01-26
+**Status: Previous**
+
+**Major Restructure: "What We Do" Section Slides**
+
+**Slide 1:**
+- ✅ Shortened paragraph text
+
+**Slide 2:**
+- ✅ Swapped layout: "We harness..." at top, rotating words at bottom
+- ✅ Combined old steps 2 and 3 into one slide
+- ✅ New CSS classes: `.hero-step-2-layout`, `.hero-text-collective-top`, `.hero-title-wrapper-bottom`
+
+**Slide 3 (Initiatives with sub-states):**
+- ✅ New header: "We are building the future of AI workforce development based on the 4 pillars."
+- ✅ Two-column layout: Left (numbered items), Right (descriptions)
+- ✅ Sub-state system: Swipe cycles through 01→02→03→04
+- ✅ Active item in black, inactive items greyed out
+- ✅ After 04, next swipe exits to Builders
+
+**Files Modified:**
+- `public/index.html` - Restructured slides, new two-column initiatives layout
+- `public/styles.css` - New CSS for step 2 layout and initiatives two-column
+- `public/script.js` - Rewritten state machine (3 main states + sub-states)
+
+---
+
+### v177 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Grey Band at Bottom on Large Browsers**
+- ✅ Added `scroll-snap-stop: always` to hero section
+- ✅ Added `margin-top: 0` to builder-stories to ensure no gap
+
+**Files Modified:**
+- `public/styles.css` - Updated snap behavior for hero and builder-stories
+
+---
+
+### v176 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Step 4 Overlay Issue**
+- ✅ State 3→4 now properly hides both step 2 (rotating words) AND step 3
+- ✅ State 4→3 now properly shows both step 2 AND step 3
+- ✅ Fixed initiatives showing on top of rotating words
+
+**Files Modified:**
+- `public/script.js` - Fixed state transitions to properly hide/show all relevant steps
+
+---
+
+### v175 - 2026-01-26
+**Status: Previous**
+
+**Added: Initiatives as Step 4 in "What We Do" Section**
+- ✅ Added new hero-step-4 with initiatives content (4 pillars)
+- ✅ Updated JavaScript state machine to handle 4 states
+- ✅ Added CSS styling for initiatives grid inside hero section
+- ✅ Flow: Paragraph → Rotating Words → We Harness → Initiatives → Builders
+
+**Files Modified:**
+- `public/index.html` - Added hero-step-4 with initiatives content
+- `public/styles.css` - Added styles for hero-initiatives
+- `public/script.js` - Updated state machine for 4 states
+
+---
+
+### v174 - 2026-01-26
+**Status: Previous**
+
+**Updated: Rotating Words Duration**
+- ✅ Changed word display time from 3 seconds to 2 seconds
+
+**Files Modified:**
+- `public/script.js` - Updated setInterval from 3000ms to 2000ms
+
+---
+
+### v173 - 2026-01-26
+**Status: Previous**
+
+**Fixed: "We Harness" Auto-Appearing Bug**
+- ✅ Increased cooldown for state 2 from 500ms to 1500ms
+- ✅ Prevents residual scroll momentum from auto-advancing to state 3
+
+**Files Modified:**
+- `public/script.js` - Updated state cooldown logic
+
+---
+
+### v172 - 2026-01-26
+**Status: Previous**
+
+**Moved: Animation Lockup and "We Harness" Up 75px**
+- ✅ Changed `.hero-title-wrapper` transform to `translateY(-75px)`
+- ✅ Changed `.hero-text-collective` transform to `translateY(-75px)`
+- ✅ Mobile `.hero-text-collective` set to `translateY(-50px)`
+
+**Files Modified:**
+- `public/styles.css` - Updated transforms for both elements
+
+---
+
+### v171 - 2026-01-26
+**Status: Previous**
+
+**Adjusted: Animation Lockup Line Spacing**
+- ✅ Decreased line-height from `1.3` to `1.1` for all three lines
+- ✅ `.hero-title-line-top` (We Build): line-height 1.1
+- ✅ `.hero-title-line2` (rotating words): line-height 1.1
+- ✅ `.hero-title-line3` (for All of Us): line-height 1.1
+
+**Files Modified:**
+- `public/styles.css` - Updated line-height for animation lockup elements
+
+---
+
+### v170 - 2026-01-26
+**Status: Previous**
+
+**Adjusted: Animation Lockup and Sentence Position**
+- ✅ Changed `.hero-title-wrapper` transform from `translateY(-50px)` to `translateY(0)`
+- ✅ Changed `.hero-text-collective` transform from `translateY(-50px)` to `translateY(0)`
+- ✅ Both now centered (moved down 50px from previous position)
+
+**Files Modified:**
+- `public/styles.css` - Updated transforms for title wrapper and collective text
+
+---
+
+### v169 - 2026-01-26
+**Status: Previous**
+
+**Adjusted: Image 01 Size on Large Screens**
+- ✅ Increased large screen height from `55vh` to `70vh`
+
+**Files Modified:**
+- `public/styles.css` - Updated large screen height for `.hero-image-pursuit-bg`
+
+---
+
+### v168 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Image 01 Visibility on Large Screens**
+- ✅ Changed large screen (1600px+) `right` from `-120px` to `200px`
+- ✅ Image 01 now stays visible on large browsers
+- ✅ Adjusted height to `55vh` for large screens
+
+**Files Modified:**
+- `public/styles.css` - Updated large screen media query for `.hero-image-pursuit-bg`
+
+---
+
+### v167 - 2026-01-26
+**Status: Previous**
+
+**Added: "We Build" Above Animated Words**
+- ✅ Added "We Build" text above the rotating words
+- ✅ Uses same style as "for All of Us" (400 weight, same font size)
+- ✅ New class `.hero-title-line-top`
+
+**Files Modified:**
+- `public/index.html` - Added "We Build" h1 element
+- `public/styles.css` - Added `.hero-title-line-top` styles
+
+---
+
+### v166 - 2026-01-26
+**Status: Previous**
+
+**Updated: Animated Words Font Weight**
+- ✅ Changed `.hero-title-line2` (rotating words) font weight from 400 to 600
+- ✅ Animated words are now semi-bold
+
+**Files Modified:**
+- `public/styles.css` - Updated font weight for `.hero-title-line2`
+
+---
+
+### v165 - 2026-01-26
+**Status: Previous**
+
+**Updated: "for All of Us" Font Weight**
+- ✅ Changed `.hero-title-line3` font weight from 600 to 400
+- ✅ Now matches the rotating words weight (regular)
+
+**Files Modified:**
+- `public/styles.css` - Updated font weight for `.hero-title-line3`
+
+---
+
+### v164 - 2026-01-26
+**Status: Previous**
+
+**Updated: "for All of Us" Font Size**
+- ✅ Changed `.hero-title-line3` font size to match rotating words
+- ✅ From `clamp(24px, 8vw, 42px)` to `clamp(3.5rem, 8vw, 5.5rem)`
+
+**Files Modified:**
+- `public/styles.css` - Updated font size for `.hero-title-line3`
+
+---
+
+### v163 - 2026-01-26
+**Status: Previous**
+
+**Adjusted: Image 01 Position**
+- ✅ Moved Image 01 another 100px to the left
+- ✅ Right changed from `clamp(50px, calc(-10vw + 200px), 150px)` to `clamp(150px, calc(-10vw + 300px), 250px)`
+
+**Files Modified:**
+- `public/styles.css` - Updated right position for `.hero-image-pursuit-bg`
+
+---
+
+### v162 - 2026-01-26
+**Status: Previous**
+
+**Adjusted: Image 01 Size**
+- ✅ Increased Image 01 by 25%
+- ✅ Height changed from `clamp(30vh, 40vh, 42.5vh)` to `clamp(37.5vh, 50vh, 53vh)`
+
+**Files Modified:**
+- `public/styles.css` - Updated height for `.hero-image-pursuit-bg`
+
+---
+
+### v161 - 2026-01-26
+**Status: Previous**
+
+**Adjusted: Image 01 Size**
+- ✅ Reduced Image 01 to 50% of previous size
+- ✅ Height changed from `clamp(60vh, 80vh, 85vh)` to `clamp(30vh, 40vh, 42.5vh)`
+
+**Files Modified:**
+- `public/styles.css` - Updated height for `.hero-image-pursuit-bg`
+
+---
+
+### v160 - 2026-01-26
+**Status: Previous**
+
+**Adjusted: Image 01 Position**
+- ✅ Moved Image 01 100px more to the left
+- ✅ Updated right value from `clamp(-50px, calc(-10vw + 100px), 50px)` to `clamp(50px, calc(-10vw + 200px), 150px)`
+
+**Files Modified:**
+- `public/styles.css` - Updated right position for `.hero-image-pursuit-bg`
+
+---
+
+### v159 - 2026-01-26
+**Status: Previous**
+
+**Adjusted: Image 03 Position**
+- ✅ Moved Image 03 50px more to the left (from -130px to -180px)
+
+**Files Modified:**
+- `public/styles.css` - Updated left position
+
+---
+
+### v158 - 2026-01-26
+**Status: Previous**
+
+**Added: Rotation to Image 03**
+- ✅ Image 03 (top-left) now rotated 90° clockwise (`rotate(90deg)`)
+
+**Files Modified:**
+- `public/styles.css` - Added transform rotate to `.hero-image-pursuit-top-left`
+
+---
+
+### v157 - 2026-01-26
+**Status: Previous**
+
+**Reverted: Paragraph Break Changes (Back to Single Paragraph)**
+- ✅ Reverted HTML back to single paragraph with `<span>` for bold
+- ✅ Removed paragraph-specific CSS rules
+- ✅ Both sentences now same font size in one paragraph
+
+**Files Modified:**
+- `public/index.html` - Reverted to single paragraph structure
+- `public/styles.css` - Removed paragraph break styles
+
+---
+
+### v156 - 2026-01-26
+**Status: Previous**
+
+**Updated: First Sentence Font Size to 64px**
+- ✅ First sentence now uses `clamp(2.5rem, 4.5vw, 4rem)` (40px min, 64px max)
+- ✅ Adjusted line-height to 1.2 for larger text
+- ✅ Reduced margin-bottom to 1em
+
+**Files Modified:**
+- `public/styles.css` - Updated first sentence font size
+
+---
+
+### v155 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Font Size Consistency in Paragraph Break**
+- ✅ Added explicit `font-size: inherit` to paragraph elements
+- ✅ Ensured both sentences use same font size from parent
+
+**Files Modified:**
+- `public/styles.css` - Added inherit rules for p elements
+
+---
+
+### v154 - 2026-01-26
+**Status: Previous**
+
+**Added: Paragraph Break After First Sentence in "What We Do"**
+- ✅ Split paragraph into two separate `<p>` elements
+- ✅ First sentence (bold) now has margin-bottom of 1.5em
+- ✅ Creates visual paragraph break (wider than line break)
+
+**Files Modified:**
+- `public/index.html` - Restructured paragraph into two `<p>` elements
+- `public/styles.css` - Added margin styling for paragraph break
+
+---
+
+### v153 - 2026-01-26
+**Status: Previous**
+
+**Updated: Unified Styling for "We Harness" and "Pursuit AI Jobs" Text**
+- ✅ Added `position: relative; z-index: 1;` to `.hero-text-collective`
+- ✅ Changed padding to use `var(--container-padding)` for consistency
+- ✅ Added `box-sizing: border-box` to prevent overflow
+- ✅ Added mobile-specific styles for both text elements
+- ✅ Smaller font on mobile: `clamp(1.5rem, 5vw, 2rem)`
+- ✅ Less padding on mobile: `20px`
+- ✅ Reduced translate offset on mobile: `-30px`
+
+**Files Modified:**
+- `public/styles.css` - Unified text styles and added mobile breakpoint
+
+---
+
+### v152 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Mobile View - Images Overlapping Text**
+- ✅ Image 01 (right): Reduced to 50vh height, scale 0.5, pushed further off screen
+- ✅ Image 03 (top-left): Reduced to 25vh height, repositioned with negative offset
+- ✅ Both images now 60% opacity on mobile for less interference
+- ✅ Text should now be clearly readable on mobile
+
+**Changes:**
+- Image 01: `height: 50vh`, `scale(0.5)`, `right: -100px`, `opacity: 0.6`
+- Image 03: `height: 25vh`, `top: -80px`, `left: -80px`, `opacity: 0.6`
+
+**Files Modified:**
+- `public/styles.css` - Updated mobile breakpoint styles
+
+---
+
+### v151 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Moved Image 01 Left by 100px (Correctly)**
+- ✅ Changed right position from `clamp(-150px, -10vw, -50px)` to `clamp(-50px, calc(-10vw + 100px), 50px)`
+- ✅ Less negative = moved left (more visible in frame)
+- ✅ Previous version moved it the wrong direction
+
+**Files Modified:**
+- `public/styles.css` - Corrected `.hero-image-pursuit-bg` right position
+
+---
+
+### v150 - 2026-01-26
+**Status: Previous - WRONG DIRECTION**
+
+**Updated: Moved Image 01 Left by 100px**
+- ❌ Changed right position from `clamp(-150px, -10vw, -50px)` to `clamp(-250px, calc(-10vw - 100px), -150px)`
+- ❌ Actually moved it right (off screen) - mistake!
+
+**Files Modified:**
+- `public/styles.css` - Updated `.hero-image-pursuit-bg` right position
+
+---
+
+### v149 - 2026-01-26
+**Status: Previous**
+
+**Updated: Image 03 Position Adjustment**
+- ✅ Changed to `top: -150px; left: -130px`
+- ✅ More overflow on top and left
+
+**Files Modified:**
+- `public/styles.css` - Updated positioning values
+
+---
+
+### v148 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Image 03 Now in True Top-Left Corner**
+- ✅ Increased negative positioning to `top: -100px; left: -100px`
+- ✅ Image now positioned in actual top-left corner of content area
+- ✅ Part of image will overflow off screen as intended
+
+**Files Modified:**
+- `public/styles.css` - Increased negative offset values
+
+---
+
+### v147 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Image 03 Pulled Closer to Actual Corner**
+- ✅ Changed position to `top: -20px; left: -20px`
+- ✅ Compensates for wrapper padding
+- ✅ Image now reaches closer to actual screen corner
+
+**Files Modified:**
+- `public/styles.css` - Added negative positioning to `.hero-image-pursuit-top-left`
+
+---
+
+### v146 - 2026-01-26
+**Status: Previous**
+
+**Updated: Image 03 Pinned to Top-Left Corner**
+- ✅ Changed position from dynamic to fixed `top: 0; left: 0`
+- ✅ Image now always hugs top-left corner at any size
+- ✅ Part of image will overflow/cut off on smaller screens (as intended)
+- ✅ Mobile view slightly larger (35vh) to ensure visible portion
+
+**Files Modified:**
+- `public/styles.css` - Changed `.hero-image-pursuit-top-left` positioning
+
+---
+
+### v145 - 2026-01-26
+**Status: Previous**
+
+**Updated: Dynamic Image Positioning Based on Browser Size**
+- ✅ Image 01 (right side) now uses `clamp()` for responsive positioning
+  - Right position scales with viewport width (-10vw)
+  - Height scales between 60vh and 85vh
+  - Scale adjusts dynamically
+- ✅ Image 03 (top left) uses `clamp()` for responsive sizing
+  - Position adjusts with viewport (2vh, 2vw)
+  - Height scales between 30vh and 50vh
+- ✅ Added mobile breakpoint (max-width: 768px) for smaller screens
+- ✅ Added large screen breakpoint (min-width: 1600px) for bigger displays
+- ✅ Images now adapt smoothly to any browser size
+
+**Files Modified:**
+- `public/styles.css` - Added dynamic clamp() values and media queries
+
+---
+
+### v144 - 2026-01-26
+**Status: Previous**
+
+**Added: Image 03 to Slide 1 & Adjusted Image 01**
+- ✅ Added AIJI_Image_OurPurpose_03.png to top left corner of slide 1
+- ✅ Image 03 positioned at top left, 40vh height
+- ✅ Brought Image 01 more into frame by moving it left 100px (right: -100px)
+- ✅ More of the right-side image now visible
+
+**Files Modified:**
+- `public/index.html` - Added Image 03 element
+- `public/styles.css` - Added `.hero-image-pursuit-top-left` styles, adjusted Image 01 positioning
+
+---
+
+### v143 - 2026-01-26
+**Status: Previous**
+
+**Updated: Moved Content Up & Changed Text**
+- ✅ Moved rotating words + "for All of Us." up 50px
+- ✅ Moved "We harness..." text up 50px
+- ✅ Updated text: "collective power" → "collective vision"
+- ✅ Full sentence now: "We harness our collective vision to build an AI-powered future that benefits all of us."
+
+**Files Modified:**
+- `public/index.html` - Updated text from "power" to "vision"
+- `public/styles.css` - Added `translateY(-50px)` to `.hero-title-wrapper` and `.hero-text-collective`
+
+---
+
+### v142 - 2026-01-26
+**Status: Previous**
+
+**Updated: Letters "Teleport" Instead of Move During Disperse**
+- ✅ Removed transition animation from disperse
+- ✅ Letters now instantly jump/teleport to random positions
+- ✅ No visible trajectory - letters blink from position to position
+- ✅ Creates glitchy, digital effect
+
+**Files Modified:**
+- `public/script.js` - Changed transition to 'none' for instant teleport
+
+---
+
+### v141 - 2026-01-26
+**Status: Previous**
+
+**Updated: Even Slower Disperse Animation**
+- ✅ Increased disperse duration from 1.2s to 2s
+- ✅ Letters scatter very slowly and gracefully
+
+**Files Modified:**
+- `public/script.js` - Increased transform transition to 2 seconds
+
+---
+
+### v140 - 2026-01-26
+**Status: Previous**
+
+**Updated: Slower Disperse Animation**
+- ✅ Increased disperse duration from 0.6s to 1.2s (2x slower)
+- ✅ Letters scatter more slowly and gracefully
+
+**Files Modified:**
+- `public/script.js` - Increased transform transition duration
+
+---
+
+### v139 - 2026-01-26
+**Status: Previous**
+
+**Updated: Removed Fade from Disperse Animation**
+- ✅ Letters no longer fade during disperse
+- ✅ Letters stay fully visible as they scatter
+- ✅ Only transform animation remains
+
+**Files Modified:**
+- `public/script.js` - Removed opacity transition and change from disperse
+
+---
+
+### v138 - 2026-01-26
+**Status: Previous**
+
+**Updated: Disperse Animation - No Scale, Wider Range**
+- ✅ Removed scale from disperse animation (letters stay same size)
+- ✅ Increased disperse range from 400px to 1200px radius
+- ✅ Letters now scatter much closer to screen edges
+
+**Files Modified:**
+- `public/script.js` - Removed scale from disperse, increased coordinate range
+
+---
+
+### v137 - 2026-01-26
+**Status: Previous**
+
+**Updated: Removed Scale from Letter Pop-In**
+- ✅ Letters now appear with opacity fade only (no scale)
+- ✅ Faster transition (0.15s instead of 0.2s)
+- ✅ Cleaner, simpler appearance animation
+
+**Files Modified:**
+- `public/script.js` - Removed scale transform from build-in
+- `public/styles.css` - Removed initial scale(0) from CSS
+
+---
+
+### v136 - 2026-01-26
+**Status: Previous**
+
+**New: Completely Redesigned Rotating Words Animation**
+- ✅ Updated word list to new set (AI Jobs, Bright Futures, New Beginnings, etc.)
+- ✅ Letters now pop in (scale from 0 to 1) instead of fading
+- ✅ Letters appear in random order at their final positions
+- ✅ Letters disperse to random coordinates when transitioning out
+- ✅ Overlapping transitions - next word builds in while current disperses
+- ✅ Removed old directional animation classes
+
+**Animation Flow:**
+1. **Build-In:** Letters pop in randomly (scale animation) at final positions
+2. **Disperse:** Letters scatter to random coordinates while fading out
+3. **Overlap:** Next word starts building while previous is still dispersing
+
+**New Word List:**
+1. AI Jobs, 2. AI-Powered World, 3. Bright Futures, 4. Transformation, 
+5. Insightful Data, 6. Opportunity, 7. AI Workforce, 8. Innovation, 
+9. New Beginnings, 10. Community, 11. Progress
+
+**Files Modified:**
+- `public/script.js` - Complete rewrite of rotating words logic
+- `public/styles.css` - Simplified letter styles, removed old animations
+
+---
+
+### v135 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Builders Section Auto-Loading (Increased Cooldown)**
+- ✅ Increased state 3 cooldown from 1000ms to 1500ms (1.5 seconds)
+- ✅ Added detailed cooldown logging for debugging
+- ✅ Prevents auto-exit to Builders section
+
+**The Problem:**
+- 1000ms cooldown was still too short in some cases
+- Residual scroll momentum could trigger exit after cooldown
+- Inconsistent behavior depending on swipe strength
+
+**The Fix:**
+- State 3 now requires 1.5 second cooldown before accepting input
+- Enhanced logging shows time elapsed vs required
+- User has more time to view content before next action
+
+**Files Modified:**
+- `public/script.js` - Increased cooldown, added logging
+
+---
+
+### v134 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Center Content Between Nav and Screen Bottom**
+- ✅ Changed `.hero-step` to start at `top: 72px` (below nav)
+- ✅ Changed height to `calc(100vh - 72px)` (viewport minus nav)
+- ✅ Removed extra padding from step 1 (was double-accounting for nav)
+- ✅ Adjusted step 3 bottom padding from 120px to 80px
+- ✅ All content now centered in the space between nav and bottom
+
+**Changes:**
+- Step container now excludes nav area from its height
+- Content centers in the available space below nav
+- More accurate vertical centering
+
+**Files Modified:**
+- `public/styles.css` - Updated `.hero-step` positioning and step-specific padding
+
+---
+
+### v133 - 2026-01-26
+**Status: Previous**
+
+**Updated: Image 02 Size Back to 75vh**
+- ✅ Changed height from `85vh` to `75vh`
+- ✅ Image now covers 75% of viewport height
+
+**Files Modified:**
+- `public/styles.css` - Updated `.hero-image-bg` height
+
+---
+
+### v132 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Image 02 Size Constraint on Large Screens**
+- ✅ Removed `max-width: 100%` constraint
+- ✅ Changed to `max-width: none` to allow full scaling
+- ✅ Added `max-height: 85vh` to match height
+- ✅ Image now properly scales to 85vh on large screens
+
+**Files Modified:**
+- `public/styles.css` - Updated `.hero-image-bg` constraints
+
+---
+
+### v131 - 2026-01-26
+**Status: Previous**
+
+**Updated: Image 02 Size to 85vh**
+- ✅ Changed height from `75vh` to `85vh` (85% of viewport height)
+- ✅ Image now covers more of the screen
+
+**Files Modified:**
+- `public/styles.css` - Updated `.hero-image-bg` height
+
+---
+
+### v130 - 2026-01-26
+**Status: Previous**
+
+**Updated: Image 02 Opacity and Size**
+- ✅ Changed opacity from `0.6` to `1.0` (fully opaque)
+- ✅ Changed height from `max-height: 500px` to `height: 75vh` (75% of viewport)
+- ✅ Image covers 75% of browser screen
+
+**Changes:**
+- `.hero-image-bg` (Image 02 behind rotating words)
+- Now fully opaque and significantly larger
+- Fills 75% of viewport height
+
+**Files Modified:**
+- `public/styles.css` - Updated `.hero-image-bg` styles
+
+---
+
+### v129 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Removed "What We Do" Label from HTML**
+- ✅ Removed `.hero-label` div from HTML completely
+- ✅ Label no longer in DOM or visible
+
+**The Problem:**
+- Previously only hidden with CSS (`opacity: 0; visibility: hidden;`)
+- Element was still in HTML and potentially causing layout issues
+
+**The Fix:**
+- Removed the entire `<div class="hero-label">` from HTML
+- Cleaner markup, no hidden elements
+
+**Files Modified:**
+- `public/index.html` - Removed hero-label div
+
+---
+
+### v128 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Auto-Exit to Builders from State 3**
+- ✅ Increased cooldown for state 3 from 500ms to 1000ms
+- ✅ Prevents scroll momentum from auto-triggering exit transition
+- ✅ User must make intentional swipe gesture to exit to Builders
+
+**The Problem:**
+- After entering state 3, the 500ms cooldown was too short
+- Residual scroll momentum could trigger `exitHeroSection()` after cooldown
+- "We harness..." text would appear, then immediately exit to Builders
+
+**The Fix:**
+- Variable cooldown based on current state
+- State 3 requires 1000ms (1 second) cooldown
+- Other states keep 500ms cooldown
+- Gives user time to read content before accepting next input
+
+**Files Modified:**
+- `public/script.js` - Added variable cooldown logic
+
+---
+
+### v127 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Hero Background Color & Removed Section Label**
+- ✅ Changed hero background from `#F5F1ED` to `#FFF3E9` (matches body/nav)
+- ✅ Hidden "What We Do" section label (`opacity: 0; visibility: hidden;`)
+
+**Changes:**
+1. **Background Color:**
+   - Updated `.hero` background to `#FFF3E9`
+   - Now matches the body background color
+   - Consistent with nav area appearance
+
+2. **Section Label:**
+   - Set `.hero-label` to `opacity: 0; visibility: hidden;`
+   - Label no longer visible in the content area
+   - Kept in DOM for potential future use
+
+**Files Modified:**
+- `public/styles.css` - Updated hero background and hidden label
+
+---
+
+### v126 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Grey Bottom Peek & Added Exit Transition to Builders**
+- ✅ Added background color to hero section to prevent next section peek-through
+- ✅ Created `exitHeroSection()` function for state 3 → Builders transition
+- ✅ All content fades out and moves up before snapping to Builders
+- ✅ Hero section resets to state 1 after exit for clean re-entry
+
+**Changes:**
+1. **Background Color:**
+   - Added `background-color: #F5F1ED` to `.hero` section
+   - Prevents Builders section grey from showing at bottom
+
+2. **Exit Transition:**
+   - When swiping down from state 3, fade out all steps
+   - All content moves up 40px while fading
+   - Smooth scroll to Builders section after 600ms
+   - Reset hero to state 1 for next visit
+
+**Files Modified:**
+- `public/styles.css` - Added hero background color
+- `public/script.js` - Added `exitHeroSection()` function
+
+---
+
+### v125 - 2026-01-26
+**Status: Previous**
+
+**Fixed: State 3 Auto-Appearing After State 2**
+- ✅ Added 500ms cooldown between state transitions
+- ✅ Prevents scroll momentum from triggering rapid state changes
+- ✅ Tracks `stateChangeTime` for each transition
+
+**The Problem:**
+- After transitioning to state 2, `isAnimating` becomes false after 700ms
+- Residual scroll momentum from initial swipe could trigger another wheel event
+- This would immediately call `advanceState()` again (2 → 3)
+- Result: "We harness..." appeared automatically without user swipe
+
+**The Fix:**
+- Track `stateChangeTime` when any state change completes
+- Block wheel events for 500ms after state change
+- User must make intentional swipe gesture for next transition
+- Similar to 800ms section entry cooldown
+
+**Files Modified:**
+- `public/script.js` - Added state change cooldown logic
+
+---
+
+### v124 - 2026-01-26
+**Status: Previous - DEBUG VERSION**
+
+**Added: Debug Logging for Step 3 Visibility**
+- ✅ Added console logs to check step 3 class and opacity in state 2
+- ✅ Simplified state 2 → 3 transition to rely on CSS
+- ✅ Need to investigate why step 3 appears without swipe
+
+**Purpose:**
+- Check if step 3 has `active` class when it shouldn't
+- Verify computed opacity is actually 0 in state 2
+- Identify if CSS or JS is causing premature visibility
+
+**Files Modified:**
+- `public/script.js` - Added step 3 debugging in state 2
+
+---
+
+### v123 - 2026-01-26
+**Status: Previous**
+
+**Fixed: "We Harness..." Text Auto-Appearing**
+- ✅ Added fade-in animation when transitioning from state 2 to state 3
+- ✅ Text now starts hidden and animates up when user swipes
+- ✅ Consistent with other state transitions
+
+**The Problem:**
+- When advancing to state 3, step 3 was immediately visible
+- No animation/transition, just appeared instantly
+- Felt abrupt and inconsistent with slide-based design
+
+**The Fix:**
+- Start step 3 with `opacity: 0` and `translateY(40px)`
+- Add `active` class (makes it in the DOM flow)
+- Clear inline styles after 50ms to trigger CSS transition
+- Text fades in and moves up smoothly
+
+**Files Modified:**
+- `public/script.js` - Updated state 2 → 3 transition
+
+---
+
+### v122 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Step 2 Not Appearing Due to Inline Style Persistence**
+- ✅ Clear inline opacity/transform styles after each transition
+- ✅ Reset styles to empty string before adding `active` class
+- ✅ Prevents previous inline styles from overriding CSS classes
+
+**The Problem:**
+- When regressing from state 2 to 1, we set `step2.style.opacity = '0'`
+- This inline style persisted on the element
+- When advancing back to state 2, adding `.active` class didn't override inline style
+- Result: Step 2 had `class="active"` but `style="opacity: 0"` (inline wins!)
+- Step 2 was technically active but invisible
+
+**The Fix:**
+- Clear inline styles (`style.opacity = ''`, `style.transform = ''`) after each transition
+- Reset styles before making a step active
+- Ensures CSS classes control visibility, not stale inline styles
+
+**Files Modified:**
+- `public/script.js` - Added style resets in all state transitions
+
+---
+
+### v121 - 2026-01-26
+**Status: Previous - DEBUG VERSION**
+
+**Added: Console Logging for State Machine Debugging**
+- ✅ Added detailed console logs to state transitions
+- ✅ Logs when advanceState() and regressState() are called
+- ✅ Logs current state, animation status, and transitions
+- ✅ Logs rotating words start/stop operations
+
+**Purpose:**
+- Diagnose why rotating words don't load consistently
+- Track state machine behavior
+- Identify if states are being skipped or transitions failing
+
+**Files Modified:**
+- `public/script.js` - Added console.log statements throughout state machine
+
+---
+
+### v120 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Rotating Words Initialization Timing**
+- ✅ Moved `initRotatingWords()` before `initHeroSwipeStates()` in init order
+- ✅ Added 100ms delay before starting rotation to ensure step 2 is fully visible
+- ✅ Added forced reflow and display properties to ensure element is ready
+- ✅ Fixed function dependency order
+
+**The Problem:**
+- `initHeroSwipeStates()` called `window.startRotatingWords()` before it existed
+- Element might not have been fully rendered when animation started
+- Race condition between DOM visibility and animation start
+
+**The Fix:**
+- Initialize rotating words controls first
+- Wait 100ms after step 2 becomes active before starting rotation
+- Force browser reflow to ensure styles are applied
+- Explicitly set display properties
+
+**Files Modified:**
+- `public/script.js` - Reordered init functions, added timing safeguards
+
+---
+
+### v119 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Rotating Words Not Loading Consistently**
+- ✅ Changed rotating words to start ONLY when state 2 is active
+- ✅ Added `startRotatingWords()` and `stopRotatingWords()` control functions
+- ✅ Interval now starts when entering state 2, stops when leaving
+- ✅ Prevents DOM manipulation issues when element is hidden
+
+**The Problem:**
+- `initRotatingWords()` started `setInterval` on page load
+- Rotating word element was inside hidden `hero-step-2`
+- DOM manipulation on hidden elements caused inconsistent rendering
+- Animation timing was off when element finally became visible
+
+**The Fix:**
+- Rotating words interval now controlled by state machine
+- Start rotation when advancing to state 2
+- Stop rotation when regressing to state 1 or leaving section
+- Ensures animation only runs when element is visible
+
+**Files Modified:**
+- `public/script.js` - Refactored `initRotatingWords()` and `initHeroSwipeStates()`
+
+---
+
+### v118 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Paragraph Auto-Advancing Without Swipe**
+- ✅ Added 800ms cooldown period after hero section becomes visible
+- ✅ Blocks ALL wheel events during cooldown to prevent auto-advance
+- ✅ Paragraph now stays visible until user explicitly swipes
+
+**The Problem:**
+- When section snapping completed (`window.scrollTo()`), scroll momentum/events would trigger hero state machine
+- Intersection Observer set `isInHeroSection = true` at 80% visibility
+- Any wheel event fired immediately after → auto-advanced from state 1 to 2
+- Result: Paragraph disappeared on its own
+
+**The Fix:**
+- Track `sectionEntryTime` when section becomes visible
+- Ignore ALL wheel events for 800ms after entry
+- Gives user time to see content before accepting input
+
+**Files Modified:**
+- `public/script.js` - Added cooldown logic to `initHeroSwipeStates()`
+
+---
+
+### v117 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Disabled Lazy Reveal for Hero Steps**
+- ✅ Removed Intersection Observer for hero steps in `initLazyScrollReveal()`
+- ✅ Hero steps now ONLY controlled by swipe state machine
+- ✅ Prevents automatic 'revealed' class being added to all steps
+- ✅ Only the active state should be visible
+
+**The Problem:**
+- `initLazyScrollReveal()` was observing all hero steps
+- When hero section became visible, it added 'revealed' class to all steps
+- This made all content visible at once, overriding state machine
+
+**The Fix:**
+- Disabled Intersection Observer for hero steps
+- Only `initHeroSwipeStates()` controls hero step visibility now
+
+**Files Modified:**
+- `public/script.js` - Removed hero steps from lazy reveal
+
+---
+
+### v116 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Debouncing and State Reset on Entry**
+- ✅ Added 100ms debounce to prevent rapid state changes
+- ✅ Added `isInHeroSection` flag (0.8 intersection threshold)
+- ✅ Explicitly remove active class from steps 2 and 3 on init
+- ✅ Reset to state 1 when entering section from top
+- ✅ Force step 1 opacity and transform on entry
+- ✅ Prevents multiple swipes from stacking
+
+**Fixes:**
+- Prevents rapid state advancement
+- Ensures only step 1 is visible initially
+- Clean reset when entering section
+- More reliable state tracking
+
+**Files Modified:**
+- `public/script.js` - Added debouncing and state reset logic
+
+---
+
+### v115 - 2026-01-26
+**Status: Previous**
+
+**Fixed: Hero State Machine Initialization and Section Advancement**
+- ✅ Changed initial state from 0 to 1 (paragraph visible from start)
+- ✅ Removed `hasInteractedWithHero` flag (was preventing first swipe)
+- ✅ Fixed advancement to Builders section
+- ✅ Changed `canAdvanceToNextSection` logic - doesn't prevent default on state 3
+- ✅ Allows browser's native snap scrolling to take over after state 3
+- ✅ Removed pointer-events manipulation
+- ✅ Updated intersection threshold to 0.3 for earlier detection
+
+**Fixes:**
+- Paragraph now shows immediately when entering section
+- First swipe works correctly (advances to state 2)
+- After state 3, natural scroll to Builders section works
+- Proper snap behavior maintained
+
+**Files Modified:**
+- `public/script.js` - Fixed initialization and advancement logic
+
+---
+
+### v114 - 2026-01-26
+**Status: Previous**
+
+**Implemented: Swipe-Based State Machine for What We Do Section**
+- ✅ Created `initHeroSwipeStates()` function
+- ✅ What We Do section now fixed at 100vh (no scrolling within)
+- ✅ All hero steps positioned absolutely and layered
+- ✅ Swipe detection on hero section triggers state changes
+- ✅ State 1: Paragraph visible
+- ✅ State 2: Paragraph fades out ↑, rotating words fade in
+- ✅ State 3: Rotating words stay, collective text fades in at bottom
+- ✅ After state 3, swipe advances to Builders section
+
+**How it works:**
+- Each swipe up = advance to next state
+- Each swipe down = regress to previous state
+- 600ms transitions for smooth fade in/out
+- Elements move up 40px when fading out
+- Intersection Observer tracks when user is in hero section
+- Prevents scroll to next section until state 3 complete
+
+**CSS Changes:**
+- Hero steps: absolute positioning, layered on top of each other
+- `.active` class controls visibility
+- Hero section: locked to 100vh height
+- Step 3: bottom-aligned with 120px padding
+
+**Files Modified:**
+- `public/script.js` - Added initHeroSwipeStates() function
+- `public/styles.css` - Updated hero/hero-step positioning and layout
+
+---
+
+### v113 - 2026-01-26
+**Status: Previous**
+
+**Restructured: What We Do Section as 3 Snap Slides**
+- ✅ Reordered hero steps to match desired flow
+- ✅ Each hero step is now a full-screen snap point (100vh)
+- ✅ Added `scroll-snap-align: start` and `scroll-snap-stop: always` to all steps
+- ✅ Removed bottom padding from .hero section
+
+**New slide order:**
+1. **Slide 1:** "Pursuit AI Jobs Institute..." paragraph (centered with Image 01)
+2. **Slide 2:** Rotating words + "for All of Us." (centered with Image 02)
+3. **Slide 3:** "We harness our collective power..." (bottom-aligned)
+
+**Step positioning:**
+- Step 1: Center-aligned with top/bottom padding
+- Step 2: Center-aligned (rotating words)
+- Step 3: Bottom-aligned with 120px bottom padding
+
+**Text styling:**
+- "We harness..." now uses same font as paragraph (fractul-variable, 36-46px)
+- Same responsive padding (80px → 120px based on screen size)
+- Line-height: 1.3 (matching paragraph)
+
+**Files Modified:**
+- `public/index.html` - Reordered hero steps (swapped 2 and 3)
+- `public/styles.css` - Updated hero-step styles, hero-text-collective font
+
+---
+
+### v112 - 2026-01-26
+**Status: Previous**
+
+**Changed: Full Page Snap Scrolling (Slide-like Behavior)**
+- ✅ Changed `scroll-snap-type: y proximity` to `y mandatory`
+- ✅ Now every section snaps into place like slides
+- ✅ All sections already had `scroll-snap-align: start` and `scroll-snap-stop: always`
+- ✅ Lazy scroll reveals still work within each section
+- ✅ Creates presentation-style navigation through the site
+
+**Sections with snap scrolling:**
+- Video Header
+- What We Do (hero)
+- Builder Stories
+- Salary Journey
+- Track Record
+- Press Quote
+- Real People
+- The Urgency
+- Signup
+- Pursuit (initiatives)
+- Council
+- Partners
+- Footer
+
+**Files Modified:**
+- `public/styles.css` - Changed body scroll-snap-type to mandatory
+
+---
+
+### v111 - 2026-01-26
+**Status: Previous**
+
+**Added: Responsive Resize Handler**
+- ✅ Created `initResponsiveResize()` function
+- ✅ Listens for browser window resize events
+- ✅ 150ms debounce to avoid excessive recalculations
+- ✅ Forces recalculation of hero step centering
+- ✅ Ensures paragraph stays centered when browser is resized
+- ✅ Triggers video header layout check for mobile stacking
+- ✅ Maintains flexbox centering on all screen sizes
+
+**How it works:**
+1. User resizes browser window
+2. Wait 150ms after resize stops (debounce)
+3. Recalculate hero step min-height and centering
+4. Force reflow to apply changes
+5. Trigger layout check for mobile/desktop switching
+
+**Files Modified:**
+- `public/script.js` - Added initResponsiveResize() function
+
+---
+
+### v110 - 2026-01-26
+**Status: Previous**
+
+**Added: Logo Click to Scroll to Top**
+- ✅ Created `initLogoClick()` function
+- ✅ Added click handler to all logo elements
+- ✅ Smooth scrolls to top (scroll position 0) when logo clicked
+- ✅ Added pointer cursor to logos
+- ✅ Works with video header logo and at-top logo
+
+**Files Modified:**
+- `public/script.js` - Added initLogoClick() function
+
+---
+
+### v109 - 2026-01-26
+**Status: Previous**
+
+**Restructured: Section Names and Nav Order**
+- ✅ Renamed "Our Purpose" section → "What We Do" (id: hero → what-we-do)
+- ✅ Renamed "Initiatives" section → "Pursuit" (id: initiatives → pursuit)
+- ✅ Updated section label from "Our Purpose" to "What We Do"
+- ✅ Updated section tag from "What We Do" to "Pursuit"
+- ✅ Removed "About" from nav
+- ✅ New nav order: What We Do, Builders, The Urgency, Council, Partners, Pursuit, Get Updates
+
+**Section IDs:**
+- `#what-we-do` - First section after video (formerly Our Purpose)
+- `#pursuit` - Initiatives section (formerly What We Do)
+
+**Files Modified:**
+- `public/index.html` - Updated section IDs, labels, and nav structure
+
+---
+
+### v108 - 2026-01-26
+**Status: Previous**
+
+**Changed: Moved "What We Do" to First Nav Position**
+- ✅ Reordered nav items - "What We Do" is now first
+- ✅ Updated both desktop nav and mobile menu
+- ✅ New order: What We Do, Builders, About, The Urgency, Council, Partners, Get Updates
+
+**Files Modified:**
+- `public/index.html` - Reordered nav-links and mobile-menu
+
+---
+
+### v107 - 2026-01-26
+**Status: Previous**
+
+**Added: Active Nav Item Tracking with Animated Underline**
+- ✅ Added animated underline to nav links (::after pseudo-element)
+- ✅ Underline grows from left to right (0 → 100% width)
+- ✅ Created `initActiveNavTracking()` function
+- ✅ Tracks scroll position and highlights active section's nav item
+- ✅ "What We Do" link gets underline when in #initiatives section
+- ✅ Works for all nav items (Builders, About, The Urgency, What We Do, Council, Partners)
+
+**Animation:**
+- Underline: 2px height, black color
+- Positioned 4px below link text
+- Transition: `width 0.3s ease`
+- Grows from left (0%) to right (100%)
+
+**Files Modified:**
+- `public/styles.css` - Added ::after underline styles
+- `public/script.js` - Added initActiveNavTracking() function
+
+---
+
+### v106 - 2026-01-26
+**Status: Previous**
+
+**Changed: Increased Minimum Font Size to 36px**
+- ✅ Changed min font size from 2rem (32px) to 2.25rem (36px)
+- ✅ Font size now: `clamp(2.25rem, 3.5vw, 2.875rem)`
+- ✅ More readable on all screen sizes
+
+**Font Size Range:**
+- **Min:** 2.25rem (36px)
+- **Preferred:** 3.5vw (responsive)
+- **Max:** 2.875rem (46px)
+
+**Files Modified:**
+- `public/styles.css` - Updated .hero-text-pursuit font-size clamp
+
+---
+
+### v105 - 2026-01-26
+**Status: Previous**
+
+**Added: Responsive Padding for Mid-Range Sizes**
+- ✅ Added base padding using `var(--container-padding)` (25px)
+- ✅ 601-1400px: 80px padding on both sides
+- ✅ 1025-1400px: 120px padding on both sides
+- ✅ Mobile (≤600px): Uses base padding (25px)
+- ✅ Large screens (>1400px): Uses base padding + max-width constraint
+
+**Padding Breakdown:**
+- Mobile: 25px sides
+- Tablet (601-1024px): 80px sides
+- Desktop (1025-1400px): 120px sides
+- Large Desktop (>1400px): 25px + max-width 1400px
+
+**Files Modified:**
+- `public/styles.css` - Added responsive padding media queries
+
+---
+
+### v104 - 2026-01-26
+**Status: Previous**
+
+**Changed: Increased Paragraph Max-Width**
+- ✅ Changed `.hero-text-pursuit-wrapper` max-width from 1000px to 1400px
+- ✅ Paragraph now has more breathing room in mid-range sizes (900-1400px)
+- ✅ Still responsive on mobile and looks good on large screens
+
+**Files Modified:**
+- `public/styles.css` - Updated hero-text-pursuit-wrapper max-width
+
+---
+
+### v103 - 2026-01-26
+**Status: Previous**
 
 **Note: Switched to simplified incremental versioning (v103, v104, v105...)**
 
