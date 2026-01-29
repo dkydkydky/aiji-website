@@ -12,8 +12,2348 @@ This file tracks all changes made to the AIJI website with version numbers for e
 
 ## Version History
 
-### v209 - 2026-01-27
+### v390 - 2026-01-29
 **Status: ✅ Current**
+
+**Footer button swipe direction:**
+- Changed from left-to-right to bottom-to-top
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v389 - 2026-01-29
+**Status: Previous**
+
+**Footer button hover animation:**
+- Hover state: black background with white text
+- Swipe animation: background slides in from left
+- Uses background-position transition on gradient
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v388 - 2026-01-29
+**Status: Previous**
+
+**Footer form gap:**
+- Gap between input and button: 24px → 19px (reduced by 5px)
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v387 - 2026-01-29
+**Status: Previous**
+
+**Footer input/button alignment:**
+- Changed align-items: center → flex-end
+- Input underline now aligns with button bottom
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v386 - 2026-01-29
+**Status: Previous**
+
+**Footer button styling:**
+- Changed from solid black to outline (1px black border)
+- Background: transparent
+- Text: black
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v385 - 2026-01-29
+**Status: Previous**
+
+**Footer spacing:**
+- Added 5px gap between phrase and input field (margin-top: -40px → -35px)
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v384 - 2026-01-29
+**Status: Previous**
+
+**Footer input field:**
+- Added 3px more padding between text and line (now 8px total)
+- Removed gradient animation
+- Focus state: 3px solid black line
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v383 - 2026-01-29
+**Status: Previous**
+
+**Footer input field styling:**
+- Padding reduced: 16px → 5px (space between text and underline)
+- Focus state: line thickens to 3px
+- Animated gradient on focus: cycles through pink → green → blue
+
+**Files Modified:**
+- `public/styles.css` - input padding, focus animation
+
+---
+
+### v382 - 2026-01-29
+**Status: Previous**
+
+**Footer spacing adjustments:**
+- Input field: moved up 30px (margin-top: -40px)
+- Gap to pursuit.org: reduced by 50px (now 30px)
+- Social icons: added 30px margin-bottom to separate from copyright
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v381 - 2026-01-29
+**Status: Previous**
+
+**New typography class + spacing:**
+- Created `footer-medium-semibold` (20px, 600 weight)
+- Moved tagline and input field down 20px (margin-top: -30px → -10px)
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v380 - 2026-01-29
+**Status: Previous**
+
+**New typography class:**
+- Created `footer-small-regular` (15px, 400 weight)
+- Applied to copyright text
+
+**Updated class system:**
+| Class | Size | Weight |
+|-------|------|--------|
+| footer-large-semibold | 30px | 600 |
+| footer-large-regular | 30px | 400 |
+| footer-medium-regular | 20px | 400 |
+| footer-small-semibold | 15px | 600 |
+| footer-small-regular | 15px | 400 |
+
+**Files Modified:**
+- `public/styles.css` - new class
+- `public/index.html` - applied to copyright
+
+---
+
+### v379 - 2026-01-29
+**Status: Previous**
+
+**Fixed font conflict:**
+- Removed `form-input` and `form-button` classes from footer elements
+- These generic classes were setting `font-family: 'Inter'` which overrode Fractul
+- Footer input/button now only use `footer-input` and `footer-button` classes
+
+**Files Modified:**
+- `public/index.html` - removed conflicting classes
+
+---
+
+### v378 - 2026-01-29
+**Status: Previous**
+
+**Fixed font on input/button with explicit values:**
+- `inherit` doesn't work well with classes on the same element
+- Now using explicit values with !important:
+  - font-family: "fractul-variable", sans-serif
+  - font-size: 20px
+  - font-weight: 400
+- Applied to .footer-input, .footer-button, and ::placeholder
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v377 - 2026-01-29
+**Status: Previous**
+
+**Ensure input inherits Fractul font:**
+- Added font-family: inherit, font-size: inherit, font-weight: inherit to .footer-input
+- Both input and button now explicitly inherit from .footer-medium-regular (Fractul)
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v376 - 2026-01-29
+**Status: Previous**
+
+**Fixed button font size:**
+- Added font-family: inherit, font-size: inherit, font-weight: inherit to .footer-button
+- Buttons have browser defaults that override class styling - now forced to inherit
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v375 - 2026-01-29
+**Status: Previous**
+
+**All footer classes letter-spacing set to 0:**
+- footer-large-semibold: 0.05em → 0
+- footer-large-regular: already 0
+- footer-medium-regular: 0.05em → 0
+- footer-small-semibold: 0.05em → 0
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v374 - 2026-01-29
+**Status: Previous**
+
+**Fixed input/button font size:**
+- Removed hardcoded font-size: 16px from .footer-input
+- Now properly inherits 20px from .footer-medium-regular class
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v373 - 2026-01-29
+**Status: Previous**
+
+**Footer input placeholder styling:**
+- Placeholder text now inherits font styling from parent (footer-medium-regular)
+
+**Files Modified:**
+- `public/styles.css` - placeholder inherits font properties
+
+---
+
+### v372 - 2026-01-29
+**Status: Previous**
+
+**Footer input field:**
+- Brought down 20px (margin-top: -30px)
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v371 - 2026-01-29
+**Status: Previous**
+
+**Footer spacing:**
+- Input field moved up 50px
+- Gap between form and pursuit.org: 80px
+
+**Files Modified:**
+- `public/styles.css` - footer-form margins
+
+---
+
+### v370 - 2026-01-29
+**Status: Previous**
+
+**Footer layout simplified:**
+- Removed "Let's build–together." heading
+- Input field + button moved directly under tagline
+- Button now shows "Get Involved" text (replaced arrow)
+- Input field uses footer-medium-regular
+- 2-column layout: brand (with form) | nav links
+
+**Files Modified:**
+- `public/index.html` - restructured footer
+- `public/styles.css` - 2-column grid, button text styling
+
+---
+
+### v369 - 2026-01-29
+**Status: Previous**
+
+**Footer layout restructure:**
+- 3 columns: brand | signup | nav links
+- Input field directly under "Let's build–together."
+- Added "Get Involved" below signup form
+- Button: pill shape, black background, white arrow
+- Nav links (Privacy Policy, Terms, Contact): stacked, right-aligned, top-aligned with logo
+- Removed border line above copyright
+- Copyright moved up
+
+**Files Modified:**
+- `public/index.html` - restructured footer
+- `public/styles.css` - new 3-column layout, button styling, nav links
+
+---
+
+### v368 - 2026-01-29
+**Status: Previous**
+
+**Footer logo adjustments:**
+- Moved back to original position (removed negative margins)
+- Scaled down 50% (120px → 60px)
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v367 - 2026-01-29
+**Status: Previous**
+
+**Footer logo changed:**
+- From: AIJI_Logo_Acronym_Black.svg
+- To: AIJI_Logo_Acronym_Background.svg
+
+**Files Modified:**
+- `public/index.html`
+
+---
+
+### v366 - 2026-01-29
+**Status: Previous**
+
+**footer-large-regular letter-spacing:**
+- Changed from 0.05em to 0
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v365 - 2026-01-29
+**Status: Previous**
+
+**Applied footer-large-regular to tagline:**
+- "Let's build an AI-first future. For all of us." now uses 30px, 400 weight
+
+**Files Modified:**
+- `public/index.html` - tagline class
+
+---
+
+### v364 - 2026-01-29
+**Status: Previous**
+
+**New typography class:**
+- `footer-large-regular` - 30px, 400 weight
+
+**Updated class system:**
+| Class | Size | Weight |
+|-------|------|--------|
+| `footer-large-semibold` | 30px | 600 |
+| `footer-large-regular` | 30px | 400 |
+| `footer-medium-regular` | 20px | 400 |
+| `footer-small-semibold` | 15px | 600 |
+
+**Files Modified:**
+- `public/styles.css` - new class
+
+---
+
+### v363 - 2026-01-29
+**Status: Previous**
+
+**Footer tagline to sentence case:**
+- "Let's build an AI-first future. For all of us."
+
+**Files Modified:**
+- `public/index.html` - tagline text
+
+---
+
+### v362 - 2026-01-29
+**Status: Previous**
+
+**Footer fine-tuning:**
+- Social icons: brought down 10px (margin-top: -10px)
+- Social icons gap: 10px between logos
+- Tagline: moved down 20px (margin-top: -30px)
+
+**Files Modified:**
+- `public/styles.css` - social icons, tagline margin
+
+---
+
+### v361 - 2026-01-29
+**Status: Previous**
+
+**Footer spacing adjustments:**
+- Social icons gap: reduced by 20px (now 0px)
+- Social icons: moved up 20px
+- Tagline "LET'S BUILD AN...": moved up 50px
+
+**Files Modified:**
+- `public/styles.css` - social icons gap/margin, tagline margin
+
+---
+
+### v360 - 2026-01-29
+**Status: Previous**
+
+**Footer simplification:**
+- Removed "Follow us" label
+- Social icons now 15px below pursuit.org
+
+**Files Modified:**
+- `public/index.html` - removed Follow us span
+- `public/styles.css` - footer-links-section gap 15px
+
+---
+
+### v359 - 2026-01-29
+**Status: Previous**
+
+**Footer spacing adjustments:**
+- Logo: pushed left another 10px (now -20px total)
+- Logo to tagline gap: halved again (now 1/4 of original)
+- Social icons gap: 20px
+
+**Files Modified:**
+- `public/styles.css` - logo margin, social icons gap
+
+---
+
+### v358 - 2026-01-29
+**Status: Previous**
+
+**Footer refinements:**
+- Logo: 120px (50% bigger), moved left 10px, up 10px
+- Logo to tagline gap: reduced by half
+- Tagline line-height: 1.1 (reduced by ~50%)
+- "Follow us" and "Let's build–together." changed to sentence case
+
+**Files Modified:**
+- `public/styles.css` - logo size/position, tagline line-height
+- `public/index.html` - sentence case text
+
+---
+
+### v357 - 2026-01-29
+**Status: Previous**
+
+**Footer styling updates:**
+
+**Logo:**
+- Size: 80px (200% of original 40px)
+- Aligned left with tagline
+
+**Typography classes updated:**
+- Removed `text-transform` from all footer classes (case controlled by input)
+- `footer-large-semibold`: 30px, 600 weight (50% increase)
+- `footer-medium-regular`: NEW - 20px, 400 weight
+- `footer-small-semibold`: 15px, 600 weight
+
+**Class applications:**
+- Main tagline: `footer-large-semibold` (uppercase in HTML)
+- PURSUIT.ORG, FOLLOW US, LET'S BUILD–TOGETHER: `footer-medium-regular`
+- Copyright, links: `footer-small-semibold`
+
+**Layout:**
+- "Let's build..." line break after "FUTURE."
+- Social icons now below "FOLLOW US" with 6px gap
+
+**Files Modified:**
+- `public/styles.css` - updated classes, logo size, social layout
+- `public/index.html` - uppercase text, new class applications
+
+---
+
+### v356 - 2026-01-29
+**Status: Previous**
+
+**Typography class refactoring:**
+
+**Renamed:**
+- `body-copy-regular` → `body-large-regular`
+
+**New classes created:**
+- `footer-large-semibold` - 20px, 600 weight, title case, letter-spacing 0.05em
+- `footer-small-semibold` - 15px (75%), 600 weight, title case, letter-spacing 0.05em
+
+**Applied to footer:**
+- Main footer elements (tagline, pursuit.org, Follow us, signup title): `footer-large-semibold`
+- Bottom bar (copyright, links): `footer-small-semibold`
+
+**Files Modified:**
+- `public/styles.css` - new typography classes, simplified footer styles
+- `public/index.html` - renamed body-copy-regular → body-large-regular, added footer typography classes
+
+---
+
+### v355 - 2026-01-29
+**Status: Previous**
+
+**Footer redesign:**
+
+**Left side:**
+- Replaced text logo with `AIJI_Logo_Acronym_Black.svg`
+- Changed tagline to "Let's build an AI-First Future. For all of us." (page title style)
+- "pursuit.org" link (page title style)
+- "Follow us" label + X logo + Instagram logo (black icons)
+
+**Right side:**
+- Title changed to "Let's Build–together." (page title style)
+- Input field: transparent background, thin black underline
+- Submit button: pink circle with arrow
+
+**Bottom bar:**
+- Copyright and links: page title style (uppercase, 20px, 600 weight)
+
+**Files Modified:**
+- `public/index.html` - new footer HTML structure
+- `public/styles.css` - complete footer restyling
+
+---
+
+### v354 - 2026-01-29
+**Status: Previous**
+
+**Major refactor: Renamed "hero" → "wwd" (What We Do):**
+- Renamed all CSS classes: `.hero` → `.wwd`, `.hero-*` → `.wwd-*`
+- Renamed all CSS variables: `--hero-*` → `--wwd-*`
+- Renamed JS variables: `heroSection` → `wwdSection`, `isInHeroSection` → `isInWwdSection`, etc.
+- Renamed JS functions: `initHeroSwipeSubsections` → `initWwdSwipePages`, `exitHeroSection` → `exitWwdSection`
+- Updated all comments to reflect new naming
+
+**Naming convention established:**
+- **Section** = "wwd" (What We Do)
+- **Page** = Mission, Vision, How, Hub (still using "step" in code, can rename later)
+- **State** = Pillar states 01-04
+
+This sets up a pattern for future sections: `.impact`, `.collab`, etc.
+
+**Files Modified:**
+- `public/index.html` - all class names
+- `public/styles.css` - all selectors and variables
+- `public/script.js` - all variables, functions, and selectors
+
+---
+
+### v353 - 2026-01-29
+**Status: Previous**
+
+**Four Pillars color inheritance fix:**
+- Added `color: inherit` to `.hero-initiative-num` and `.hero-initiative-name`
+- This overrides the `.body-copy-regular` color (#333) so both number and name
+  properly inherit the parent's color (#AAAAAA inactive, #000 active)
+
+**Files Modified:**
+- `public/styles.css` - color inherit on num and name
+
+---
+
+### v352 - 2026-01-29
+**Status: Previous**
+
+**Four Pillars interaction improvements:**
+- Changed inactive category color from #ccc to #AAAAAA
+- Changed cursor to pointer on categories to indicate clickability
+- Added click handlers to all categories (01-04) in "The How" subsection
+  - Clicking a category jumps directly to that state
+  - Only works when in the Pillars subsection
+  - Blocks during animations
+
+**Files Modified:**
+- `public/styles.css` - color #AAAAAA, cursor pointer
+- `public/script.js` - click event listeners on initiative items
+
+---
+
+### v351 - 2026-01-28
+**Status: Previous**
+
+**Hub scroll momentum fix v2:**
+- Added `hubMomentumBlocking` flag to completely block wheel event processing
+- The issue: after `isAnimating = false`, wheel events were processed but stored up
+- The fix:
+  - Set `hubMomentumBlocking = true` at start of transition
+  - Keep it true until 500ms AFTER the 600ms transition (1100ms total)
+  - Wheel handler blocks and prevents default when this flag is true
+  - Increased delay to 500ms for momentum to fully dissipate
+  - This ensures no scroll events are processed during the entire transition window
+
+**Files Modified:**
+- `public/script.js` - added hubMomentumBlocking flag and extended blocking
+
+---
+
+### v350 - 2026-01-28
+**Status: Previous**
+
+**Hub scroll momentum fix:**
+- Body copy to images: 60px → 80px
+- Fixed Hub landing position affected by swipe aggressiveness:
+  - Set `overflow: hidden` on Hub BEFORE transition starts
+  - This prevents wheel events from affecting scrollTop during transition
+  - Re-enable overflow 200ms after transition completes to let momentum die
+  - This ensures Hub always starts at top regardless of swipe intensity
+
+**Files Modified:**
+- `public/styles.css` - margin-bottom to 80px
+- `public/script.js` - overflow hidden during 3→4 transition
+
+---
+
+### v349 - 2026-01-28
+**Status: Previous**
+
+**Hub spacing and scroll fix:**
+- Body copy to images: 60px → 80px
+- Added more aggressive scroll reset for Hub transition:
+  - Reset before transition
+  - Reset right before showing step
+  - Reset after activation
+  - Reset with requestAnimationFrame to ensure DOM update
+
+**Files Modified:**
+- `public/styles.css` - margin-bottom to 80px
+- `public/script.js` - multiple scroll resets in 3→4 transition
+
+---
+
+### v348 - 2026-01-28
+**Status: Previous**
+
+**Hub spacing adjusted:**
+- Headline to body copy: 30px → 40px
+- Body copy to images: 50px → 60px
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v347 - 2026-01-28
+**Status: Previous**
+
+**Fixed scroll position on Hub transition:**
+- Reset `step4.scrollTop = 0` BEFORE the transition starts
+- This prevents momentum from aggressive swipes carrying over
+- Still reset again after animation completes for safety
+
+**Files Modified:**
+- `public/script.js` - Added early scroll reset in 3→4 transition
+
+---
+
+### v346 - 2026-01-28
+**Status: Previous**
+
+**Hub body copy max-width:**
+- Changed from 1000px to 975px
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v345 - 2026-01-28
+**Status: Previous**
+
+**Hub body copy max-width:**
+- Changed from 950px to 1000px
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v344 - 2026-01-28
+**Status: Previous**
+
+**Hub body copy max-width adjusted:**
+- Changed from 900px to 950px
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v343 - 2026-01-28
+**Status: Previous**
+
+**Reverted Hub text padding changes:**
+- Removed responsive padding from .hero-hub-text (was causing layout issues)
+- Restored 130px top padding on .hero-step-4
+- Body copy constrained by max-width: 900px instead
+
+**Files Modified:**
+- `public/styles.css` - Removed .hero-hub-text media query padding
+
+---
+
+### v342 - 2026-01-28
+**Status: Previous**
+
+**Hub top padding restored:**
+- Increased desktop top padding back to 150px (was reduced to 130px earlier)
+
+**Files Modified:**
+- `public/styles.css` - Hub step-4 top padding
+
+---
+
+### v341 - 2026-01-28
+**Status: Previous**
+
+**Hub body copy width constrained:**
+- Set max-width: 900px on body copy for better readability
+- Body copy now appears narrower, closer to headline visual width
+
+**Files Modified:**
+- `public/styles.css` - Hub body copy max-width
+
+---
+
+### v340 - 2026-01-28
+**Status: Previous**
+
+**Hub text padding matches Four Pillars:**
+- Added responsive padding to `.hero-hub-text` wrapper
+- 601-1024px: 25px padding
+- 1025-1400px: 80px padding (matches Four Pillars)
+- Body copy now has same width constraints as headline
+
+**Files Modified:**
+- `public/styles.css` - Added responsive padding to Hub text wrapper
+
+---
+
+### v339 - 2026-01-28
+**Status: Previous**
+
+**Pillar category names use body-copy-regular:**
+- Applied `.body-copy-regular` class to `.hero-initiative-name` elements
+- Category names now match body copy size (27px - 43px)
+
+**Files Modified:**
+- `public/index.html` - Added body-copy-regular to initiative names
+- `public/styles.css` - Simplified .hero-initiative-name
+
+---
+
+### v338 - 2026-01-28
+**Status: Previous**
+
+**Body copy size reduced to 90%:**
+- Before: clamp(1.875rem, 3vw, 3rem) = 30px - 48px
+- After: clamp(1.6875rem, 2.7vw, 2.7rem) = 27px - 43px
+
+**Files Modified:**
+- `public/styles.css` - Updated .body-copy-regular font-size
+
+---
+
+### v337 - 2026-01-28
+**Status: Previous**
+
+**Created reusable headline class:**
+- Added `.headline-regular` class with shared typography styles
+- Font: fractul-variable, clamp(2.5rem, 4vw, 4rem), weight 400, line-height 1.1, color #000
+- Applied to all headlines in "What We Do" section:
+  - `.hero-text-pursuit` (The Mission)
+  - `.hero-text-collective-top` (The Vision)
+  - `.hero-initiatives-headline` (Four Pillars)
+  - `.hero-hub-headline` (The Hub)
+- Simplified existing CSS classes by removing duplicate typography
+
+**Files Modified:**
+- `public/styles.css` - Added .headline-regular class, simplified existing classes
+- `public/index.html` - Added headline-regular class to all headlines
+
+---
+
+### v336 - 2026-01-28
+**Status: Previous**
+
+**Created reusable typography class:**
+- Added `.body-copy-regular` class with shared typography styles
+- Font: fractul-variable, clamp(1.875rem, 3vw, 3rem), weight 400, line-height 1.3, color #333
+- Applied to `.hero-hub-body` and `.hero-initiative-desc` elements
+- Simplified existing CSS classes by removing duplicate typography
+
+**Files Modified:**
+- `public/styles.css` - Added .body-copy-regular class, simplified existing classes
+- `public/index.html` - Added body-copy-regular class to Hub body and Four Pillars descriptions
+
+---
+
+### v335 - 2026-01-28
+**Status: Previous**
+
+**Hub desktop top padding adjusted:**
+- Changed from 120px to 130px
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v334 - 2026-01-28
+**Status: Previous**
+
+**Hub desktop top padding adjusted:**
+- Changed from 100px to 120px
+
+**Files Modified:**
+- `public/styles.css` - Hub desktop top padding to 120px
+
+---
+
+### v333 - 2026-01-28
+**Status: Previous**
+
+**Hub desktop top padding reduced:**
+- Changed desktop top padding from 150px to 100px
+- Matches the visual position of the Four Pillars headline
+
+**Files Modified:**
+- `public/styles.css` - Hub desktop top padding reduced
+
+---
+
+### v332 - 2026-01-28
+**Status: Previous**
+
+**Hub mobile spacing to match Four Pillars:**
+- Changed Hub mobile top padding from 150px to 30px
+- With 40px title padding, total = 70px from step top to title (matches Four Pillars)
+- Desktop remains at 150px (content scrolls, not centered)
+
+**Files Modified:**
+- `public/styles.css` - Hub mobile top padding matches Four Pillars
+
+---
+
+### v331 - 2026-01-28
+**Status: Previous**
+
+**Scroll boundary pause increased:**
+- Increased SCROLL_BOUNDARY_COOLDOWN from 400ms to 800ms
+- This creates a more noticeable pause when hitting the bottom of a scrollable subsection before transitioning
+
+**Files Modified:**
+- `public/script.js` - Increased scroll boundary cooldown
+
+---
+
+### v330 - 2026-01-28
+**Status: Previous**
+
+**Hub section bottom padding:**
+- Increased bottom padding from 40px to 100px
+- Applied to both desktop and mobile
+
+**Files Modified:**
+- `public/styles.css` - Increased Hub section bottom padding
+
+---
+
+### v329 - 2026-01-28
+**Status: Previous**
+
+**Fixed Hub title positioning:**
+- Root cause: Parent `transform` on `.hero-step` breaks `position: fixed` (CSS spec)
+- Solution: Added separate fixed title element outside the scrolling step
+- Desktop: Fixed title shows when step-4 is active (CSS sibling selector)
+- Mobile: Inline title inside step for flow layout
+
+**Files Modified:**
+- `public/index.html` - Added `.hero-hub-title-fixed` outside step, `.hero-hub-title-mobile` inside
+- `public/styles.css` - Styles for fixed/mobile Hub titles
+
+---
+
+### v328 - 2026-01-28
+**Status: Previous**
+
+**Hub gallery width matches Four Pillars table:**
+- Applied same max-width (1400px) and responsive padding as Four Pillars
+- Mobile: 25px padding
+- Tablet (601-1024px): 25px padding
+- Desktop (1025-1400px): 80px padding
+- 2 images now span the same width as the Four Pillars table
+
+**Files Modified:**
+- `public/styles.css` - Hub gallery width/padding to match Four Pillars
+
+---
+
+### v327 - 2026-01-28
+**Status: Previous**
+
+**Hub title fixed positioning:**
+- "The Hub" title now uses `position: fixed` on desktop so it stays at vertical center while content scrolls
+- On mobile (≤900px), title remains in flow and scrolls with content
+
+**Files Modified:**
+- `public/styles.css` - Fixed Hub subsection title positioning
+
+---
+
+### v326 - 2026-01-28
+**Status: Previous**
+
+**Hub section - adjust top padding:**
+- Increased top padding from 100px to 150px (+50px as requested)
+- Applied to both desktop and mobile
+
+**Files Modified:**
+- `public/styles.css` - Increased Hub section top padding to 150px
+
+---
+
+### v325 - 2026-01-28
+**Status: Previous**
+
+**Hub section - increase top padding:**
+- Increased top padding from 40px to 100px on both desktop and mobile
+- This should give enough space for the headline to be visible below the nav
+
+**Files Modified:**
+- `public/styles.css` - Increased Hub section top padding
+
+---
+
+### v324 - 2026-01-28
+**Status: Previous**
+
+**Hub section - fix content starting at top:**
+- Added `flex-direction: column !important` to stack content vertically
+- Override auto margins that were centering content: `margin-top: 0 !important`
+- Both desktop and mobile now have explicit overrides
+- Content should now start at top showing headline first, then scroll to images
+
+**Files Modified:**
+- `public/styles.css` - Fixed Hub section content alignment
+
+---
+
+### v323 - 2026-01-28
+**Status: Previous**
+
+**Hub section scroll fix:**
+- Added top padding (120px desktop) so headline is visible below nav
+- Mobile: align-items and justify-content set to flex-start
+- Mobile: padding 30px 20px 40px 20px (matches step-3 pattern)
+- Content starts at top, user scrolls down to see images
+- scrollTop = 0 already set in JS for section transitions
+
+**Files Modified:**
+- `public/styles.css` - Fixed Hub section padding and alignment
+
+---
+
+### v322 - 2026-01-28
+**Status: Previous**
+
+**Hub styling updates:**
+- Headline: Matches initiatives headline (fractul-variable, 400 weight, clamp(2.5rem, 4vw, 4rem))
+- Body copy: Matches initiative descriptions (fractul-variable, clamp(1.875rem, 3vw, 3rem), #333)
+- Gallery: Full width minus 20px padding on each side
+- No gap between images
+- No rounded corners
+- Images can scroll past viewport (overflow scroll works like pillars)
+- Added hero-hub-text wrapper for proper spacing
+
+**Files Modified:**
+- `public/index.html` - Added hero-hub-text wrapper
+- `public/styles.css` - Updated Hub styling, added to mobile headline styles
+
+---
+
+### v321 - 2026-01-28
+**Status: Previous**
+
+**Added new subsection: The Hub (subsection 4)**
+- Title: "THE HUB"
+- Headline: "One Hub. Infinite Futures."
+- Body copy about One Court Square
+- 2-column image gallery with 4 renderings (Reception, Auditorium, Workspace, Cafeteria)
+- Single column on mobile (< 600px)
+- Updated JS navigation: Pillars → Hub → Builders
+- Return from Builders now goes to Hub (subsection 4)
+
+**Files Modified:**
+- `public/index.html` - Added hero-step-4 HTML
+- `public/styles.css` - Added Hub styling
+- `public/script.js` - Updated maxSubsection to 4, added transitions
+
+---
+
+### v320 - 2026-01-28
+**Status: Previous**
+
+**Fix: Scroll up from Builders goes to header:**
+- Added wheel event listener on Builders section
+- When scrolling up at top of Builders, smoothly scrolls to hero section
+- Restores hero section to subsection 3 (Four Pillars) at state 4
+- 800ms debounce to prevent multiple triggers
+
+**Files Modified:**
+- `public/script.js`
+
+---
+
+### v319 - 2026-01-28
+**Status: Previous**
+
+**Fix: Scroll up skipping subsections:**
+- Added post-action cooldown check based on `lastStateChangeTime`
+- Subsection transitions: 700ms cooldown (animations are 600ms)
+- Pillar transitions: 300ms cooldown (instant transitions)
+- Prevents momentum from triggering multiple actions after animation completes
+
+**Files Modified:**
+- `public/script.js`
+
+---
+
+### v318 - 2026-01-28
+**Status: Previous**
+
+**Fix: Scroll up not locking / going to header:**
+- Now `preventDefault()` for ALL scroll up events in hero section
+- Added gesture tracking (`heroGestureActionTaken = true`) for scroll up at subsection 1
+- At subsection 1, scroll to header uses controlled `window.scrollTo` with smooth behavior
+- Prevents uncontrolled page scrolling that was bypassing subsections
+
+**Files Modified:**
+- `public/script.js`
+
+---
+
+### v317 - 2026-01-28
+**Status: Previous**
+
+**Fix: Vision subsection gap too big:**
+- Changed `min-height: 100%` to `min-height: auto` on `.hero-step-2-layout`
+- Added explicit `margin-top: 0; padding-top: 0` to remove extra space
+- Added `margin: 0` to headline styles on mobile
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v316 - 2026-01-28
+**Status: Previous**
+
+**Fix: Letter dispersion constrained to viewport:**
+- `getRandomCoordinates()` now uses `window.innerWidth` and `window.innerHeight`
+- X spread: 80% of viewport width (max 600px)
+- Y spread: 60% of viewport height (max 400px)
+- Letters now stay within the visible screen on all devices
+
+**Files Modified:**
+- `public/script.js`
+
+---
+
+### v315 - 2026-01-28
+**Status: Previous**
+
+**Fix: Rotating word line breaking at word boundaries:**
+- Modified `buildWord()` function to wrap each word in a `<span>` with `white-space: nowrap`
+- Line breaks now only happen between words, not mid-word
+- "AI-Powered World" will break as "AI-Powered" / "World" instead of "AI-Powered Worl" / "d"
+
+**Files Modified:**
+- `public/script.js`
+
+---
+
+### v314 - 2026-01-28
+**Status: Previous**
+
+**Vision subsection mobile fixes (continued):**
+- Changed from `min-height` to fixed `height: 160px` on title wrapper for true isolation
+- Added `word-break: keep-all`, `overflow-wrap: normal`, `hyphens: none` to prevent mid-word breaks
+- Changed gap to 40px to match other subsections
+- Added flex-shrink/grow: 0 to prevent container size changes
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v313 - 2026-01-28
+**Status: Previous**
+
+**Vision subsection mobile fixes:**
+- Increased gap from 30px to 50px between headline and rotating words
+- Changed background image to `position: fixed` on mobile for viewport centering
+- Added fixed min-height (140px) to title wrapper with `justify-content: flex-end`
+- This keeps baseline fixed - text grows upward when words wrap to 2 lines
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v312 - 2026-01-28
+**Status: Previous**
+
+**Fix: Subsection title behind nav (targeted fix):**
+- Reverted v311 changes that broke other sections
+- Added `padding-top: 40px` specifically to `.hero-subsection-title` on mobile
+- More targeted approach that doesn't affect other elements
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v311 - 2026-01-28
+**Status: Reverted**
+
+**Fix: Subsection title behind nav on mobile:**
+- Increased top padding from 40px to 100px on mobile hero-steps
+- Removed auto margins on first/last child (was interfering with scroll position)
+- REVERTED: Broke other sections
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v310 - 2026-01-28
+**Status: Previous**
+
+**Fix: Scroll position not reset when re-entering hero section:**
+- Added scroll reset for all steps (step1, step2, step3) when hero section becomes visible
+- Resets `scrollTop = 0` and `scrollBoundaryTime = 0` in IntersectionObserver callback
+- Fixes headline cutoff when returning from Builders section
+
+**Files Modified:**
+- `public/script.js`
+
+---
+
+### v309 - 2026-01-28
+**Status: Previous**
+
+**Added scroll boundary cooldown:**
+- Added 400ms pause after reaching scroll boundary before allowing transition
+- `scrollBoundaryTime` tracks when user first hits top/bottom of scrollable content
+- Prevents immediate transition when scrolling to edge
+- Timer resets when entering new subsection or while actively scrolling
+
+**Files Modified:**
+- `public/script.js`
+
+---
+
+### v308 - 2026-01-28
+**Status: Previous**
+
+**Fix: Can't advance after scrolling + header cut off on return:**
+- Reset `heroGestureActionTaken = false` when at scroll boundary (allows transition after scrolling to bottom)
+- Reset `scrollTop = 0` on all hero-steps when entering them (fixes header cutoff on return)
+
+**Files Modified:**
+- `public/script.js`
+
+---
+
+### v307 - 2026-01-28
+**Status: Previous**
+
+**Fix: Page scrolling when scrolling within hero-step:**
+- Changed from allowing natural scroll to manually scrolling hero-step element
+- Always `preventDefault()` on hero section wheel events
+- Manually adjust `scrollTop` on the active step element
+- Prevents page from scrolling and revealing Builders section
+
+**Files Modified:**
+- `public/script.js`
+
+---
+
+### v306 - 2026-01-28
+**Status: Previous**
+
+**Fix: Next section showing through:**
+- Added `background-color: #FFF3E9` to `.hero-step` to prevent Builders section from showing through during scroll
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v305 - 2026-01-28
+**Status: Previous**
+
+**Overflow scroll support for tall content:**
+- ✅ Hero steps now allow overflow scrolling when content exceeds viewport
+- ✅ Scroll to bottom of content before advancing to next subsection
+- ✅ Scroll to top of content before going back to previous subsection
+- ✅ Hidden scrollbars for clean look
+- ✅ Mobile CSS: Changed from `justify-content: center` to `flex-start` with auto margins
+- ✅ Prevents headline cutoff on mobile when content overflows
+
+**Files Modified:**
+- `public/styles.css` - Added overflow-y: auto, hidden scrollbars, mobile centering fix
+- `public/script.js` - Added getScrollState() helper, scroll boundary detection
+
+---
+
+### v304 - 2026-01-28
+**Status: Previous**
+
+**Style update:**
+- Changed subsection title font size from 0.875rem (14px) to 20px
+
+**Files Modified:**
+- `public/styles.css`
+
+---
+
+### v303 - 2026-01-28
+**Status: Previous**
+
+**Copy update:**
+- Changed headline to "Four pillars. One vision. All of us will build the future of work–together."
+
+**Files Modified:**
+- `public/index.html`
+
+---
+
+### v302 - 2026-01-28
+**Status: Previous**
+
+**Copy update:**
+- Changed headline to "Four pillars. One vision. All of us are building the future of work–together."
+
+**Files Modified:**
+- `public/index.html`
+
+---
+
+### v301 - 2026-01-28
+**Status: Previous**
+
+**Copy update:**
+- Changed "Four pillars. One vision. This is how we're building the future of work." to "Four pillars. One vision. This is how we will build the future of work–together."
+
+**Files Modified:**
+- `public/index.html`
+
+---
+
+### v300 - 2026-01-28
+**Status: Previous**
+
+**Gesture Reset After ALL Subsection Animations**
+
+**Change:**
+- ✅ Added gesture reset after 1→2 subsection transition
+- ✅ Added gesture reset after 3→2 regression
+- ✅ Added gesture reset after 2→1 regression
+- ✅ Reset includes: `heroGestureActionTaken`, `lastHeroWheelTime`, `lastStateChangeTime`
+- ✅ Prevents momentum from blocking next intentional swipe after animation
+
+**Files Modified:**
+- `public/script.js` - Added gesture resets to advanceSubsection and regressSubsection
+
+---
+
+### v299 - 2026-01-28
+**Status: Previous**
+
+**Unified Gesture Detection with Proper Momentum Tracking**
+
+**Change:**
+- ✅ Track `lastHeroWheelTime` BEFORE any blocking checks (including `isAnimating`)
+- ✅ Momentum events during 600ms animation now properly update wheel timestamp
+- ✅ Prevents false "time gap" detection after animation ends
+- ✅ Same gesture detection applies to subsections AND pillars
+- ✅ One swipe = one step for entire hero section
+
+**Files Modified:**
+- `public/script.js` - Moved wheel time tracking to very start of handler
+
+---
+
+### v298 - 2026-01-28
+**Status: Previous**
+
+**Reduced subsection cooldown (broke sections)**
+- Reduced cooldown from 500-1000ms to 150ms
+- Issue: Too short, caused flying through sections
+
+---
+
+### v297 - 2026-01-28
+**Status: Previous**
+
+**Reverted to v294 approach (broke subsections)**
+- Separated pillar gesture detection from subsection time-based cooldown
+- Issue: Subsection transitions required too many swipes
+
+---
+
+### v296 - 2026-01-28
+**Status: Previous**
+
+**Action-based cooldowns (broke everything)**
+- Used `timeSinceLastAction` instead of `timeSinceLastWheel`
+- Different cooldowns for pillars (300ms) vs subsections (700ms)
+- Issue: Flying through sections, long waits
+
+---
+
+### v295 - 2026-01-28
+**Status: Previous**
+
+**Unified Gesture Detection for Entire Hero Section**
+
+**Change:**
+- ✅ Applied same gesture detection logic to ALL hero section navigation
+- ✅ Subsection 1→2→3 now uses gesture detection (was time-based cooldown)
+- ✅ Going back (scroll up) now uses gesture detection
+- ✅ Pillar navigation and exit to Builders unchanged
+- ✅ Unified variables: `gestureActionTaken`, `lastWheelEventTime`
+- ✅ Constants: `GESTURE_GAP=140ms`, `STRONG_SWIPE_THRESHOLD=50`, `ACTION_COOLDOWN=300ms`
+- ✅ Cleaner, more consistent code
+
+**Files Modified:**
+- `public/script.js` - Unified gesture detection
+
+---
+
+### v291-v294 - 2026-01-28
+**Status: Previous (consolidated)**
+
+**Gesture detection evolution:** Bypass debounce, detailed logging, deltaY detection, strong swipe with cooldown
+
+---
+
+### v286-v290 - 2026-01-28
+**Status: Previous (consolidated)**
+
+**Gesture gap tuning:** 300ms → 150ms → 75ms → 100ms → 140ms
+
+**One Swipe = One Pillar Step - Gesture Detection**
+
+**Problem:**
+- Aggressive trackpad swipes generate wheel events for 800-1000ms
+- Simple cooldowns (400-600ms) weren't enough - events continued after cooldown expired
+- Multiple pillar transitions happening from single long swipes
+
+**Solution - Gesture Detection:**
+- Track `pillarGestureActionTaken` flag per gesture
+- Detect NEW gesture when gap between wheel events > 300ms
+- On first wheel event of gesture: take action, set flag to true
+- All subsequent wheel events in same gesture: ignored (flag is true)
+- Reset flag only when new gesture is detected
+
+**How it works:**
+1. User swipes → generates many wheel events over ~800ms
+2. First event: `NEW GESTURE detected`, action taken, flag = true
+3. Remaining events: ignored because flag = true
+4. User waits 300ms+ then swipes again
+5. New gesture detected, flag reset, action taken
+
+**Files Modified:**
+- `public/script.js` - Added gesture detection variables and logic
+
+---
+
+### v277-v285 - 2026-01-28
+**Status: Previous (consolidated)**
+
+**Debugging and Iteration for Pillar Navigation:**
+- v277-v278: Added console logging to debug swipe issues
+- v279: Fixed lock never releasing by not resetting timer when blocked
+- v280: Reduced timing values (80ms unlock, 200ms initial, 100ms guard)
+- v281: Simplified to fixed 250ms lock period
+- v282: Added more debugging logs
+- v283: Extended lock to 400ms
+- v284: Removed old resetStateUnlockTimer function, added version logging
+- v285: Changed to timestamp-based 600ms cooldown (still not enough)
+
+---
+
+### v283 - 2026-01-28
+**Status: Previous**
+
+**One Swipe = One Step - Extended Lock Period**
+
+**Problem:**
+- With 80-250ms lock, aggressive swipes were still triggering multiple state changes
+- Console showed states advancing every ~100ms within one swipe gesture
+
+**Fix:**
+- ✅ Extended lock period to 400ms - covers the full duration of most swipe gestures
+- ✅ Removed debug logging for cleaner output
+- ✅ Now one swipe truly equals one step, regardless of swipe intensity
+
+**Files Modified:**
+- `public/script.js` - Changed lock period from 250ms to 400ms
+
+---
+
+### v281 - 2026-01-28
+**Status: Previous**
+
+**One Swipe = One Step - Fixed Lock Period**
+
+**Changes:**
+- ✅ Simplified gesture handling: one swipe = one step regardless of intensity
+- ✅ Fixed 250ms lock period after each action
+- ✅ During lock period, ALL wheel events are ignored (no timer resetting)
+- ✅ Removed timing guards and complex debouncing logic
+- ✅ Cleaner, more predictable behavior
+
+**How it works:**
+1. First wheel event triggers the action immediately
+2. Lock is set for exactly 250ms
+3. All subsequent wheel events during lock are completely ignored
+4. After 250ms, lock releases and next swipe is recognized
+
+**Files Modified:**
+- `public/script.js` - Simplified state transition logic with fixed lock period
+
+---
+
+### v280 - 2026-01-28
+**Status: Previous**
+
+**Faster Swipe Response in Pillars Subsection**
+
+**Fixes:**
+- ✅ Reduced unlock timer from 150ms to 80ms (faster gesture recognition)
+- ✅ Reduced initial lock when entering subsection 3 from 500ms to 200ms
+- ✅ Reduced timing guard between states from 200ms to 100ms
+- ✅ v279: Fixed lock never releasing by not calling resetStateUnlockTimer() when blocked
+- ✅ v278: Added debug logging for state transitions
+- ✅ v277: Added debug logging for wheel events
+
+**Files Modified:**
+- `public/script.js` - Reduced timing values for faster response
+
+---
+
+### v276 - 2026-01-28
+**Status: Previous**
+
+**Fixed Transition to Builders Section**
+
+**Fixes:**
+- ✅ Lowered `isInHeroSection` visibility threshold from 0.8 (80%) to 0.3 (30%)
+- ✅ Added 0.3 to IntersectionObserver threshold array
+- ✅ This fixes the issue where the wheel event handler was blocked because `isInHeroSection` was false
+
+**Root Cause:**
+- The hero section visibility wasn't reaching 80% on mobile due to CSS changes
+- This caused `isInHeroSection` to be `false`, blocking all wheel event handling
+- The transition from subsection 3 to Builders was being ignored
+
+**Files Modified:**
+- `public/script.js` - Lowered IntersectionObserver visibility threshold
+
+---
+
+### v275 - 2026-01-28
+**Status: Previous**
+
+**Fixed Mobile Layout - Removed Problematic Padding**
+
+**Fixes:**
+- ✅ Removed `padding-top: 120px` from `.hero` at 900px (was causing content to push down)
+- ✅ Removed duplicate padding rule in second 900px media query
+- ✅ Reverted height calculation to original `vh` (removed `svh` experiment)
+- ✅ This should fix the Builders section appearing below subsection 1
+
+**Files Modified:**
+- `public/styles.css` - Removed padding-top rules from .hero at 900px breakpoint
+
+---
+
+### v274 - 2026-01-28
+**Status: Previous**
+
+**Subsection Titles - Mobile Viewport Fix**
+
+**Fixes:**
+- ✅ Switched back to Flexbox with `!important` overrides
+- ✅ Used `svh` (small viewport height) for better mobile browser support
+- ✅ Adjusted `top: 70px` for mobile nav position
+- ✅ Added fallback `vh` for browsers without `svh` support
+- ✅ Set `flex-shrink: 0` and `flex-grow: 0` on content wrappers
+
+**Files Modified:**
+- `public/styles.css` - Updated 900px media query with viewport and flexbox fixes
+
+---
+
+### v273 - 2026-01-28
+**Status: Previous**
+
+**Subsection Titles - CSS Grid Centering**
+
+**Fixes:**
+- ✅ Switched from Flexbox to CSS Grid for more precise centering
+- ✅ Used `display: grid` with `place-content: center` and `place-items: center`
+- ✅ Grid rows defined as `auto auto` for title and content
+- ✅ This should properly center the content block between nav bottom and viewport bottom
+
+**Files Modified:**
+- `public/styles.css` - Changed 900px media query to use CSS Grid instead of Flexbox
+
+---
+
+### v272 - 2026-01-28
+**Status: Previous**
+
+**Subsection Titles - Center Entire Content Block as Unit**
+
+**Fixes:**
+- ✅ Title and content now centered together as one unit
+- ✅ Changed title from `position: absolute` back to `position: relative` (part of flex flow)
+- ✅ Used `gap: 40px` on `.hero-step` for spacing between title and content
+- ✅ Both title and content centered vertically with `justify-content: center`
+- ✅ Added `flex-shrink: 0` to prevent content from being squeezed
+
+**Files Modified:**
+- `public/styles.css` - Updated 900px media query to center title + content as unit
+
+---
+
+### v271 - 2026-01-28
+**Status: Previous**
+
+**Subsection Titles - Fixed Spacing and Content Centering**
+
+**Fixes:**
+- ✅ Fixed excessive gap between title and content
+- ✅ Title now positioned absolutely at `top: 100px` from section top
+- ✅ Content remains centered vertically in the section (via `justify-content: center`)
+- ✅ Removed `flex: 1` from content wrappers that was causing content to push to bottom
+
+**Files Modified:**
+- `public/styles.css` - Updated 900px media query positioning
+
+---
+
+### v270 - 2026-01-28
+**Status: Previous**
+
+**Subsection Titles - Fixed Mobile/Tablet Layout**
+
+**Fixes:**
+- ✅ Fixed subsection title not appearing horizontal on mobile/tablet
+- ✅ Changed `.hero-step` to `flex-direction: column` at 900px and below
+- ✅ Added `!important` flags to override absolute positioning
+- ✅ Title now centered horizontally with `text-align: center` and `width: 100%`
+- ✅ Title positioned 100px above content with `margin-bottom: 100px`
+- ✅ Content wrappers (`.hero-text-pursuit-wrapper`, `.hero-step-2-layout`, `.hero-initiatives-wrapper`) centered with flex
+
+**Files Modified:**
+- `public/styles.css` - Updated 900px media query for hero-step and subsection titles
+
+---
+
+### v269 - 2026-01-28
+**Status: Previous**
+
+**Subsection Titles - Horizontal Layout on Mobile/Tablet**
+
+**Changes:**
+- ✅ At 900px and below: Subsection titles ("The Mission", "The Vision", "The How") now display horizontally instead of vertically
+- ✅ Titles positioned 100px above the main content (via margin-bottom)
+- ✅ Titles centered horizontally
+- ✅ Titles remain visible on mobile (removed display: none at 768px)
+- ✅ Cleaned up unused CSS from v268
+
+**Files Modified:**
+- `public/styles.css` - Added 900px media query for `.hero-subsection-title`, removed mobile hide rule
+
+---
+
+### v268 - 2026-01-28
+**Status: Previous**
+
+**Tablet Layout Attempt (superseded by v269)**
+
+**Changes:**
+- ❌ Added 900px media query for initiatives categories (not what user wanted)
+- ✅ Changes cleaned up in v269
+
+**Files Modified:**
+- `public/styles.css` - Added and then removed tablet layout changes
+
+---
+
+### v267 - 2026-01-28
+**Status: Previous**
+
+**Image Permission Fix**
+
+**Fixes:**
+- ✅ Fixed `EPERM: operation not permitted` error for `AIJI_Image_OurPurpose_01.png`
+- ✅ Applied `chmod 644` to set proper file permissions
+- ✅ Applied `xattr -c` to clear macOS quarantine flags
+- ✅ Removed extraneous JavaScript code that was making a non-existent `.hero-label` element visible
+
+**Files Modified:**
+- `public/script.js` - Removed unnecessary visibility code in `initLazyScrollReveal()`
+- File permissions fixed via shell commands
+
+---
+
+### v266 - 2026-01-28
+**Status: Previous**
+
+**Asymmetric Navigation + Variable Renaming**
+
+**Navigation Behavior:**
+- ✅ Swipe UP (forward): Goes through each state one at a time (State 1 → 2 → 3 → 4 → Next subsection)
+- ✅ Swipe DOWN (backward): Skips all states, jumps directly to previous subsection
+- ✅ This makes going back faster since user already saw the content
+
+**Variable Renaming for Clarity:**
+- ✅ Renamed to match intuitive hierarchy:
+  - `Section` = Major page section (What We Do, Builders, etc.)
+  - `Subsection` = Slides within a section (1, 2, 3)
+  - `State` = Animated elements within a subsection (pillar categories 1-4)
+- ✅ Variables: `currentSubsection`, `currentState`, `maxSubsection`, `maxState`
+- ✅ Functions: `advanceSubsection()`, `advanceState()`, `regressSubsection()`, `regressState()`
+
+**Files Modified:**
+- `public/script.js` - Renamed variables/functions, updated swipe-down behavior
+
+---
+
+### v252-v265 - 2026-01-28
+**Status: Previous (consolidated)**
+
+**Arrow Styling Refinements:**
+- ✅ Changed all pathway stroke weight from 4px to 3px
+- ✅ Arrowheads: 80° angle (was 90°), 32x32 size, matching 3px stroke
+- ✅ Pathway 02 made more erratic (varying loop sizes)
+- ✅ Reverted pillar numbers to black (removed colors)
+
+**Swipe Gesture Fixes:**
+- ✅ One swipe = one step (regardless of gesture intensity)
+- ✅ Lock mechanism: First wheel event advances, subsequent events ignored
+- ✅ 150ms unlock delay after gesture ends
+- ✅ 400ms minimum gap between state changes
+- ✅ 500ms lock when entering subsection 3 to prevent skipping pillar 01
+
+**Header Text:**
+- ✅ Changed from "AI for All of Us." to "For All of Us."
+
+**Files Modified:**
+- `public/index.html` - Arrow SVG paths, arrowhead sizing, header text
+- `public/script.js` - Swipe handling, variable renaming
+
+---
+
+### v251 - 2026-01-28
+**Status: Previous**
+
+**Subsection Titles + Centering Fix + Mission Update + Mobile Layout**
+
+**Subsection Titles:**
+- ✅ Added vertical subsection titles on left edge of hero section:
+  - Subsection 01: "The Mission"
+  - Subsection 02: "The Vision"
+  - Subsection 03: "The How"
+- ✅ Fractul semi-bold font (weight 600), uppercase, 0.875rem
+- ✅ Positioned at global padding (25px) from left edge
+- ✅ Vertically centered between nav and screen bottom
+- ✅ Uses `writing-mode: vertical-rl` with 180deg rotation for bottom-to-top reading
+- ✅ Hidden on mobile (under 768px) to avoid overlap
+
+**Centering Fix:**
+- ✅ Fixed content not being vertically centered in hero subsections
+- ✅ Removed JavaScript override in `handleResize()` that was incorrectly setting `minHeight: 100vh`
+- ✅ CSS now correctly handles centering with `height: calc(100vh - 72px)` and flex centering
+
+**Mission Statement Update:**
+- ✅ Updated to: "Pursuit AI Jobs Institute is America's first AI workforce hub, pioneering how all of us prepare for the needs of an AI-first economy."
+
+**Mobile Layout for "4 Pillars" Section:**
+- ✅ Stacked layout on mobile: number + category name followed by description
+- ✅ Arrows/pathways hidden on mobile
+- ✅ Consistent headline styling across all 3 subsections on mobile
+
+**Files Modified:**
+- `public/index.html` - Added subsection title elements, updated mission text
+- `public/styles.css` - Added `.hero-subsection-title` styling, mobile adjustments
+- `public/script.js` - Removed problematic `minHeight: 100vh` override
+
+---
+
+### v250 - 2026-01-27
+**Status: Previous**
+
+**Separated Arrowheads from Lines + Colored Numbers**
+- ✅ Split arrows into two separate SVG elements: `.initiative-arrow-line` and `.initiative-arrowhead`
+- ✅ Arrowheads are now positioned at the END point separately (no distortion)
+- ✅ Arrowheads rotate to match the line angle but don't stretch
+- ✅ Added pillar number colors matching their arrows:
+  - 01: Pursuit Purple #4242ea
+  - 02: Pink #FFB8B6
+  - 03: Blue #AEE0E5
+  - 04: Green #BAEAB0
+
+**Solution:**
+- Arrowhead is a separate 24x24 SVG that gets positioned at the end point
+- Arrowhead rotates using same angle as line but maintains consistent size
+- Line SVG stretches with `preserveAspectRatio="none"`, arrowhead doesn't
+
+**Files Modified:**
+- `public/index.html` - Split SVGs into line + arrowhead pairs
+- `public/styles.css` - Added styles for arrowheads and number colors
+- `public/script.js` - Position both line and arrowhead separately
+
+---
+
+### v249 - 2026-01-27
+**Status: Previous**
+
+**Fixed Arrowhead Distortion with SVG Markers**
+- ✅ Replaced manual arrowhead paths with SVG `<marker>` elements
+- ✅ Markers use `markerUnits="userSpaceOnUse"` to maintain consistent size
+- ✅ Arrowheads now maintain 90-degree angle regardless of SVG stretching
+- ✅ Each arrow has its own marker with matching color
+- ✅ Arrowhead is a proper "V" shape: 20x20 units with tip at center
+
+**Problem:**
+- With `preserveAspectRatio="none"`, horizontal stretching distorted arrowheads
+- Arrow 01 (shortest) had most horizontal compression, widest arrowhead angle
+
+**Solution:**
+- SVG `<marker>` elements are not affected by the parent SVG's stretching
+- `orient="auto"` rotates arrowhead to match line direction
+- `refX` and `refY` position the arrowhead at the line endpoint
+
+**Files Modified:**
+- `public/index.html` - Replaced arrowhead paths with marker definitions
+
+---
+
+### v248 - 2026-01-27
+**Status: Previous**
+
+**Fixed Arrow 01 Thickness & Redesigned Arrow 02 as Coil**
+- ✅ Added `preserveAspectRatio="none"` to arrow 01 SVG
+- ✅ Added `vector-effect="non-scaling-stroke"` to all arrow 01 paths
+- ✅ Redesigned arrow 02 with true coiled spring pattern using Bezier curves
+- ✅ Spring pattern: 6 loops oscillating between y=10 and y=50
+
+**Files Modified:**
+- `public/index.html` - Fixed arrow 01 attributes, redesigned arrow 02 path
+
+---
+
+### v247 - 2026-01-27
+**Status: Previous**
+
+**Fixed Arrows to be Diagonal - Rotation Transform**
+- ✅ Arrows now go diagonally from category to description
+- ✅ Calculate delta X and delta Y between start and end points
+- ✅ Calculate diagonal length (hypotenuse) for SVG width
+- ✅ Calculate rotation angle using atan2(deltaY, deltaX)
+- ✅ Apply CSS transform: rotate() to make arrows diagonal
+- ✅ Set transform-origin: left center so arrows rotate from start point
+
+**Problem:**
+- Arrows were horizontal lines positioned at each category's Y level
+- They didn't actually go UP to the description at commonY
+- SVG paths were horizontal (y=30) within the viewBox
+
+**Solution:**
+- Calculate the angle from start point to end point
+- Apply CSS rotation to make the SVG arrow diagonal
+- Width is now the diagonal distance (hypotenuse)
+- Arrow rotates from its left edge to point toward the description
+
+**Files Modified:**
+- `public/script.js` - Complete rewrite of positionInitiativeArrows()
+
+---
+
+### v246 - 2026-01-27
+**Status: Previous**
+
+**Fixed End Y - Use First Description's First Character**
+- ✅ Using Range API to get first character position of first description
+- ✅ `commonY` now calculated from actual text position, not container
+- ✅ Descriptions container was at top: 0, giving wrong Y position
+- ✅ Now measures where the description text actually renders
+
+**Root Cause:**
+- Descriptions container and wrapper both at same Y (relative top: 0)
+- Descriptions are absolutely positioned, containers don't reflect text position
+- Need to measure actual rendered text, not container boxes
+
+**Files Modified:**
+- `public/script.js` - Use first character of first description for commonY
+
+---
+
+### v245 - 2026-01-27
+**Status: Previous**
+
+**Fixed End Y Position - Use Descriptions Container**
+- ✅ Changed from using first description's position to descriptions container position
+- ✅ Descriptions are `position: absolute; top: 0` relative to their parent
+- ✅ Parent `.hero-initiatives-right` has the actual Y position we need
+- ✅ `commonY` now calculated from descriptions container top
+
+**Root Cause:**
+- First description and wrapper had same top (477.93)
+- Because description is absolutely positioned at top: 0 of its parent
+- Need parent container's position, not the description's position
+
+**Files Modified:**
+- `public/script.js` - Use `.hero-initiatives-right` for commonY calculation
+
+---
+
+### v243 - 2026-01-27
+**Status: Previous**
+
+**Improved Arrow Coordinate Logging**
+- ✅ Clear section showing START POINT (X, Y)
+- ✅ Clear section showing END POINT (X, Y)
+- ✅ Shows final arrow SVG positioning (left, top, width)
+- ✅ All values formatted to 2 decimal places for readability
+- ✅ Easier to verify if coordinates are correct
+
+**Files Modified:**
+- `public/script.js` - Enhanced coordinate logging
+
+---
+
+### v242 - 2026-01-27
+**Status: Previous**
+
+**Fixed Arrow Y Position - Each Arrow Has Own Y**
+- ✅ Changed from using `commonY` to calculating individual `startY` for each arrow
+- ✅ Each arrow now positioned at its own category's first line Y position
+- ✅ `startY` calculated from the last character's Y position + half its height
+- ✅ Arrow top set to `startY - 30` instead of `commonY - 30`
+- ✅ Added logging for both start and end Y coordinates
+
+**Critical Bug Fixed:**
+- All arrows were using the same Y position (from first description)
+- Categories are at different vertical positions
+- Each arrow now correctly aligns with its own category's first line
+
+**Files Modified:**
+- `public/script.js` - Calculate and use individual Y positions per arrow
+
+---
+
+### v241 - 2026-01-27
+**Status: Previous**
+
+**Fixed Range Measurement - Single Character Only**
+- ✅ Changed from `range.setEnd(textNode, firstLineEndPos)` to `range.setEnd(textNode, lastCharIndex + 1)`
+- ✅ Now measures ONLY the last visible character on first line
+- ✅ Previously was measuring from last char to line break (including spaces and next line chars)
+- ✅ Should now give correct right edge position for each category
+
+**Bug Found:**
+- For "Pilot Programs & ", was measuring range from "&" (index 15) to "T" (index 17)
+- This included the space and part of the next line
+- Now only measures the "&" itself (index 15 to 16)
+
+**Files Modified:**
+- `public/script.js` - Fixed range end position
+
+---
+
+### v240 - 2026-01-27
+**Status: Previous**
+
+**Enhanced Debug Logging - Show Y Coordinates**
+- ✅ Now logs Y coordinate for EVERY character
+- ✅ Shows X position range (left-right) for each character
+- ✅ Uses first character's Y as baseline for first line
+- ✅ Clearly marks where line break occurs
+- ✅ Shows which character is detected as last on first line
+- ✅ More detailed console output for debugging
+
+**Files Modified:**
+- `public/script.js` - Enhanced logging with Y coordinates
+
+---
+
+### v239 - 2026-01-27
+**Status: Previous**
+
+**Fixed Space Character Issue in Arrow Positioning**
+- ✅ Skips trailing space characters when finding line end
+- ✅ Finds last visible (non-space) character on first line
+- ✅ Added logging to show which spaces are being skipped
+- ✅ Should now correctly measure different end positions for each category
+
+**Problem Identified:**
+- All arrows were starting at same position (262.3125px)
+- Was measuring space character at line wrap point
+- All spaces happened to be at similar positions
+
+**Files Modified:**
+- `public/script.js` - Added space-skipping logic
+
+---
+
+### v238 - 2026-01-27
+**Status: Previous**
+
+**Added Debug Logging for Arrow Coordinates**
+- ✅ Console logs showing common Y and end X positions
+- ✅ Per-arrow logging with category name and text analysis
+- ✅ Character-by-character position tracking to detect line breaks
+- ✅ Shows detected first line text and break position
+- ✅ Displays all calculated coordinates (start X, end X, width)
+- ✅ Helps identify where positioning is going wrong
+
+**Files Modified:**
+- `public/script.js` - Added extensive console.log statements
+
+---
+
+### v237 - 2026-01-27
+**Status: Previous**
+
+**Fixed Arrow Start Position Using Range API**
+- ✅ Implemented Range API to detect actual end of first line of text
+- ✅ Handles multi-line category names correctly (e.g., "Support Small Businesses & Nonprofits")
+- ✅ Finds where line break occurs by checking each character position
+- ✅ Arrow now starts precisely at end of first line, not element bounding box
+- ✅ Works for both single-line and multi-line category names
+
+**Technical Details:**
+- Uses `document.createRange()` to measure individual character positions
+- Detects line break by comparing vertical positions of characters
+- Gets `lastCharRect.right` for precise text end position
+
+**Files Modified:**
+- `public/script.js` - Updated `positionInitiativeArrows()` with Range API logic
+
+---
+
+### v236 - 2026-01-27
+**Status: Previous**
+
+**Unified Arrow Y-Position and End X-Position**
+- ✅ All arrows now use common Y-coordinate (aligned with first description line)
+- ✅ All arrows end at same X-coordinate (start of description column)
+- ✅ Each arrow starts at different X based on its category text length
+- ✅ Distance calculated individually for each arrow
+- ✅ More consistent arrow positioning across all 4 pillars
+
+**Files Modified:**
+- `public/script.js` - Updated arrow positioning logic
+
+---
+
+### v235 - 2026-01-27
+**Status: Previous**
+
+**Fixed Arrow Length and Positioning**
+- ✅ Width now calculated as exact distance between category end and description start
+- ✅ Increased gap to 20px for better spacing
+- ✅ Removed minimum width constraint
+- ✅ Each arrow scales to fit its specific distance (different for each pillar)
+- ✅ Arrows now start at end of category name and end at start of description
+
+**Files Modified:**
+- `public/script.js` - Fixed arrow width calculation
+
+---
+
+### v234 - 2026-01-27
+**Status: Previous**
+
+**Fixed Arrow Positioning**
+- ✅ Increased gap from category text (10px → 15px)
+- ✅ Increased gap before description text (10px → 15px)
+- ✅ Added minimum width of 150px for arrows
+- ✅ Clarified positioning calculations relative to content wrapper
+
+**Files Modified:**
+- `public/script.js` - Updated `positionInitiativeArrows()` function
+
+---
+
+### v233 - 2026-01-27
+**Status: Previous**
+
+**Fixed Arrows 02-04: Prevent Distortion**
+- ✅ Added `preserveAspectRatio="none"` to arrows 02, 03, 04
+- ✅ Added `vector-effect="non-scaling-stroke"` to all paths in arrows 02, 03, 04
+- ✅ Now all arrows stretch horizontally without distorting stroke width
+- ✅ Matches the fix applied to arrow 01
+
+**Files Modified:**
+- `public/index.html` - Fixed SVG properties for arrows 02-04
+
+---
+
+### v232 - 2026-01-27
+**Status: Previous**
+
+**All Four Pillar Arrows Complete**
+- ✅ Arrow 01 (Pursuit Purple #4242ea): S-curve
+- ✅ Arrow 02 (Pink #FFB8B6): Coil/spring with multiple curves
+- ✅ Arrow 03 (Blue #AEE0E5): Zigzag pattern
+- ✅ Arrow 04 (Green #BAEAB0): Smooth wavy pattern
+- ✅ Each arrow unique in form, same 4px stroke, same arrowhead size
+- ✅ Only one arrow visible at a time (matches active category)
+- ✅ All arrows dynamically positioned and responsive
+
+**Files Modified:**
+- `public/index.html` - Added arrows 02, 03, 04
+- `public/script.js` - Updated arrow handling for all 4 arrows
+
+---
+
+### v231 - 2026-01-27
+**Status: Previous**
+
+**Pillar 01 Arrow: Extended Further**
+- ✅ Extended line another 10px to the right (from x=185 to x=195)
+- ✅ Arrowhead adjusted to x=175 (total 20px extension from v229)
+- ✅ Maintains 4px stroke width
+
+**Files Modified:**
+- `public/index.html` - Extended arrow further right
+
+---
+
+### v230 - 2026-01-27
+**Status: Previous**
+
+**Pillar 01 Arrow: Extended & Thicker**
+- ✅ Extended line by 10px (from x=175 to x=185)
+- ✅ Increased stroke width from 3px to 4px (both line and arrowhead)
+- ✅ Arrowhead endpoint adjusted to x=165 to maintain 20px length
+
+**Files Modified:**
+- `public/index.html` - Extended and thickened arrow
+
+---
+
+### v229 - 2026-01-27
+**Status: Previous**
+
+**Pillar 01 Arrow: Even Bigger Arrowhead**
+- ✅ Added explicit `viewBox` to ensure proper rendering
+- ✅ Arrowhead now 20px long on each side (much more prominent)
+- ✅ Adjusted line endpoint to connect properly to arrowhead
+- ✅ Arrowhead spans from y=15 to y=45 (30px total height)
+
+**Files Modified:**
+- `public/index.html` - Updated arrow SVG with bigger arrowhead
+
+---
+
+### v228 - 2026-01-27
+**Status: Previous**
+
+**Pillar 01 Arrow: Increased Size**
+- ✅ Line weight increased from 2px to 3px
+- ✅ Arrowhead made much bigger (from 5px to 15px length on each side)
+- ✅ All strokes now 3px weight
+
+**Files Modified:**
+- `public/index.html` - Updated arrow SVG sizing
+
+---
+
+### v227 - 2026-01-27
+**Status: Previous**
+
+**Pillar 01: Dynamic Arrow with Hand-Drawn Path**
+- ✅ Created arrow for pillar 01 in Pursuit Purple (#4242ea)
+- ✅ Gentle S-curve path with slight wobbles for hand-drawn feel
+- ✅ Dynamically positioned from end of "Train AI Workers" to start of description
+- ✅ 2px stroke with 45° arrowhead
+- ✅ Shows only when category 01 is active
+- ✅ Repositions on load and resize
+
+**Files Modified:**
+- `public/index.html` - Added pillar 01 arrow SVG
+- `public/styles.css` - Added `.initiative-arrow` styling
+- `public/script.js` - Added `positionInitiativeArrows()` function
+
+---
+
+### v226 - 2026-01-27
+**Status: Previous**
+
+**Clean Arrow - No Filter**
+- ✅ Removed SVG filter completely (was causing displacement)
+- ✅ Clean black line with 2px stroke
+- ✅ Centered and floating on top of table
+- ✅ Will add hand-drawn effect differently later
+
+**Files Modified:**
+- `public/index.html` - Removed filter and defs
+
+---
+
+### v225 - 2026-01-27
+**Status: Previous**
+
+**Final: Clean Arrow with Subtle Hand-Drawn Effect**
+- ✅ Removed debug red tint background
+- ✅ Changed arrow to black, 2px stroke
+- ✅ Added gentler hand-drawn filter (baseFrequency: 0.8, scale: 0.5)
+- ✅ Arrow floats on top of table content
+
+**Files Modified:**
+- `public/index.html` - Black stroke, subtle filter
+- `public/styles.css` - Removed debug background
+
+---
+
+### v224 - 2026-01-27
+**Status: Previous - DEBUG**
+
+**Debug: Removed Filter**
+- ✅ Removed `filter="url(#hand-drawn)"` from paths
+- ✅ The filter was causing visual displacement
+- ✅ Now the red line should be solid and in the center
+
+**Files Modified:**
+- `public/index.html` - Removed filter from all paths
+
+---
+
+### v223 - 2026-01-27
+**Status: Previous - DEBUG**
+
+**Debug: Made Arrow Highly Visible**
+- ✅ Changed arrow to RED with 3px stroke
+- ✅ Added semi-transparent red background to container
+- ✅ Increased z-index to 100
+- ✅ This will help us see if it's positioned correctly
+
+**Files Modified:**
+- `public/index.html` - Changed arrow to red, thicker
+- `public/styles.css` - Added debug background, increased z-index
+
+---
+
+### v222 - 2026-01-27
+**Status: Previous**
+
+**Fixed: Arrow Container Wrapped Separately from Headline**
+- ✅ Created `.hero-initiatives-content-wrapper` to wrap table + arrows only
+- ✅ Headline now outside the arrow positioning context
+- ✅ Arrow should be centered relative to table area, not including headline
+
+**Files Modified:**
+- `public/index.html` - Added content wrapper div around table and arrows
+- `public/styles.css` - Moved positioning context to content wrapper
+
+---
+
+### v221 - 2026-01-27
+**Status: Previous**
+
+**Fixed: Arrow Container Positioning**
+- ✅ Added `position: relative` to `.hero-initiatives-wrapper` (positioning context)
+- ✅ Changed arrow container to use `top/right/bottom/left: 0` (fills parent)
+- ✅ Arrow should now be centered relative to wrapper, not description text
+
+**Files Modified:**
+- `public/styles.css` - Fixed `.hero-initiatives-wrapper` and `.hero-arrows-container`
+
+---
+
+### v220 - 2026-01-27
+**Status: Previous**
+
+**Updated: Arrow Container Separation**
+- ✅ Created `.hero-arrows-container` outside of table
+- ✅ Arrow now sits on top with z-index: 10
+- ✅ Container is absolutely positioned over the entire wrapper
+- ✅ Pointer-events: none to allow clicking through to table
+
+**Files Modified:**
+- `public/index.html` - Moved SVG to new container outside table
+- `public/styles.css` - Added `.hero-arrows-container` styling
+
+---
+
+### v219 - 2026-01-27
+**Status: Previous**
+
+**Reset: Simple Test Arrow**
+- ✅ Removed all previous arrow code
+- ✅ Created single test line centered on slide
+- ✅ Straight path with hand-drawn texture filter
+- ✅ 2px stroke with 45° arrowhead
+- ✅ Fixed positioning (150px × 40px, centered)
+
+**Files Modified:**
+- `public/index.html` - Replaced complex arrows with single test SVG
+- `public/script.js` - Removed positioning functions
+- `public/styles.css` - Removed arrow CSS
+
+---
+
+### v218 - 2026-01-27
+**Status: Previous**
+
+**Fixed: SVG Lines Using vector-effect non-scaling-stroke**
+- ✅ Reverted to `preserveAspectRatio="none"` to fill space
+- ✅ Added `vector-effect="non-scaling-stroke"` to maintain 2px stroke at any scale
+- ✅ Adjusted viewBox to 100x30 for better proportions
+- ✅ Recentered all paths vertically at y=15
+- ✅ Reduced filter scale to 1.5 for subtler texture
+- ✅ Removed JS stroke-width scaling (no longer needed)
+
+**Files Modified:**
+- `public/index.html` - Updated all SVG paths with vector-effect and new coordinates
+- `public/script.js` - Removed dynamic stroke-width calculation
+
+---
+
+### v217 - 2026-01-27
+**Status: Previous**
+
+**Fixed: SVG Line Skewing and Scaling**
+- ✅ Changed `preserveAspectRatio` from "none" to "xMidYMid meet" to prevent skewing
+- ✅ Adjusted viewBox to 100x50 for better proportions
+- ✅ Rescaled all path coordinates to fit new viewBox
+- ✅ Dynamic stroke-width calculation to maintain 2px appearance at any size
+- ✅ Paths now scale proportionally without distortion
+
+**Files Modified:**
+- `public/index.html` - Updated all 4 SVG viewBox and path coordinates
+- `public/script.js` - Added dynamic stroke-width scaling based on SVG dimensions
+
+---
+
+### v216 - 2026-01-27
+**Status: Previous**
+
+**Fixed: Dynamic Positioning for Decorative Lines**
+- ✅ Lines now positioned dynamically via JavaScript
+- ✅ Start point: Right edge of category name text
+- ✅ End point: Left edge of description first line
+- ✅ Automatically repositions on load, resize, and state changes
+- ✅ Responsive to actual text layout
+
+**Files Modified:**
+- `public/styles.css` - Simplified line positioning (removed static values)
+- `public/script.js` - Added `positionInitiativeLines()` function with dynamic calculations
+
+---
+
+### v215 - 2026-01-27
+**Status: Previous**
+
+**Added: Hand-Drawn Decorative Lines on Slide 3**
+- ✅ Added 4 unique SVG connecting lines between categories and descriptions
+- ✅ Each line has unique character: S-curve, coil, zigzag, wave
+- ✅ Hand-drawn effect with SVG filters (feTurbulence, feDisplacementMap)
+- ✅ 2px stroke weight with 45° arrowheads
+- ✅ Lines fade in/out based on active category
+- ✅ Positioned in gap between columns
+
+**Files Modified:**
+- `public/index.html` - Added 4 SVG elements with unique paths
+- `public/styles.css` - Added `.hero-initiative-line` styling and positioning
+- `public/script.js` - Updated `updateInitiativeSubState` to control line visibility
+
+---
+
+### v214 - 2026-01-27
+**Status: Previous**
+
+**Updated: Slide 3 Headline Margin**
+- ✅ Gap between headline and table reduced from 100px to 75px
+
+**Files Modified:**
+- `public/styles.css` - Updated `.hero-initiatives-headline` margin-bottom
+
+---
+
+### v213 - 2026-01-27
+**Status: Previous**
+
+**Fixed: Slide 3 Headline Double Padding**
+- ✅ Removed padding from `.hero-initiatives-headline` (was causing double padding)
+- ✅ Headline now inherits padding from `.hero-initiatives-wrapper` only
+- ✅ Headline now aligns consistently with Slides 1 & 2
+
+**Files Modified:**
+- `public/styles.css` - Removed padding and responsive media queries from `.hero-initiatives-headline`
+
+---
+
+### v212 - 2026-01-27
+**Status: Previous**
+
+**Updated: Slide 3 Padding Adjustment**
+- ✅ Reduced padding for 1025-1400px range from 100px to 80px
+- ✅ Total side padding for this range now: 20px + 80px = 100px
+
+**Files Modified:**
+- `public/styles.css` - Updated `.hero-initiatives-wrapper` responsive padding
+
+---
+
+### v211 - 2026-01-27
+**Status: Previous**
+
+**Updated: Slide 3 Padding Adjustment**
+- ✅ Reduced padding for 1025-1400px range from 120px to 100px
+- ✅ Total side padding for this range now: 20px + 100px = 120px
+
+**Files Modified:**
+- `public/styles.css` - Updated `.hero-initiatives-wrapper` responsive padding
+
+---
+
+### v210 - 2026-01-27
+**Status: Previous**
+
+**Updated: Slide 3 Layout Improvements**
+- ✅ Reduced gap between numbers and category names from 16px to 8px
+- ✅ Removed fixed min-width on numbers to close gap further
+- ✅ Adjusted column ratio to 0.8fr / 1.2fr (more space for descriptions)
+- ✅ Increased gap between columns from 60px to 80px
+- ✅ Reduced side padding from 40px to 20px to prevent description cutoff
+
+**Files Modified:**
+- `public/styles.css` - Updated `.hero-initiatives-two-col`, `.hero-initiative-item`, `.hero-initiative-num`, `.hero-step-3`
+
+---
+
+### v209 - 2026-01-27
+**Status: Previous**
 
 **Fixed: Slide 3 Content Vertical Centering**
 - ✅ Removed duplicate `.hero-step-3` definition
@@ -3628,6 +5968,6 @@ When the logo became `position: fixed`, it was removed from document flow, causi
 
 ## Quick Reference
 
-**Current Version:** v2.1.40  
-**Last Updated:** 2025-01-25  
-**Next Version:** v2.1.41 (for next patch change)
+**Current Version:** v390  
+**Last Updated:** 2026-01-29  
+**Next Version:** v391 (for next change)
