@@ -57,6 +57,11 @@
   --transition-fast: 150ms ease;
   --transition-base: 250ms ease;
   --transition-slow: 400ms ease;
+  
+  /* Consistent content padding for page transitions */
+  --content-padding-top: 150px;
+  --content-padding-bottom: 150px;
+  --nav-height: 72px;
 }
 
 /* --------------------------------------------------------------------------
@@ -79,11 +84,43 @@
   color: #000000;
 }
 
+.headline-semibold {
+  font-family: "fractul-variable", sans-serif;
+  font-size: clamp(2.5rem, 4vw, 4rem); /* 40px - 64px */
+  font-weight: 600;
+  line-height: 1.1;
+  color: #000000;
+}
+
 .body-large-regular {
   font-family: "fractul-variable", sans-serif;
   font-size: clamp(1.6875rem, 2.7vw, 2.7rem); /* 27px - 43px (90% of original) */
   font-weight: 400;
   line-height: 1.3;
+  color: #333;
+}
+
+.body-large-semibold {
+  font-family: "fractul-variable", sans-serif;
+  font-size: clamp(1.6875rem, 2.7vw, 2.7rem);
+  font-weight: 600;
+  line-height: 1.3;
+  color: #333;
+}
+
+.body-small-regular {
+  font-family: "fractul-variable", sans-serif;
+  font-size: clamp(1rem, 1.5vw, 1.125rem); /* 16px - 18px */
+  font-weight: 400;
+  line-height: 1.4;
+  color: #333;
+}
+
+.body-medium-regular {
+  font-family: "fractul-variable", sans-serif;
+  font-size: clamp(1.25rem, 2vw, 1.5rem); /* 20px - 24px */
+  font-weight: 400;
+  line-height: 1.4;
   color: #333;
 }
 
@@ -158,20 +195,32 @@ html {
 }
 
 body {
-  scroll-snap-type: y mandatory;
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.6;
   color: var(--color-white);
   background-color: #FFF3E9;
-  overflow-x: hidden;
-  overflow-y: scroll;
   margin: 0;
   padding: 0;
-  height: 100%;
+  height: 100vh; /* Full viewport height */
+  /* Use clip instead of hidden to prevent page scroll but allow child scrolling */
+  overflow: clip;
   /* Hide scrollbar */
   scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+}
+
+/* Section Background Transition Overlay */
+.section-bg-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 0; /* Behind everything else */
+  background-color: #FFF3E9; /* Default: What We Do background */
+  transition: background-color 1s ease-in-out;
+  pointer-events: none;
+}
+
+.section-bg-overlay.our-impact-active {
+  background-color: #F5FAFB; /* Our Impact background */
 }
 
 body::-webkit-scrollbar,
@@ -192,6 +241,90 @@ body::-webkit-scrollbar {
 
 *::-webkit-scrollbar {
   display: none;
+}
+
+/* --------------------------------------------------------------------------
+   Section Page - Independent scrollable sections
+   -------------------------------------------------------------------------- */
+.section-page {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100vh !important;
+  overflow-y: scroll !important; /* Use scroll instead of auto */
+  overflow-x: hidden !important;
+  display: none; /* Hidden by default */
+  z-index: 100;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  touch-action: pan-y; /* Allow vertical touch scrolling */
+  overscroll-behavior-y: none; /* Stop scrolling at content bottom - no rubber band past footer */
+}
+
+/* Section pages only visible after video intro is complete */
+body.video-complete .section-page.active {
+  display: block !important;
+}
+
+/* Before video-complete, keep section-pages hidden even if active */
+body:not(.video-complete) .section-page.active {
+  display: none !important;
+}
+
+/* Ensure containers inside section-page don't restrict scrolling */
+.section-page > .container {
+  min-height: auto;
+  height: auto;
+}
+
+/* Remove any conflicting position styles from child elements when in section-page */
+.section-page.builder-stories,
+.section-page.urgency {
+  position: fixed !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure builder-stories content doesn't block scrolling */
+/* Impact Step 2: Builders */
+.section-page.builder-stories > .container {
+  height: auto;
+  min-height: 100vh;
+  padding: var(--content-padding-top) var(--container-padding) var(--content-padding-bottom);
+}
+
+/* WWD Step 6 (Partners) - page content only; footer is separate step 7 */
+.wwd-step-6 {
+  height: auto !important;
+  min-height: auto; /* Content-based height for tighter transitions */
+  overflow-y: auto !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: stretch !important;
+}
+
+/* Content inside Step 6 - padding before footer page */
+.wwd-step-6 .wwd-partners-wrapper {
+  flex-shrink: 0;
+  padding-bottom: var(--space-lg); /* Minimal gap between partners and footer */
+}
+
+/* WWD Step 7 (Footer) - content-based height, no min-height */
+.wwd-step-7 {
+  height: auto !important;
+  min-height: auto !important; /* Override base .wwd-step min-height: 100vh */
+  overflow-y: auto !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: stretch !important;
+  padding: 0 !important;
+  /* Never apply fade transition to footer */
+  transition: none !important;
+}
+
+.wwd-step-7 .footer {
+  padding-top: 150px;   /* Match other pages */
+  padding-bottom: 30px; /* Copyright 30px above bottom */
 }
 
 a {
@@ -244,13 +377,24 @@ strong {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  background: transparent;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+  background-color: rgba(255, 243, 233, 0) !important; /* Fully transparent, blur only */
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
   border-bottom: none;
-  transition: background 0.5s ease-in, all var(--transition-base);
+  transition: background-color 0.5s ease-in, backdrop-filter 0.5s ease-in, all var(--transition-base);
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* Show nav after video intro is complete */
+body.video-complete .nav {
   opacity: 1;
   visibility: visible;
+}
+
+body.video-complete .nav .nav-links a {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 /* Hide nav when on video header */
@@ -258,21 +402,25 @@ strong {
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
-  background: transparent;
+  background-color: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 body.logo-at-top .nav.hidden-on-video {
   opacity: 1;
   pointer-events: auto;
   visibility: visible;
-  background: transparent;
+  background-color: rgba(255, 243, 233, 0) !important; /* Fully transparent, blur only */
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
 }
 
 .nav.scrolled {
   padding: 0;
   height: 72px; /* Keep same height for consistency */
   border-bottom: none;
-  background: transparent;
+  background-color: rgba(255, 243, 233, 0); /* Fully transparent, blur only */
 }
 
 .nav-container {
@@ -446,7 +594,16 @@ body.logo-at-top .nav.hidden-on-video {
   font-weight: 600;
 }
 
-.nav-cta:hover {
+.nav-cta-pill {
+  border-radius: 999px; /* Full pill shape */
+  padding: 10px 24px;
+  background: #000000;
+  color: #FFF3E9 !important;
+  font-weight: 600;
+}
+
+.nav-cta:hover,
+.nav-cta-pill:hover {
   background: #000000;
   opacity: 0.8;
 }
@@ -524,7 +681,9 @@ body.logo-at-top .nav.hidden-on-video {
    Video Header Section
    -------------------------------------------------------------------------- */
 .video-header {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100vh;
   min-height: 100vh;
@@ -532,11 +691,17 @@ body.logo-at-top .nav.hidden-on-video {
   overflow: hidden;
   margin: 0;
   padding: 0;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-  z-index: 1;
+  z-index: 200; /* Above section-pages initially */
   display: block;
   visibility: visible;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+/* After video intro is complete, hide video header */
+body.video-complete .video-header {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 .video-header::before {
@@ -630,14 +795,22 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 }
 
 .video-header-logo.at-top {
-  position: fixed;
-  top: -2px;
-  left: 15px;
+  position: fixed !important;
+  top: -2px !important;
+  left: 15px !important;
+  transform: scale(1) !important;
   transform-origin: top left;
   z-index: 1001 !important;
   opacity: 1 !important;
   visibility: visible !important;
   display: block !important;
+}
+
+/* Ensure logo is visible even when parent video-header is hidden */
+body.video-complete .video-header-logo.at-top {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
 }
 
 .video-header-logo.at-top img {
@@ -813,24 +986,16 @@ body > .video-header-logo:not(.animating):not(.at-top) {
    What We Do Section
    -------------------------------------------------------------------------- */
 .wwd {
-  position: relative;
-  min-height: 100vh;
-  height: 100vh;
-  max-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   padding: 0;
-  background-color: #FFF3E9;
+  background-color: #FFF3E9; /* What We Do section background */
   color: #000000;
-  overflow: hidden;
   box-sizing: border-box;
   margin: 0;
-  z-index: 2;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-  scroll-snap-stop: always;
+  /* height, overflow, position handled by .section-page */
 }
 
 /* Base class for all wwd elements - allows easy targeting */
@@ -863,7 +1028,8 @@ body > .video-header-logo:not(.animating):not(.at-top) {
   z-index: 2;
   text-align: center;
   width: 100%;
-  height: 100%;
+  min-height: 100%;
+  height: auto; /* Allow content to grow */
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -873,27 +1039,37 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 
 /* WWD pages - lazy reveal on scroll */
 .wwd-step {
-  position: absolute;
-  top: 72px; /* Start below nav */
-  left: 0;
+  position: relative; /* Changed from absolute for continuous scroll */
   width: 100%;
-  height: calc(100vh - 72px); /* Height minus nav */
-  opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  min-height: 100vh; /* Reduced baseline: enter + content + exit */
+  height: auto; /* Grows based on content */
+  opacity: 1; /* Always visible for continuous scroll */
   margin: 0;
-  padding: 0;
+  padding: var(--content-padding-top) 0 var(--content-padding-bottom) 0;
   display: flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  pointer-events: none;
-  /* Allow scrolling when content overflows viewport */
-  overflow-y: auto;
+  pointer-events: auto; /* Always interactive */
+  overflow: visible; /* Allow content to overflow for scrolling backgrounds */
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none; /* Firefox - hide scrollbar */
-  /* Background to prevent next section from showing through */
+  /* What We Do background */
   background-color: #FFF3E9;
+  /* Smooth transitions for crossfade effect */
+  transition: opacity 0.8s cubic-bezier(0.43, 0.195, 0.02, 1),
+              transform 0.8s cubic-bezier(0.43, 0.195, 0.02, 1);
+}
+
+/* Page crossfade states */
+.wwd-step.fading-out {
+  opacity: 0;
+  transform: translateY(-30px); /* Slight upward movement */
+}
+
+.wwd-step.fading-in {
+  opacity: 0;
+  transform: translateY(30px); /* Start slightly down */
 }
 
 .wwd-step::-webkit-scrollbar {
@@ -902,26 +1078,133 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 
 .wwd-step.active {
   opacity: 1;
-  transform: translateY(0);
   pointer-events: auto;
 }
 
-/* Subsection titles - vertical text on left edge */
-.wwd-subsection-title {
-  position: absolute;
+/* Ensure wwd-steps are completely hidden during video transition */
+body:not(.video-complete) .wwd-step {
+  display: none !important;
+}
+
+body.video-complete .wwd-step {
+  display: flex !important;
+}
+
+/* Fixed Page Titles Container - Progress bar with dots */
+.wwd-titles-fixed {
+  position: fixed;
   left: var(--container-padding);
-  top: 50%;
-  transform: translateY(-50%) rotate(180deg);
+  top: 50vh;
+  transform: translateY(-50%);
+  z-index: 1000;
+  pointer-events: none;
+}
+
+/* Layout driven by fixed-height children: 40px + 220px + 40px + gaps = consistent total */
+.titles-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* Fixed height so lowest dot above / highest dot below stay at consistent positions */
+.titles-above,
+.titles-below {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 40px;
+}
+
+.titles-above {
+  justify-content: flex-end; /* Dots stick to bottom, closest to title */
+}
+
+.titles-below {
+  justify-content: flex-start; /* Dots stick to top, closest to title */
+}
+
+.titles-current {
+  flex: 0 0 220px;
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Center shorter titles vertically within the fixed area */
+}
+
+.title-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #AAAAAA; /* Match inactive pillar categories */
+  flex-shrink: 0;
+}
+
+/* Hide all fixed WWD containers until video transition is complete */
+body:not(.video-complete) .wwd-titles-fixed,
+body:not(.video-complete) .wwd-vision-content-fixed,
+body:not(.video-complete) .wwd-how-content-fixed {
+  display: none !important;
+  pointer-events: none;
+}
+
+/* CRITICAL: All fixed text overlays AND their children must NEVER block wheel events
+   This ensures scrolling always works on the underlying .wwd section
+   The * selector overrides the original pointer-events: auto on children */
+.wwd-titles-fixed,
+.wwd-titles-fixed *,
+.wwd-mission-text-fixed,
+.wwd-mission-text-fixed *,
+.wwd-vision-content-fixed,
+.wwd-vision-content-fixed *,
+.wwd-how-content-fixed,
+.wwd-how-content-fixed * {
+  pointer-events: none !important;
+}
+
+/* Individual title items - shown in titles-current when active (title case from JS) */
+.wwd-title-item {
+  position: relative;
+  transform: rotate(180deg);
+  transform-origin: center center;
   writing-mode: vertical-rl;
   font-family: "fractul-variable", sans-serif;
-  font-variation-settings: "wght" 600;
+  font-variation-settings: "wght" 400;
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 400;
   letter-spacing: 0.05em;
-  text-transform: uppercase;
+  text-transform: none;
   color: #000000;
   white-space: nowrap;
-  z-index: 10;
+  will-change: opacity, transform;
+  transition: opacity 0.6s cubic-bezier(0.43, 0.195, 0.02, 1),
+              transform 0.6s cubic-bezier(0.43, 0.195, 0.02, 1);
+  pointer-events: auto;
+  opacity: 0; /* Hidden by default */
+}
+
+/* Active title state */
+.wwd-title-item.active {
+  opacity: 1;
+}
+
+/* Entrance animation - fading in from below */
+.wwd-title-item.entering {
+  opacity: 0;
+  transform: translateY(-30px) rotate(180deg);
+}
+
+/* Exit animation - fading out to above */
+.wwd-title-item.exiting {
+  opacity: 0;
+  transform: translateY(30px) rotate(180deg);
+}
+
+/* Legacy class - keep for compatibility but hide */
+.wwd-subsection-title {
+  display: none !important;
 }
 
 /* Tablet/Mobile: Subsection titles horizontal above content */
@@ -969,16 +1252,150 @@ body > .video-header-logo:not(.animating):not(.at-top) {
   }
 }
 
-/* Step 1: Paragraph - centered */
+/* Step 1: Mission page - fixed text and scrolling backgrounds */
 .wwd-step-1 {
   padding-top: 0;
   padding-bottom: 0;
+  min-height: 250vh; /* Reduced for tighter transitions */
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  position: relative;
 }
 
-/* Step 2: Rotating words - centered */
+/* Fixed text container - stays centered while backgrounds scroll */
+.wwd-mission-text-fixed {
+  position: sticky;
+  top: 50vh;
+  transform: translateY(-50%);
+  z-index: 5;
+  pointer-events: none; /* Allow scrolling through */
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  text-align: center;
+  /* Animation properties for entrance effect */
+  opacity: 0;
+  transition: opacity 0.8s cubic-bezier(0.43, 0.195, 0.02, 1),
+              transform 0.8s cubic-bezier(0.43, 0.195, 0.02, 1);
+}
+
+/* Visible state for Mission text */
+.wwd-mission-text-fixed.visible {
+  opacity: 1;
+}
+
+/* Ensure text content is visible and interactive */
+.wwd-mission-text-fixed * {
+  pointer-events: auto;
+}
+
+/* Scrolling background container */
+.wwd-mission-bg-scroll {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 250vh; /* Match parent min-height to contain all images */
+  z-index: 1;
+  pointer-events: none;
+  overflow: visible; /* ADDED: Don't clip images that extend beyond */
+}
+
+/* Step 2: Vision page - sticky text with scrolling background */
 .wwd-step-2 {
+  min-height: 100vh; /* Reduced for tighter Vision→How transition */
+  height: auto;
+  position: relative;
+  overflow: hidden; /* Contain background */
+}
+
+/* Fixed Vision Content Container - OUTSIDE scrolling content */
+.wwd-vision-content-fixed {
+  position: fixed; /* Fixed to viewport - doesn't scroll */
+  top: 50vh;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 500; /* High z-index to ensure visibility above backgrounds */
+  width: 90%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  will-change: transform, opacity;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* Layout inside the fixed Vision container */
+.wwd-vision-content-fixed .wwd-step-2-layout {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  text-align: center;
+  gap: 40px;
+  width: 100%;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.wwd-vision-content-fixed .wwd-text-collective-top {
+  text-align: center;
+  max-width: 1000px;
+}
+
+.wwd-vision-content-fixed .wwd-title-wrapper-bottom {
+  text-align: center;
+  overflow: hidden;
+  padding: 20px 0;
+}
+
+/* Legacy class - keep for compatibility */
+.wwd-vision-content-sticky {
+  display: none;
+}
+
+/* Allow pointer events on text content inside sticky container */
+.wwd-vision-content-sticky * {
+  pointer-events: auto;
+}
+
+/* Ensure step-2-layout is above background and centered */
+.wwd-step-2 .wwd-step-2-layout {
+  z-index: 10;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Background image container for Vision page - scrolls UP with page */
+.wwd-vision-bg-container {
+  position: absolute; /* Absolute to center in parent */
+  top: 50vh; /* Start at vertical center */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px;
+  height: auto;
+  z-index: 1; /* Behind text content (which has z-index: 10) */
+  pointer-events: none;
+}
+
+.wwd-vision-bg-image {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  will-change: transform;
+  transform: scale(1);
 }
 
 /* Step 3: Initiatives - centered in content area */
@@ -1029,29 +1446,58 @@ body > .video-header-logo:not(.animating):not(.at-top) {
   gap: 0;
 }
 
-/* WWD Page 3: Initiatives with two columns - centered in content area */
+/* Fixed How Content Container - OUTSIDE scrolling content */
+/* Multi-element pages: headline 100px below nav (nav = 72px, so top = 172px) */
+.wwd-how-content-fixed {
+  position: fixed;
+  top: 172px; /* 72px nav + 100px gap */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 500;
+  width: 90%;
+  max-width: 1200px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s cubic-bezier(0.43, 0.195, 0.02, 1),
+              transform 0.6s cubic-bezier(0.43, 0.195, 0.02, 1);
+  will-change: opacity, transform;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center children horizontally */
+  gap: 40px;
+}
+
+.wwd-how-content-fixed .wwd-initiatives-headline {
+  text-align: center;
+  width: 100%;
+}
+
+.wwd-how-content-fixed .wwd-initiatives-content-wrapper {
+  width: 100%;
+  max-width: 1000px; /* Constrain table width for better centering */
+}
+
+.wwd-how-content-fixed * {
+  pointer-events: auto;
+}
+
+/* WWD Page 3: Initiatives - now just scroll space (content is in fixed container) */
 .wwd-step-3 {
-  align-items: center;
-  justify-content: center;
-  padding: 0 20px; /* Reduced side padding */
+  min-height: 160vh; /* Reduced for tighter transitions */
+  height: auto;
+  position: relative;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: var(--content-padding-top) 20px var(--content-padding-bottom) 20px;
 }
 
-/* WWD Page 4: The Hub */
+/* WWD Page 4: The Hub - content in document flow (scrolls like Advisory Council) */
 .wwd-step-4 {
-  align-items: flex-start !important; /* Start from top, not center */
+  align-items: flex-start !important;
   justify-content: flex-start !important;
-  padding: 130px 20px 100px 20px !important; /* Match Four Pillars headline position */
-  flex-direction: column !important; /* Stack children vertically */
-}
-
-/* Override any auto margins - content should start at top for scrollable section */
-.wwd-step-4 > * {
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
-}
-
-.wwd-step-4 .wwd-hub-wrapper {
-  margin-top: 0;
+  padding: calc(var(--nav-height) + var(--content-padding-top)) 20px var(--content-padding-bottom) 20px !important;
+  flex-direction: column !important;
+  min-height: 120vh !important; /* Room for entrance/exit transition */
 }
 
 /* Hub fixed title - outside the step so transform doesn't affect it */
@@ -1088,14 +1534,19 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 
 .wwd-hub-wrapper {
   width: 100%;
-  max-width: 100%;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0;
+  padding: 0 var(--container-padding);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0;
+  text-align: center;
+  /* Initial state for entrance animation */
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s cubic-bezier(0.43, 0.195, 0.02, 1),
+              transform 0.6s cubic-bezier(0.43, 0.195, 0.02, 1);
 }
 
 .wwd-hub-text {
@@ -1113,7 +1564,7 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 .wwd-hub-headline {
   /* Typography via .headline-regular class */
   text-align: center;
-  margin: 0;
+  margin: 0 0 var(--space-md) 0;
 }
 
 .wwd-hub-body {
@@ -1123,15 +1574,22 @@ body > .video-header-logo:not(.animating):not(.at-top) {
   margin: 0;
 }
 
+/* 100px gap between body copy and gallery images */
+.wwd-hub-wrapper .wwd-hub-gallery {
+  margin-top: 100px;
+}
+
 .wwd-hub-gallery {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0; /* No gap between images */
   width: 100%;
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 var(--container-padding); /* Match Four Pillars table padding */
+  padding: 0 var(--container-padding);
   box-sizing: border-box;
+  will-change: transform, opacity;
+  transition: transform 0.1s linear, opacity 0.4s ease;
 }
 
 /* Responsive padding for Hub gallery - match Four Pillars */
@@ -1168,11 +1626,18 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 }
 
 .wwd-initiatives-wrapper {
+  position: sticky;
+  top: 50vh;
+  transform: translateY(-50%);
+  z-index: 5;
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 var(--container-padding);
   box-sizing: border-box;
+  will-change: transform, opacity;
+  transition: opacity 0.6s cubic-bezier(0.43, 0.195, 0.02, 1),
+              transform 0.6s cubic-bezier(0.43, 0.195, 0.02, 1);
 }
 
 /* Content wrapper for table + arrows */
@@ -1185,7 +1650,7 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 .initiative-arrow-line {
   position: absolute;
   pointer-events: none;
-  opacity: 0;
+  opacity: 0; /* Hidden by default - shown when pillar is active */
   transition: opacity 0.5s ease;
 }
 
@@ -1197,7 +1662,7 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 .initiative-arrowhead {
   position: absolute;
   pointer-events: none;
-  opacity: 0;
+  opacity: 0; /* Hidden by default - shown when pillar is active */
   transition: opacity 0.5s ease;
 }
 
@@ -1292,13 +1757,14 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 }
 
 .wwd-initiative-desc {
-  /* Typography via .body-copy-regular class */
+  /* Typography via .body-large-regular class */
   text-align: left;
-  opacity: 0;
-  position: absolute;
+  opacity: 0; /* Hidden by default - only active one shows */
+  position: absolute; /* Absolute so they stack in same position */
   top: 0;
   left: 0;
   transition: opacity 0.4s ease;
+  max-width: 500px;
 }
 
 .wwd-initiative-desc.active {
@@ -1585,6 +2051,18 @@ body > .video-header-logo:not(.animating):not(.at-top) {
   position: relative;
 }
 
+/* Container for rotating words - clip scattered letters */
+.wwd-title-wrapper-bottom {
+  overflow: hidden; /* Clip scattered letters that fly outside */
+  position: relative;
+  padding: 50px 0; /* Add padding so visible letters don't get clipped */
+}
+
+/* Ensure the step-2-layout clips overflowing animation */
+.wwd-step-2 .wwd-step-2-layout {
+  overflow: hidden;
+}
+
 .rotating-word-letter {
   display: inline-block;
   opacity: 0;
@@ -1672,32 +2150,7 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 }
 
 /* WWD Page 1: Text only - "Pursuit AI Jobs Institute..." */
-.wwd-text-pursuit-wrapper {
-  position: relative;
-  width: 100%;
-  max-width: 1400px;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 var(--container-padding);
-  box-sizing: border-box;
-  flex-shrink: 0;
-}
-
-/* Add more padding for mid-range sizes */
-@media (min-width: 601px) and (max-width: 1400px) {
-  .wwd-text-pursuit-wrapper {
-    padding: 0 80px;
-  }
-}
-
-/* Even more padding for larger mid-range */
-@media (min-width: 1025px) and (max-width: 1400px) {
-  .wwd-text-pursuit-wrapper {
-    padding: 0 120px;
-  }
-}
+/* Old wrapper styles removed - now using .wwd-mission-text-fixed */
 
 .wwd-image-pursuit-bg {
   position: absolute;
@@ -1756,9 +2209,71 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 .wwd-text-pursuit {
   /* Typography via .headline-regular class */
   position: relative;
-  z-index: 1;
+  z-index: 10; /* Increased from 1 to ensure text is above backgrounds */
   text-align: center;
-  padding: 0;
+  max-width: 1400px;
+  padding: 0 var(--container-padding); /* Match Vision text padding */
+  box-sizing: border-box;
+}
+
+/* Responsive padding for Mission text - match Vision */
+@media (min-width: 601px) and (max-width: 1400px) {
+  .wwd-text-pursuit {
+    padding: 0 80px;
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1400px) {
+  .wwd-text-pursuit {
+    padding: 0 120px;
+  }
+}
+
+/* Microsoft-style word-by-word animation */
+.wwd-text-pursuit .word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s cubic-bezier(0.43, 0.195, 0.02, 1),
+              transform 0.6s cubic-bezier(0.43, 0.195, 0.02, 1);
+}
+
+.wwd-text-pursuit .word.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Mission page background artwork */
+.mission-bg-art {
+  position: absolute;
+  pointer-events: none;
+  will-change: opacity;
+  transition: opacity 0.8s cubic-bezier(0.43, 0.195, 0.02, 1);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Vertical orientation - fully vertical, no rotation */
+.mission-bg-art.vertical {
+  height: var(--img-height);
+  width: auto;
+}
+
+/* Horizontal orientation - fully horizontal, no rotation */
+.mission-bg-art.horizontal {
+  width: var(--img-width);
+  height: auto;
+}
+
+/* Size variants - Mission_01 is largest */
+.mission-bg-art.large {
+  --img-height: 600px;
+  --img-width: 900px;
+}
+
+.mission-bg-art.medium {
+  --img-height: 400px;
+  --img-width: 600px;
 }
 
 .wwd-text-pursuit-bold {
@@ -1868,16 +2383,14 @@ body > .video-header-logo:not(.animating):not(.at-top) {
   border: none;
 }
 
-/* Salary Journey Section */
+/* Salary Journey Section - Impact Step 3: Transformation */
 .salary-journey-section {
   min-height: 100vh;
   height: auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-2xl);
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
+  padding: var(--content-padding-top) var(--space-2xl) var(--content-padding-bottom);
   overflow: visible;
   box-sizing: border-box;
 }
@@ -1967,118 +2480,508 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 }
 
 /* --------------------------------------------------------------------------
+   WWD Step 5 & 6: Council and Partners (within What We Do)
+   -------------------------------------------------------------------------- */
+.wwd-step-5,
+.wwd-step-6 {
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  /* Consistent padding: nav height + 100px top, 100px bottom */
+  padding: calc(var(--nav-height) + var(--content-padding-top)) 20px var(--content-padding-bottom) 20px !important;
+  flex-direction: column !important;
+  min-height: 120vh !important; /* Room for entrance/exit transition */
+}
+
+.wwd-council-wrapper,
+.wwd-partners-wrapper {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--container-padding);
+  box-sizing: border-box;
+  /* Initial state for entrance animation */
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s cubic-bezier(0.43, 0.195, 0.02, 1),
+              transform 0.6s cubic-bezier(0.43, 0.195, 0.02, 1);
+}
+
+.wwd-council-headline,
+.wwd-partners-headline {
+  /* Typography via .headline-regular class */
+  text-align: center;
+  margin: 0 0 var(--space-md) 0;
+}
+
+.wwd-council-description,
+.wwd-partners-description {
+  /* Typography via .body-large-regular class */
+  text-align: center;
+  max-width: 975px;
+  margin: 0 auto var(--space-3xl) auto;
+}
+
+.wwd-step-6 .wwd-partners-description {
+  margin-bottom: calc(var(--space-3xl) * 1.5);
+}
+
+/* Urgency quote styling */
+.urgency-quote {
+  margin-top: var(--space-3xl);
+  padding-top: var(--space-3xl);
+  border-top: 1px solid var(--color-dark-border);
+}
+
+.urgency-quote .quote-block {
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.urgency-quote .quote-text {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: var(--space-md);
+  color: var(--color-white);
+}
+
+.urgency-quote .quote-source {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--color-gray);
+  font-style: normal;
+}
+
+/* --------------------------------------------------------------------------
    Builder Stories Section
    -------------------------------------------------------------------------- */
 .builder-stories {
-  position: relative;
-  z-index: 10;
-  min-height: 100vh;
-  height: auto;
-  padding: var(--space-4xl) 0;
-  background: linear-gradient(180deg, var(--color-black) 0%, var(--color-dark) 50%, var(--color-black) 100%);
-  overflow: visible;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
+  padding: 0;
+  background-color: #F5FAFB; /* Our Impact section background */
   box-sizing: border-box;
-  margin-top: 0;
+  /* height, overflow, position handled by .section-page */
+}
+
+/* Impact step 1: Decade of Work - scroll spacer only; copy is in fixed container.
+   Taller than viewport so scroll-driven entrance/exit animation has range (like Vision). */
+.impact-step.impact-decade {
+  min-height: 240vh;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* Decade of Work background: builder photos (injected by JS). */
+.impact-decade-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.impact-decade-bg .builder-photo {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  max-width: 300px;
+  max-height: 300px;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+}
+
+/* One-time entrance on load: headline first, then body (staggered slide up + fade in) */
+@keyframes decadeEntranceInChild {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.impact-decade-content-fixed.decade-entrance-animate .impact-decade-headline {
+  animation: decadeEntranceInChild 0.5s cubic-bezier(0.43, 0.195, 0.02, 1) forwards;
+}
+
+.impact-decade-content-fixed.decade-entrance-animate .impact-decade-body {
+  animation: decadeEntranceInChild 0.5s cubic-bezier(0.43, 0.195, 0.02, 1) forwards;
+  animation-delay: 0.25s;
+}
+
+/* Fixed Decade of Work content - same pattern as Vision page. Above section-page (z 100). */
+.impact-decade-content-fixed {
+  position: fixed;
+  top: calc(50vh - 75px);
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  width: 90%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  will-change: transform, opacity;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+}
+
+.impact-decade-content-fixed .impact-decade-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 40px;
+  width: 100%;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.impact-decade-content-fixed .impact-decade-headline {
+  color: #000000;
+  text-align: center;
+  max-width: 1000px;
+  line-height: 1.1;
+  will-change: transform, opacity;
+}
+
+.impact-decade-content-fixed .impact-decade-body {
+  color: #000000;
+  text-align: center;
+  max-width: 1000px;
+  line-height: 1.3;
+  will-change: transform, opacity;
+}
+
+/* Ensure pseudo-elements don't block scrolling */
+.builder-stories::before,
+.builder-stories::after {
+  pointer-events: none;
 }
 
 .builder-stories::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+  display: none; /* Hide accent line */
 }
 
 .builder-stories::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+  display: none; /* Hide accent line */
 }
 
+/* Meet Our Builders step - padding and height grows with revealed content */
+.builder-stories-step {
+  padding-top: 250px;
+  padding-bottom: 250px;
+  min-height: auto;
+}
+
+/* Layout: headline → body copy → images/videos (same as Hub, Real People) */
 .builder-stories-content {
-  display: grid;
-  grid-template-columns: 1fr 1.2fr;
-  gap: var(--space-3xl);
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  text-align: center;
+  gap: 0;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--container-padding);
+  box-sizing: border-box;
 }
 
-.builder-stories-text {
-  animation: fadeInUp 0.6s ease forwards;
-}
-
-.builder-stories-title {
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  margin-bottom: var(--space-md);
-  line-height: 1.1;
-}
-
-.builder-stories-title span {
-  color: var(--color-accent);
+.builder-stories-headline {
+  color: #000000;
+  text-align: center;
+  margin: 0 0 var(--space-md) 0;
 }
 
 .builder-stories-description {
-  font-size: 1.125rem;
-  line-height: 1.8;
-  color: var(--color-gray);
-  margin-bottom: var(--space-xl);
+  color: #333;
+  text-align: center;
+  max-width: 975px;
+  margin: 0 auto;
 }
 
-.builder-stories-stats {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-}
-
-.builder-stat {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  padding: var(--space-sm) 0;
-}
-
-.builder-stat-icon {
-  color: var(--color-accent);
-  font-size: 1rem;
-  animation: pulse 2s infinite;
-}
-
-.builder-stat-text {
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--color-light);
-  letter-spacing: 0.02em;
-}
-
-.builder-stories-video {
+/* 100px gap between body copy and gallery (same as Hub: body → gallery) */
+.builder-stories-media {
   position: relative;
+  width: 100%;
+  max-width: 100%;
+  margin-top: 100px;
   animation: fadeInUp 0.6s ease forwards;
   animation-delay: 0.2s;
   opacity: 0;
 }
 
+/* Gallery: 2 columns, 2 rows visible initially; no box behind videos */
+.builder-video-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: var(--space-2xl);
+  row-gap: var(--space-2xl);
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* Thumbnails grow at upper responsive ranges */
+@media (min-width: 1200px) {
+  .builder-video-gallery {
+    max-width: 1100px;
+  }
+}
+
+@media (min-width: 1400px) {
+  .builder-video-gallery {
+    max-width: 1200px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .builder-video-gallery {
+    max-width: 1300px;
+  }
+}
+
+@media (min-width: 1800px) {
+  .builder-video-gallery {
+    max-width: 1500px;
+  }
+}
+
+.builder-video-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity var(--transition-base);
+}
+
+
+.builder-video-card--hidden {
+  display: none;
+}
+
+.builder-video-card.builder-video-card--visible {
+  display: flex;
+  animation: fadeInUp 0.4s ease forwards;
+}
+
+.builder-video-thumb {
+  display: block;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 0 0 0 #000000;
+  transition: box-shadow 0.3s ease;
+}
+
+/* Use card hover for reliable hit area (covers thumb + button + name) */
+.builder-video-card:hover .builder-video-thumb {
+  box-shadow: 0 0 0 10px #000000;
+}
+
+.builder-video-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.builder-video-name {
+  display: block;
+  color: #333;
+  text-align: left;
+}
+
+/* Play button on thumbnail: default circle section color, triangle black; hover reverse */
+.builder-play-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 64px;
+  height: 64px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: opacity var(--transition-base);
+}
+
+
+.builder-play-btn-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.builder-play-btn-circle {
+  fill: #F5FAFB;
+  transition: fill var(--transition-base);
+}
+
+.builder-play-btn-triangle {
+  fill: #000000;
+  transition: fill var(--transition-base);
+}
+
+.builder-video-card:hover .builder-play-btn-circle {
+  fill: #000000;
+}
+
+.builder-video-card:hover .builder-play-btn-triangle {
+  fill: #F5FAFB;
+}
+
+/* Builder video overlay */
+.builder-video-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl);
+  box-sizing: border-box;
+}
+
+.builder-video-overlay[hidden] {
+  display: none !important;
+}
+
+.builder-video-overlay__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(245, 250, 251, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.builder-video-overlay__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 1600px;
+}
+
+.builder-video-overlay__iframe-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: calc(100vh - 2 * var(--space-xl));
+  background: #000;
+}
+
+.builder-video-overlay__iframe-wrap iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Close button top right of overlay */
+.builder-overlay-close {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  z-index: 2;
+  transition: opacity var(--transition-base);
+}
+
+.builder-overlay-close:hover {
+  opacity: 0.9;
+}
+
+.builder-overlay-close-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.builder-overlay-close-circle {
+  fill: #F5FAFB;
+  transition: fill var(--transition-base);
+}
+
+.builder-overlay-close-x {
+  fill: none;
+  stroke: #000000;
+  transition: stroke var(--transition-base);
+}
+
+.builder-overlay-close:hover .builder-overlay-close-circle {
+  fill: #000000;
+}
+
+.builder-overlay-close:hover .builder-overlay-close-x {
+  stroke: #F5FAFB;
+}
+
+/* More button – same styling as footer "Get Involved" */
+.builder-more-btn {
+  display: block;
+  margin: var(--space-2xl) auto 0;
+  padding: 12px 24px;
+  border-radius: 999px !important;
+  background: linear-gradient(0deg, #000000 50%, transparent 50%) !important;
+  background-size: 100% 200% !important;
+  background-position: 0 0 !important;
+  border: 1px solid #000000 !important;
+  color: #000000 !important;
+  cursor: pointer;
+  transition: background-position 0.3s ease, color 0.3s ease;
+  font-family: "fractul-variable", sans-serif !important;
+  font-size: 20px !important;
+  font-weight: 400 !important;
+  white-space: nowrap;
+}
+
+.builder-more-btn:hover {
+  background-position: 0 100% !important;
+  color: #ffffff !important;
+}
+
+.builder-more-btn.builder-more-btn--hidden {
+  display: none;
+}
+
+/* Video wrapper (used elsewhere) - keep for other pages */
 .video-wrapper {
   position: relative;
   padding-bottom: 56.25%; /* 16:9 aspect ratio */
   height: 0;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  background: var(--color-dark-elevated);
-  border: 2px solid var(--color-dark-border);
+  background: #f0f0f0;
+  border: 2px solid #cccccc;
   transition: border-color var(--transition-base), transform var(--transition-base);
 }
 
 .video-wrapper:hover {
-  border-color: var(--color-accent);
+  border-color: #000000;
   transform: scale(1.01);
 }
 
@@ -2091,28 +2994,7 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 }
 
 .video-glow {
-  position: absolute;
-  inset: -20%;
-  background: radial-gradient(ellipse at center, var(--color-accent-glow) 0%, transparent 70%);
-  opacity: 0.3;
-  z-index: -1;
-  filter: blur(40px);
-  animation: orbPulse 4s ease-in-out infinite;
-}
-
-@media (max-width: 1024px) {
-  .builder-stories-content {
-    grid-template-columns: 1fr;
-    gap: var(--space-2xl);
-  }
-  
-  .builder-stories-text {
-    text-align: center;
-  }
-  
-  .builder-stories-stats {
-    align-items: center;
-  }
+  display: none; /* Hide glow on light background */
 }
 
 @media (max-width: 768px) {
@@ -2121,20 +3003,24 @@ body > .video-header-logo:not(.animating):not(.at-top) {
   }
   
   .builder-stories-description {
-    font-size: 1rem;
+    font-size: clamp(1.25rem, 2vw, 1.5rem);
+  }
+  
+  .builder-video-gallery {
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
   }
 }
 
 /* --------------------------------------------------------------------------
    Track Record Section
    -------------------------------------------------------------------------- */
+/* Impact Step 4: Economic Impact */
 .track-record {
   min-height: 100vh;
   height: auto;
-  padding: var(--space-4xl) 0;
+  padding: var(--content-padding-top) 0 var(--content-padding-bottom);
   border-top: 1px solid var(--color-dark-border);
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
   overflow: visible;
   box-sizing: border-box;
 }
@@ -2196,23 +3082,84 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 /* --------------------------------------------------------------------------
    Press Quote Section
    -------------------------------------------------------------------------- */
+/* Impact Step 2: NYT Quote */
 .press-quote {
-  min-height: 100vh;
+  min-height: 150vh;
   height: auto;
-  padding: var(--space-3xl) 0;
-  background: var(--color-dark-elevated);
-  border-top: 1px solid var(--color-dark-border);
-  border-bottom: 1px solid var(--color-dark-border);
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
+  padding: var(--content-padding-top) 0 var(--content-padding-bottom);
+  background: #F5FAFB; /* Our Impact section background */
   overflow: visible;
   box-sizing: border-box;
   display: flex;
   align-items: center;
+  justify-content: center;
+  position: relative;
 }
 
 .press-quote.alt {
-  background: var(--color-black);
+  background: #FFF3E9;
+}
+
+/* NYT Background image container */
+.press-quote-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nyt-bg-image {
+  width: 80vw;
+  height: auto;
+  object-fit: contain;
+  opacity: 1; /* Always visible - scrolls naturally with page */
+}
+
+/* Fixed NYT content overlay - centered in viewport like Mission/Vision */
+.nyt-content-fixed {
+  position: fixed;
+  top: 50vh;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  width: 90%;
+  max-width: 1200px;
+  padding: 0 var(--container-padding);
+  pointer-events: none;
+  box-sizing: border-box;
+  opacity: 0;
+  transition: opacity 0.6s cubic-bezier(0.43, 0.195, 0.02, 1);
+}
+
+.nyt-content-fixed * {
+  pointer-events: auto;
+}
+
+.nyt-content-fixed .quote-text {
+  line-height: 1.3;
+  margin-bottom: var(--space-md);
+  color: #000000;
+}
+
+.nyt-content-fixed .quote-source {
+  font-style: normal;
+  color: #000000;
+}
+
+.press-quote-content {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--container-padding);
+  position: relative;
+  z-index: 1;
+  /* Initial state - used when fixed overlay not in use (fallback) */
+  opacity: 0;
+  transform: translateY(20px);
 }
 
 .quote-block {
@@ -2221,32 +3168,78 @@ body > .video-header-logo:not(.animating):not(.at-top) {
   margin: 0 auto;
 }
 
-.quote-text {
-  font-size: clamp(1.5rem, 4vw, 2.5rem);
-  font-weight: 700;
+.press-quote .quote-text {
   line-height: 1.3;
   margin-bottom: var(--space-md);
+  color: #000000;
 }
 
-.quote-source {
-  font-family: var(--font-mono);
-  font-size: 0.875rem;
-  color: var(--color-gray);
+.press-quote .quote-source {
   font-style: normal;
+  color: #000000;
 }
 
 /* --------------------------------------------------------------------------
    Real People Section
    -------------------------------------------------------------------------- */
+/* Impact Step 2: Demography (Real People, Real Results) */
 .real-people {
   min-height: 100vh;
   height: auto;
-  padding: var(--space-4xl) 0;
-  border-bottom: 1px solid var(--color-dark-border);
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
+  padding: var(--content-padding-top) var(--container-padding) var(--content-padding-bottom);
+  background-color: #F5FAFB; /* Our Impact section background */
   overflow: visible;
   box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.real-people-content {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+  /* Initial state for entrance animation */
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.real-people-headline {
+  color: #000000;
+  text-align: center;
+  margin-bottom: var(--space-md);
+}
+
+.real-people-body {
+  color: #000000;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto var(--space-3xl) auto;
+}
+
+/* Impact Step 7: Footer (separate page - same pattern as wwd-step-7) */
+.impact-step.impact-footer {
+  height: auto !important;
+  min-height: auto !important;
+  overflow-y: auto !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: stretch !important;
+  padding: 0 !important;
+}
+
+.impact-step.impact-footer .footer {
+  padding-top: 150px;
+  padding-bottom: 30px;
+  background: #F5FAFB; /* Match Our Impact section color */
+}
+
+.impact-footer-fullwidth {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  position: relative;
+  left: 0;
 }
 
 .section-title-left {
@@ -2257,8 +3250,16 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 
 .demographics-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: var(--space-lg);
+  grid-template-columns: repeat(3, auto);
+  gap: var(--space-2xl) var(--space-xl);
+  justify-content: center;
+}
+
+.demo-label {
+  display: block;
+  white-space: normal;
+  word-wrap: break-word;
+  color: #000000;
 }
 
 .demo-card {
@@ -2267,8 +3268,6 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 
 .demo-number {
   display: block;
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  font-weight: 800;
   line-height: 1;
   margin-bottom: var(--space-sm);
 }
@@ -2283,13 +3282,13 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 
 @media (max-width: 1024px) {
   .demographics-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, auto);
   }
 }
 
 @media (max-width: 600px) {
   .demographics-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: auto;
   }
 }
 
@@ -2330,14 +3329,10 @@ body > .video-header-logo:not(.animating):not(.at-top) {
    Urgency Section
    -------------------------------------------------------------------------- */
 .urgency {
-  min-height: 100vh;
-  height: auto;
   padding: var(--space-4xl) 0;
   background: var(--color-black);
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-  overflow: visible;
   box-sizing: border-box;
+  /* height, overflow, position handled by .section-page */
 }
 
 .urgency-grid {
@@ -2470,59 +3465,8 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 }
 
 /* --------------------------------------------------------------------------
-   Signup Section
+   Form Styles (Footer)
    -------------------------------------------------------------------------- */
-.signup-section {
-  min-height: 100vh;
-  height: auto;
-  padding: var(--space-3xl) 0;
-  background: var(--color-dark);
-  border-top: 1px solid var(--color-dark-border);
-  border-bottom: 1px solid var(--color-dark-border);
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-  overflow: visible;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-}
-
-.signup-card {
-  background: var(--color-black);
-  border: 1px solid var(--color-dark-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-2xl);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-2xl);
-  align-items: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.signup-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--color-accent);
-}
-
-.signup-title {
-  font-size: clamp(1.5rem, 4vw, 2rem);
-  font-weight: 800;
-  margin-bottom: var(--space-md);
-}
-
-.signup-description {
-  color: var(--color-gray);
-  font-size: 1rem;
-  line-height: 1.6;
-}
-
-.signup-form,
 .footer-form {
   width: 100%;
 }
@@ -2582,13 +3526,6 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 }
 
 @media (max-width: 768px) {
-  .signup-card {
-    grid-template-columns: 1fr;
-    text-align: center;
-    gap: var(--space-lg);
-    padding: var(--space-xl);
-  }
-  
   .form-group {
     flex-direction: column;
   }
@@ -2605,8 +3542,6 @@ body > .video-header-logo:not(.animating):not(.at-top) {
   min-height: 100vh;
   height: auto;
   padding: var(--space-4xl) 0;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
   overflow: visible;
   box-sizing: border-box;
 }
@@ -2664,43 +3599,48 @@ body > .video-header-logo:not(.animating):not(.at-top) {
   padding: var(--space-4xl) 0;
   background: var(--color-dark);
   border-top: 1px solid var(--color-dark-border);
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
   overflow: visible;
   box-sizing: border-box;
 }
 
 .council-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: var(--space-lg);
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: auto auto auto;
+  grid-auto-flow: column;
+  row-gap: 40px;
+  column-gap: 125px;
+  max-width: 825px;
+  margin: 0 auto;
+  justify-items: center;
 }
 
 .council-card {
-  text-align: center;
-  padding: var(--space-lg);
-  background: var(--color-dark-elevated);
-  border: 1px solid var(--color-dark-border);
-  border-radius: var(--radius-md);
+  text-align: left;
+  padding: 0;
+  background: transparent;
+  border: none;
   transition: all var(--transition-base);
+  max-width: min(350px, 100%);
+  transform: translate(var(--offset-x, 0), var(--offset-y, 0));
 }
 
-.council-card:hover {
-  border-color: var(--color-accent);
-  transform: translateY(-4px);
+.council-card:hover .council-image {
+  opacity: 0.9;
 }
 
 .council-image {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto var(--space-md);
-  border-radius: 50%;
+  width: clamp(180px, 25vw, 350px);
+  height: clamp(180px, 25vw, 350px);
+  aspect-ratio: 1 / 1;
+  margin: 0 0 1.125rem;
+  border-radius: 0;
   overflow: hidden;
   background: var(--color-dark-border);
-  border: 2px solid var(--color-dark-border);
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: opacity var(--transition-base);
 }
 
 .council-image.placeholder span {
@@ -2716,26 +3656,22 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 }
 
 .council-name {
-  font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: var(--space-xs);
+  max-width: 100%;
+  margin-bottom: 0;
 }
 
 .council-role {
-  font-size: 0.8rem;
-  color: var(--color-gray);
-  line-height: 1.4;
-}
-
-@media (max-width: 1024px) {
-  .council-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
+  max-width: 100%;
 }
 
 @media (max-width: 600px) {
   .council-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
+    grid-auto-flow: row;
+    max-width: 100%;
+  }
+  .council-card {
+    transform: none;
   }
 }
 
@@ -2746,14 +3682,12 @@ body > .video-header-logo:not(.animating):not(.at-top) {
   min-height: 100vh;
   height: auto;
   padding: var(--space-4xl) 0;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
   overflow: visible;
   box-sizing: border-box;
 }
 
 .partners-category {
-  margin-bottom: var(--space-2xl);
+  margin-bottom: calc(var(--space-2xl) + 50px);
 }
 
 .partners-category:last-child {
@@ -2761,20 +3695,24 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 }
 
 .partners-category-title {
-  font-family: var(--font-mono);
-  font-size: 0.875rem;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  color: var(--color-accent);
   margin-bottom: var(--space-lg);
   text-align: center;
+}
+
+.partners-category-title.body-large-regular {
+  font-family: "fractul-variable", sans-serif;
+  font-size: clamp(1.6875rem, 2.7vw, 2.7rem);
+  font-weight: 400;
+  line-height: 1.3;
+  color: #333;
 }
 
 .partners-grid {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: var(--space-sm);
+  row-gap: calc(var(--space-sm) * 0.25);
+  column-gap: calc(var(--space-sm) * 0.5);
 }
 
 .partners-grid.funders,
@@ -2784,24 +3722,23 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 }
 
 .partner-card {
-  padding: var(--space-sm) var(--space-md);
-  background: var(--color-dark-elevated);
-  border: 1px solid var(--color-dark-border);
-  border-radius: var(--radius-sm);
+  padding: 10px 15px;
+  background: transparent;
+  border: none;
   transition: all var(--transition-base);
   text-align: center;
 }
 
 .partner-card:hover {
-  border-color: var(--color-accent);
-  background: var(--color-accent-dim);
+  opacity: 0.85;
 }
 
 .partner-card.placeholder span {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--color-gray);
-  white-space: nowrap;
+  font-family: "fractul-variable", sans-serif;
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  font-weight: 400;
+  line-height: 1.4;
+  color: #333;
 }
 
 .partner-card img {
@@ -2822,15 +3759,42 @@ body > .video-header-logo:not(.animating):not(.at-top) {
    Footer
    -------------------------------------------------------------------------- */
 .footer {
-  min-height: 100vh;
-  height: auto;
+  height: auto; /* Content-based height */
   background: #FFF3E9;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
-  padding: var(--space-3xl) 0 var(--space-lg);
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
+  padding: var(--space-3xl) 0 30px; /* Exactly 30px below copyright */
   overflow: visible;
   box-sizing: border-box;
+}
+
+/* Hide footer during video transition */
+body:not(.video-complete) .footer {
+  display: none !important;
+}
+
+body.video-complete .footer {
+  display: block;
+  /* Add a delay to ensure video header has fully faded before showing footer */
+  animation: delayedShow 0.7s;
+}
+
+@keyframes delayedShow {
+  0%, 99% {
+    opacity: 0;
+    visibility: hidden;
+  }
+  100% {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+/* Full-width footer for WWD section */
+.wwd-footer-fullwidth {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  position: relative;
+  left: 0;
 }
 
 .footer-main {
@@ -2859,6 +3823,7 @@ body > .video-header-logo:not(.animating):not(.at-top) {
   line-height: 1.1; /* Reduced line spacing by ~50% */
   margin-top: -10px; /* Moved down 20px from -30px */
   margin-bottom: var(--space-sm);
+  text-align: left;
 }
 
 .footer-form {
@@ -2875,6 +3840,7 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 .footer-pursuit-link {
   /* Typography via .footer-large-semibold class */
   text-decoration: none;
+  text-align: left;
 }
 
 .footer-pursuit-link:hover {
@@ -3006,6 +3972,7 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 
 .footer-copyright {
   /* Typography via .footer-small-semibold class */
+  text-align: left;
 }
 
 @media (max-width: 768px) {
@@ -3078,3 +4045,172 @@ body > .video-header-logo:not(.animating):not(.at-top) {
   color: var(--color-accent);
   font-weight: 600;
 }
+
+/* --------------------------------------------------------------------------
+   Stagger Animation for Multi-Element Pages
+   -------------------------------------------------------------------------- */
+/* Base state for staggered items - hidden */
+.stagger-item {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.4s cubic-bezier(0.43, 0.195, 0.02, 1),
+              transform 0.4s cubic-bezier(0.43, 0.195, 0.02, 1);
+}
+
+/* Revealed state */
+.stagger-item.stagger-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger delays - applied via JavaScript or CSS nth-child */
+.stagger-item:nth-child(1) { transition-delay: 0ms; }
+.stagger-item:nth-child(2) { transition-delay: 80ms; }
+.stagger-item:nth-child(3) { transition-delay: 160ms; }
+.stagger-item:nth-child(4) { transition-delay: 240ms; }
+.stagger-item:nth-child(5) { transition-delay: 320ms; }
+.stagger-item:nth-child(6) { transition-delay: 400ms; }
+.stagger-item:nth-child(7) { transition-delay: 480ms; }
+.stagger-item:nth-child(8) { transition-delay: 560ms; }
+.stagger-item:nth-child(9) { transition-delay: 640ms; }
+.stagger-item:nth-child(10) { transition-delay: 720ms; }
+.stagger-item:nth-child(11) { transition-delay: 800ms; }
+.stagger-item:nth-child(12) { transition-delay: 880ms; }
+
+/* How page elements - stagger animation */
+.wwd-initiatives-headline.stagger-item {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.wwd-initiatives-headline.stagger-item.stagger-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.wwd-initiative-item.stagger-item,
+.wwd-initiative-desc.stagger-item {
+  opacity: 0;
+  transform: translateY(15px);
+}
+
+.wwd-initiative-item.stagger-item.stagger-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Keep descriptions hidden by default, only show when revealed AND active */
+.wwd-initiative-desc.stagger-item {
+  opacity: 0 !important;
+}
+
+.wwd-initiative-desc.stagger-item.stagger-revealed.active {
+  opacity: 1 !important;
+}
+
+/* Arrows - hidden by default, only show when revealed */
+.initiative-arrow-line.stagger-item,
+.initiative-arrowhead.stagger-item {
+  opacity: 0 !important;
+}
+
+.initiative-arrow-line.stagger-item.stagger-revealed.active,
+.initiative-arrowhead.stagger-item.stagger-revealed.active {
+  opacity: 1 !important;
+}
+
+/* Hub page elements - stagger animation */
+.wwd-hub-headline.stagger-item,
+.wwd-hub-body.stagger-item {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.wwd-hub-headline.stagger-item.stagger-revealed,
+.wwd-hub-body.stagger-item.stagger-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Hub gallery images - stagger animation */
+.wwd-hub-image.stagger-item {
+  opacity: 0;
+  transform: scale(0.95) translateY(20px);
+  transition: opacity 0.5s cubic-bezier(0.43, 0.195, 0.02, 1),
+              transform 0.5s cubic-bezier(0.43, 0.195, 0.02, 1);
+}
+
+.wwd-hub-image.stagger-item.stagger-revealed {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+/* Council page elements - stagger animation */
+.wwd-council-headline.stagger-item,
+.wwd-council-description.stagger-item {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.wwd-council-headline.stagger-item.stagger-revealed,
+.wwd-council-description.stagger-item.stagger-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Council cards - stagger animation (preserves --offset-x, --offset-y) */
+.council-card.stagger-item {
+  opacity: 0;
+  transform: translate(var(--offset-x, 0), calc(20px + var(--offset-y, 0)));
+}
+
+.council-card.stagger-item.stagger-revealed {
+  opacity: 1;
+  transform: translate(var(--offset-x, 0), var(--offset-y, 0));
+}
+
+/* Partners page elements - stagger animation */
+.wwd-partners-headline.stagger-item,
+.wwd-partners-description.stagger-item {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.wwd-partners-headline.stagger-item.stagger-revealed,
+.wwd-partners-description.stagger-item.stagger-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Partner cards - stagger animation */
+.partner-card.stagger-item {
+  opacity: 0;
+  transform: translateY(15px);
+}
+
+.partner-card.stagger-item.stagger-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* --------------------------------------------------------------------------
+   Bounce Animation for Section Boundaries - single smooth motion
+   -------------------------------------------------------------------------- */
+@keyframes bounceBottom {
+  0% { 
+    transform: translateY(-20px); 
+  }
+  100% { 
+    transform: translateY(0); 
+  }
+}
+
+.bounce-bottom {
+  animation: bounceBottom 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Ensure footer content returns to position after bounce */
+.bounce-bottom .footer {
+  transform: translateY(0);
+}
+

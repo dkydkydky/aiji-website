@@ -19,6 +19,9 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
 </head>
 <body>
+  <!-- Section Background Transition Overlay -->
+  <div class="section-bg-overlay" id="section-bg-overlay"></div>
+
   <!-- Video Header Section -->
   <section class="video-header" id="video-header">
     <video class="video-header-player" autoplay muted loop playsinline>
@@ -30,7 +33,7 @@
       <div class="video-header-logo">
         <img src="assets/images/AIJI_Logo_Full_White.svg" alt="AI Jobs Institute" class="logo-full-svg">
       </div>
-      <h1 class="video-header-text">For All of Us.</h1>
+      <h1 class="video-header-text">Building<br>The Future<br>of Work.</h1>
     </div>
   </section>
 
@@ -40,12 +43,9 @@
       <!-- Logo removed - using header logo instead -->
       <div class="nav-links">
         <a href="#what-we-do">What We Do</a>
-        <a href="#builders">Builders</a>
+        <a href="#our-impact">Our Impact</a>
         <a href="#urgency">The Urgency</a>
-        <a href="#council">Council</a>
-        <a href="#partners">Partners</a>
-        <a href="#pursuit">Pursuit</a>
-        <a href="#signup" class="nav-cta">Get Updates</a>
+        <a href="#our-impact" class="nav-cta nav-cta-pill">Get Involved</a>
       </div>
       <button class="nav-mobile-toggle" aria-label="Toggle menu">
         <span></span>
@@ -58,360 +58,557 @@
   <!-- Mobile Menu -->
   <div class="mobile-menu">
     <a href="#what-we-do">What We Do</a>
-    <a href="#builders">Builders</a>
+    <a href="#our-impact">Our Impact</a>
     <a href="#urgency">The Urgency</a>
-    <a href="#council">Council</a>
-    <a href="#partners">Partners</a>
-    <a href="#pursuit">Pursuit</a>
-    <a href="#signup" class="nav-cta">Get Updates</a>
+    <a href="#our-impact" class="nav-cta nav-cta-pill">Get Involved</a>
+  </div>
+
+  <!-- Fixed Page Titles Container - Progress bar with dots -->
+  <div class="wwd-titles-fixed" id="wwd-titles-fixed">
+    <div class="titles-progress">
+      <div class="titles-above" id="titles-above"></div>
+      <div class="titles-current" id="titles-current">
+        <div class="wwd-title-item active" data-for-step="1">The Mission</div>
+      </div>
+      <div class="titles-below" id="titles-below"></div>
+    </div>
+  </div>
+
+  <!-- Fixed Vision Content - OUTSIDE scrolling content -->
+  <div class="wwd-vision-content-fixed" id="wwd-vision-content-fixed">
+    <div class="wwd-step-2-layout">
+      <div class="wwd-text-collective-top headline-regular">
+        We harness our collective power to build an AI future that uplifts everyone.
+      </div>
+      <div class="wwd-title-wrapper-bottom">
+        <h1 class="wwd-title-line2">
+          <span class="rotating-word" id="rotating-word">AI Workforce</span>
+        </h1>
+        <h1 class="wwd-title-line3">for All of Us.</h1>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Fixed How Content - OUTSIDE scrolling content -->
+  <div class="wwd-how-content-fixed" id="wwd-how-content-fixed">
+    <h2 class="wwd-initiatives-headline headline-regular">Four pillars. One vision. All of us will build the future of work–together.</h2>
+    
+    <div class="wwd-initiatives-content-wrapper">
+      <!-- Decorative arrows container (outside table, on top) -->
+      <div class="wwd-arrows-container">
+        <!-- Arrow line for pillar 01: S-curve (Pursuit Purple) -->
+        <svg class="initiative-arrow-line" data-arrow="1" width="200" height="60" viewBox="0 0 200 60" preserveAspectRatio="none">
+          <path d="M 5,30 Q 50,28 100,30 T 195,30" stroke="#4242ea" stroke-width="3" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+        </svg>
+        <!-- Arrowhead for pillar 01 -->
+        <svg class="initiative-arrowhead" data-arrow="1" width="32" height="32" viewBox="0 0 32 32">
+          <path d="M 16,4 L 30,16 L 16,28" stroke="#4242ea" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        
+        <!-- Arrow line for pillar 02: Erratic coil (Pink) -->
+        <svg class="initiative-arrow-line" data-arrow="2" width="200" height="60" viewBox="0 0 200 60" preserveAspectRatio="none">
+          <path d="M 5,30 C 12,8 22,55 30,32 C 38,5 52,58 62,28 C 70,12 78,52 88,35 C 98,15 108,48 120,30 C 130,18 142,45 155,32 C 168,22 180,42 195,30" stroke="#FFB8B6" stroke-width="3" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+        </svg>
+        <!-- Arrowhead for pillar 02 -->
+        <svg class="initiative-arrowhead" data-arrow="2" width="32" height="32" viewBox="0 0 32 32">
+          <path d="M 16,4 L 30,16 L 16,28" stroke="#FFB8B6" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        
+        <!-- Arrow line for pillar 03: Zigzag (Blue) -->
+        <svg class="initiative-arrow-line" data-arrow="3" width="200" height="60" viewBox="0 0 200 60" preserveAspectRatio="none">
+          <path d="M 5,30 L 35,18 L 65,42 L 95,18 L 125,42 L 155,25 L 195,30" stroke="#AEE0E5" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+        </svg>
+        <!-- Arrowhead for pillar 03 -->
+        <svg class="initiative-arrowhead" data-arrow="3" width="32" height="32" viewBox="0 0 32 32">
+          <path d="M 16,4 L 30,16 L 16,28" stroke="#AEE0E5" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        
+        <!-- Arrow line for pillar 04: Wavy (Green) -->
+        <svg class="initiative-arrow-line" data-arrow="4" width="200" height="60" viewBox="0 0 200 60" preserveAspectRatio="none">
+          <path d="M 5,30 Q 40,20 70,30 Q 100,40 130,30 Q 160,20 195,30" stroke="#BAEAB0" stroke-width="3" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+        </svg>
+        <!-- Arrowhead for pillar 04 -->
+        <svg class="initiative-arrowhead" data-arrow="4" width="32" height="32" viewBox="0 0 32 32">
+          <path d="M 16,4 L 30,16 L 16,28" stroke="#BAEAB0" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      
+      <!-- Desktop: Two columns layout -->
+      <div class="wwd-initiatives-two-col wwd-initiatives-desktop">
+        <!-- Left column: Numbered items -->
+        <div class="wwd-initiatives-left">
+          <div class="wwd-initiative-item active" data-initiative="1">
+            <span class="wwd-initiative-num">01</span>
+            <span class="wwd-initiative-name body-large-regular">Train AI Workers</span>
+          </div>
+          <div class="wwd-initiative-item" data-initiative="2">
+            <span class="wwd-initiative-num">02</span>
+            <span class="wwd-initiative-name body-large-regular">Support Small Businesses & Nonprofits</span>
+          </div>
+          <div class="wwd-initiative-item" data-initiative="3">
+            <span class="wwd-initiative-num">03</span>
+            <span class="wwd-initiative-name body-large-regular">Pilot Programs & Trials</span>
+          </div>
+          <div class="wwd-initiative-item" data-initiative="4">
+            <span class="wwd-initiative-num">04</span>
+            <span class="wwd-initiative-name body-large-regular">Achieve Systemic Changes</span>
+          </div>
+        </div>
+        
+        <!-- Right column: Descriptions -->
+        <div class="wwd-initiatives-right">
+          <div class="wwd-initiative-desc body-large-regular active" data-initiative="1">Developing comprehensive training programs to equip workers with cutting-edge AI skills—from prompting and data concepts to building, fine-tuning, and maintaining AI-powered solutions.</div>
+          <div class="wwd-initiative-desc body-large-regular" data-initiative="2">Bringing AI-powered solutions to local businesses and nonprofits to boost productivity, enhance services, and create new opportunities for underserved communities.</div>
+          <div class="wwd-initiative-desc body-large-regular" data-initiative="3">Partnering with employers on real-world initiatives to demonstrate how AI augments jobs, protects workers, and drives measurable impact in frontline roles.</div>
+          <div class="wwd-initiative-desc body-large-regular" data-initiative="4">Working with policymakers to develop responsible AI deployment frameworks that protect workers while enabling progress.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fixed Decade of Work Content (Our Impact) - visible when Decade step is in view -->
+  <div class="impact-decade-content-fixed" id="impact-decade-content-fixed">
+    <div class="impact-decade-layout">
+      <h2 class="headline-regular impact-decade-headline">A Decade of Work.<br>A Multitude of Impact.</h2>
+      <p class="body-large-regular impact-decade-body">Thousands of Builders have transformed their lives through Pursuit, creating a ripple effect of measurable economic impact.</p>
+    </div>
   </div>
 
   <!-- What We Do Section -->
-  <header class="wwd" id="what-we-do">
+  <header class="wwd section-page active" id="what-we-do">
     <!-- Main Content Container -->
     <div class="wwd-content">
       <!-- STEP 1: Text: "Pursuit AI Jobs Institute..." with Image 01 behind -->
       <div class="wwd-step wwd-step-1" data-step="1">
-        <div class="wwd-subsection-title">The Mission</div>
-        <div class="wwd-text-pursuit-wrapper">
-          <img src="assets/images/AIJI_Image_OurPurpose_01.png" alt="Background image" class="wwd-image-pursuit-bg">
-          <img src="assets/images/AIJI_Image_OurPurpose_03.png" alt="Background image" class="wwd-image-pursuit-top-left">
+        <!-- Fixed text container - stays centered -->
+        <div class="wwd-mission-text-fixed">
           <div class="wwd-text-pursuit headline-regular">
-            Pursuit AI Jobs Institute is America's first AI workforce hub, pioneering how all of us prepare for the needs of an AI-first economy.
+            Pursuit AI Jobs Institute is America's first AI workforce hub, preparing all of us for the needs of an AI-first economy.
           </div>
+        </div>
+        
+        <!-- Scrolling background container - images scroll behind text -->
+        <div class="wwd-mission-bg-scroll">
+          <!-- Background images inserted here by JavaScript -->
         </div>
       </div>
       
-      <!-- STEP 2: "We harness..." (top) + Rotating words (bottom) -->
+      <!-- STEP 2: Vision page - only background here, text is in fixed container above -->
       <div class="wwd-step wwd-step-2" data-step="2">
-        <div class="wwd-subsection-title">The Vision</div>
-        <div class="wwd-step-2-layout">
-          <!-- Image 02 as background -->
-          <img src="assets/images/AIJI_Image_OurPurpose_02.png" alt="Our Purpose" class="wwd-image-bg">
-          
-          <!-- "We harness..." at top -->
-          <div class="wwd-text-collective-top headline-regular">
-            We harness our collective power to build an AI future that uplifts everyone.
-          </div>
-          
-          <!-- Rotating words at bottom -->
-          <div class="wwd-title-wrapper-bottom">
-            <h1 class="wwd-title-line2">
-              <span class="rotating-word" id="rotating-word">AI Workforce</span>
-            </h1>
-            <h1 class="wwd-title-line3">for All of Us.</h1>
-          </div>
+        <!-- Background image container - scrolls with page -->
+        <div class="wwd-vision-bg-container">
+          <img src="assets/images/AIJI_Artwork_Vision_01.png" alt="Vision" class="wwd-vision-bg-image">
         </div>
       </div>
       
-      <!-- STEP 3: Our Initiatives with sub-states -->
+      <!-- STEP 3: The How - scroll space only (content is in fixed container above) -->
       <div class="wwd-step wwd-step-3" data-step="3">
-        <div class="wwd-subsection-title">The How</div>
-        <div class="wwd-initiatives-wrapper">
-          <h2 class="wwd-initiatives-headline headline-regular">Four pillars. One vision. All of us will build the future of work–together.</h2>
-          
-          <div class="wwd-initiatives-content-wrapper">
-            <!-- Decorative arrows container (outside table, on top) -->
-            <div class="wwd-arrows-container">
-              <!-- Arrow line for pillar 01: S-curve (Pursuit Purple) -->
-              <svg class="initiative-arrow-line" data-arrow="1" width="200" height="60" viewBox="0 0 200 60" preserveAspectRatio="none">
-                <path d="M 5,30 Q 50,28 100,30 T 195,30" stroke="#4242ea" stroke-width="3" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
-              </svg>
-              <!-- Arrowhead for pillar 01 (80° angle, longer arms) -->
-              <svg class="initiative-arrowhead" data-arrow="1" width="32" height="32" viewBox="0 0 32 32">
-                <path d="M 16,4 L 30,16 L 16,28" stroke="#4242ea" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              
-              <!-- Arrow line for pillar 02: Erratic coil (Pink) -->
-              <svg class="initiative-arrow-line" data-arrow="2" width="200" height="60" viewBox="0 0 200 60" preserveAspectRatio="none">
-                <path d="M 5,30 C 12,8 22,55 30,32 C 38,5 52,58 62,28 C 70,12 78,52 88,35 C 98,15 108,48 120,30 C 130,18 142,45 155,32 C 168,22 180,42 195,30" stroke="#FFB8B6" stroke-width="3" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
-              </svg>
-              <!-- Arrowhead for pillar 02 (80° angle, longer arms) -->
-              <svg class="initiative-arrowhead" data-arrow="2" width="32" height="32" viewBox="0 0 32 32">
-                <path d="M 16,4 L 30,16 L 16,28" stroke="#FFB8B6" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              
-              <!-- Arrow line for pillar 03: Zigzag (Blue) -->
-              <svg class="initiative-arrow-line" data-arrow="3" width="200" height="60" viewBox="0 0 200 60" preserveAspectRatio="none">
-                <path d="M 5,30 L 35,18 L 65,42 L 95,18 L 125,42 L 155,25 L 195,30" stroke="#AEE0E5" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
-              </svg>
-              <!-- Arrowhead for pillar 03 (80° angle, longer arms) -->
-              <svg class="initiative-arrowhead" data-arrow="3" width="32" height="32" viewBox="0 0 32 32">
-                <path d="M 16,4 L 30,16 L 16,28" stroke="#AEE0E5" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              
-              <!-- Arrow line for pillar 04: Wavy (Green) -->
-              <svg class="initiative-arrow-line" data-arrow="4" width="200" height="60" viewBox="0 0 200 60" preserveAspectRatio="none">
-                <path d="M 5,30 Q 40,20 70,30 Q 100,40 130,30 Q 160,20 195,30" stroke="#BAEAB0" stroke-width="3" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
-              </svg>
-              <!-- Arrowhead for pillar 04 (80° angle, longer arms) -->
-              <svg class="initiative-arrowhead" data-arrow="4" width="32" height="32" viewBox="0 0 32 32">
-                <path d="M 16,4 L 30,16 L 16,28" stroke="#BAEAB0" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
+        <!-- Content is in wwd-how-content-fixed container outside -->
+      </div>
+      
+      <!-- STEP 4: The Hub - content in document flow (scrolls like Advisory Council) -->
+      <div class="wwd-step wwd-step-4" data-step="4">
+        <div class="wwd-subsection-title">The Hub</div>
+        <div class="wwd-hub-wrapper">
+          <h2 class="wwd-hub-headline headline-regular">One Hub. Infinite Futures.</h2>
+          <p class="wwd-hub-body body-large-regular">
+            At the Hub—housed in one of the most iconic buildings in the NYC skyline, One Court Square—we'll dream and build possibilities into realities for all of us.
+          </p>
+          <div class="wwd-hub-gallery" id="wwd-hub-gallery">
+            <div class="wwd-hub-image">
+              <img src="assets/images/AIJI_Hub_01_Reception.png" alt="Reception">
             </div>
-            
-            <!-- Desktop: Two columns layout -->
-            <div class="wwd-initiatives-two-col wwd-initiatives-desktop">
-              <!-- Left column: Numbered items -->
-              <div class="wwd-initiatives-left">
-                <div class="wwd-initiative-item" data-initiative="1">
-                  <span class="wwd-initiative-num">01</span>
-                  <span class="wwd-initiative-name body-large-regular">Train AI Workers</span>
-                </div>
-                <div class="wwd-initiative-item" data-initiative="2">
-                  <span class="wwd-initiative-num">02</span>
-                  <span class="wwd-initiative-name body-large-regular">Support Small Businesses & Nonprofits</span>
-                </div>
-                <div class="wwd-initiative-item" data-initiative="3">
-                  <span class="wwd-initiative-num">03</span>
-                  <span class="wwd-initiative-name body-large-regular">Pilot Programs & Trials</span>
-                </div>
-                <div class="wwd-initiative-item" data-initiative="4">
-                  <span class="wwd-initiative-num">04</span>
-                  <span class="wwd-initiative-name body-large-regular">Achieve Systemic Changes</span>
-                </div>
-              </div>
-              
-              <!-- Right column: Descriptions -->
-              <div class="wwd-initiatives-right">
-                <div class="wwd-initiative-desc body-large-regular" data-initiative="1">
-                  Developing comprehensive training programs to equip workers with cutting-edge AI skills—from prompting and data concepts to tools like Cursor, Claude, and more.
-                </div>
-                <div class="wwd-initiative-desc body-large-regular" data-initiative="2">
-                  Providing resources and guidance to help local organizations integrate AI into their operations effectively and responsibly.
-                </div>
-                <div class="wwd-initiative-desc body-large-regular" data-initiative="3">
-                  Testing innovative AI workforce solutions through real-world pilots with government and industry partners to prove what works.
-                </div>
-                <div class="wwd-initiative-desc body-large-regular" data-initiative="4">
-                  Working with policymakers to create lasting structural changes that ensure equitable access to AI opportunities for all.
-                </div>
-              </div>
+            <div class="wwd-hub-image">
+              <img src="assets/images/AIJI_Hub_02_Auditorium.png" alt="Auditorium">
             </div>
-            
-            <!-- Mobile: Stacked layout -->
-            <div class="wwd-initiatives-mobile">
-              <div class="wwd-initiative-group" data-initiative="1">
-                <div class="wwd-initiative-item">
-                  <span class="wwd-initiative-num">01</span>
-                  <span class="wwd-initiative-name body-large-regular">Train AI Workers</span>
-                </div>
-                <div class="wwd-initiative-desc body-large-regular">
-                  Developing comprehensive training programs to equip workers with cutting-edge AI skills—from prompting and data concepts to tools like Cursor, Claude, and more.
-                </div>
-              </div>
-              
-              <div class="wwd-initiative-group" data-initiative="2">
-                <div class="wwd-initiative-item">
-                  <span class="wwd-initiative-num">02</span>
-                  <span class="wwd-initiative-name body-large-regular">Support Small Businesses & Nonprofits</span>
-                </div>
-                <div class="wwd-initiative-desc body-large-regular">
-                  Providing resources and guidance to help local organizations integrate AI into their operations effectively and responsibly.
-                </div>
-              </div>
-              
-              <div class="wwd-initiative-group" data-initiative="3">
-                <div class="wwd-initiative-item">
-                  <span class="wwd-initiative-num">03</span>
-                  <span class="wwd-initiative-name body-large-regular">Pilot Programs & Trials</span>
-                </div>
-                <div class="wwd-initiative-desc body-large-regular">
-                  Testing innovative AI workforce solutions through real-world pilots with government and industry partners to prove what works.
-                </div>
-              </div>
-              
-              <div class="wwd-initiative-group" data-initiative="4">
-                <div class="wwd-initiative-item">
-                  <span class="wwd-initiative-num">04</span>
-                  <span class="wwd-initiative-name body-large-regular">Achieve Systemic Changes</span>
-                </div>
-                <div class="wwd-initiative-desc body-large-regular">
-                  Working with policymakers to create lasting structural changes that ensure equitable access to AI opportunities for all.
-                </div>
-              </div>
+            <div class="wwd-hub-image">
+              <img src="assets/images/AIJI_Hub_03_WorkSpace.png" alt="Workspace">
+            </div>
+            <div class="wwd-hub-image">
+              <img src="assets/images/AIJI_Hub_04_Cafeteria.png" alt="Cafeteria">
             </div>
           </div>
         </div>
       </div>
       
-      <!-- STEP 4: The Hub -->
-      <div class="wwd-step wwd-step-4" data-step="4">
-        <!-- Mobile title inside for flow layout -->
-        <div class="wwd-subsection-title wwd-hub-title-mobile">The Hub</div>
-        <div class="wwd-hub-wrapper">
-          <div class="wwd-hub-text">
-            <h2 class="wwd-hub-headline headline-regular">One Hub. Infinite Futures.</h2>
-            <p class="wwd-hub-body body-large-regular">
-              At the Hub—housed in one of the most iconic buildings in the NYC skyline, One Court Square—we'll dream and build possibilities into realities for all of us.
-            </p>
+      <!-- STEP 5: Advisory Council (Leadership) -->
+      <div class="wwd-step wwd-step-5" data-step="5">
+        <div class="wwd-subsection-title">Leadership</div>
+        <div class="wwd-council-wrapper">
+          <h2 class="wwd-council-headline headline-regular">Fueled by Impact. Guided by Visionaries.</h2>
+          <p class="wwd-council-description body-large-regular">Our Advisory Council consists of leaders across education, technology, and policy.</p>
+          
+          <div class="council-grid">
+            <article class="council-card" style="--offset-x: 75px; --offset-y: 0">
+              <div class="council-image"><img src="assets/images/AIJI_Advisory_MiguelCardona.jpg" alt="Miguel Cardona"></div>
+              <div class="council-info">
+                <h3 class="council-name body-large-regular">Miguel Cardona</h3>
+                <p class="council-role body-small-regular">Former U.S. Secretary of Education</p>
+              </div>
+            </article>
+
+            <article class="council-card" style="--offset-x: -25px; --offset-y: 25px">
+              <div class="council-image"><img src="assets/images/AIJI_Advisory_MCLader.jpeg" alt="MC Lader"></div>
+              <div class="council-info">
+                <h3 class="council-name body-large-regular">MC Lader</h3>
+                <p class="council-role body-small-regular">Former President & COO, Uniswap Labs</p>
+              </div>
+            </article>
+
+            <article class="council-card" style="--offset-x: 120px; --offset-y: 60px">
+              <div class="council-image"><img src="assets/images/AIJI_Advisory_JonSchnur.jpeg" alt="Jon Schnur"></div>
+              <div class="council-info">
+                <h3 class="council-name body-large-regular">Jon Schnur</h3>
+                <p class="council-role body-small-regular">CEO, America Achieves</p>
+              </div>
+            </article>
+
+            <article class="council-card" style="--offset-x: 10px; --offset-y: 130px">
+              <div class="council-image"><img src="assets/images/AIJI_Advisory_JulieSamuels.jpg" alt="Julie Samuels"></div>
+              <div class="council-info">
+                <h3 class="council-name body-large-regular">Julie Samuels</h3>
+                <p class="council-role body-small-regular">CEO, Tech:NYC</p>
+              </div>
+            </article>
+
+            <article class="council-card" style="--offset-x: 85px; --offset-y: 150px">
+              <div class="council-image"><img src="assets/images/AIJI_Advisory_RyanCraig .jpeg" alt="Ryan Craig"></div>
+              <div class="council-info">
+                <h3 class="council-name body-large-regular">Ryan Craig</h3>
+                <p class="council-role body-small-regular">Managing Director, Achieve Partners</p>
+              </div>
+            </article>
           </div>
-          <div class="wwd-hub-gallery">
-            <div class="wwd-hub-image">
-              <img src="assets/images/AIJI_Rendering_01_Reception.png" alt="Reception">
+        </div>
+      </div>
+      
+      <!-- STEP 6: Partners (Ecosystem) -->
+      <div class="wwd-step wwd-step-6" data-step="6">
+        <div class="wwd-subsection-title">Ecosystem</div>
+        <div class="wwd-partners-wrapper">
+          <h2 class="wwd-partners-headline headline-regular">Our Partners</h2>
+          <p class="wwd-partners-description body-large-regular">Unmatched public, private, and community partners ready to invest, hire, and collaborate</p>
+
+          <div class="partners-category">
+            <h3 class="partners-category-title body-large-regular">Anchor Capital Funders</h3>
+            <div class="partners-grid">
+              <div class="partner-card placeholder">
+                <span>Queens Borough President</span>
+              </div>
+              <div class="partner-card placeholder">
+                <span>Empire State Development</span>
+              </div>
             </div>
-            <div class="wwd-hub-image">
-              <img src="assets/images/AIJI_Rendering_02_Auditorium.png" alt="Auditorium">
+          </div>
+
+          <div class="partners-category">
+            <h3 class="partners-category-title body-large-regular">Program Funders</h3>
+            <div class="partners-grid funders">
+              <div class="partner-card placeholder"><span>Siegel Family Endowment</span></div>
+              <div class="partner-card placeholder"><span>Google</span></div>
+              <div class="partner-card placeholder"><span>Robin Hood</span></div>
+              <div class="partner-card placeholder"><span>Amazon</span></div>
+              <div class="partner-card placeholder"><span>GitLab Foundation</span></div>
+              <div class="partner-card placeholder"><span>MetLife Foundation</span></div>
+              <div class="partner-card placeholder"><span>Goldman Sachs</span></div>
+              <div class="partner-card placeholder"><span>Andreessen Horowitz</span></div>
+              <div class="partner-card placeholder"><span>BlackRock</span></div>
+              <div class="partner-card placeholder"><span>Morgan Stanley</span></div>
             </div>
-            <div class="wwd-hub-image">
-              <img src="assets/images/AIJI_Rendering_03_WorkSpace.png" alt="Workspace">
+          </div>
+
+          <div class="partners-category">
+            <h3 class="partners-category-title body-large-regular">Employer Partners</h3>
+            <div class="partners-grid employers">
+              <div class="partner-card placeholder"><span>Uber</span></div>
+              <div class="partner-card placeholder"><span>Pinterest</span></div>
+              <div class="partner-card placeholder"><span>Spotify</span></div>
+              <div class="partner-card placeholder"><span>LinkedIn</span></div>
+              <div class="partner-card placeholder"><span>Airbnb</span></div>
+              <div class="partner-card placeholder"><span>Apple</span></div>
+              <div class="partner-card placeholder"><span>Microsoft</span></div>
+              <div class="partner-card placeholder"><span>JPMorgan Chase</span></div>
+              <div class="partner-card placeholder"><span>Citi</span></div>
+              <div class="partner-card placeholder"><span>Moody's</span></div>
+              <div class="partner-card placeholder"><span>Verizon</span></div>
+              <div class="partner-card placeholder"><span>The New York Times</span></div>
             </div>
-            <div class="wwd-hub-image">
-              <img src="assets/images/AIJI_Rendering_04_Cafeteria.png" alt="Cafeteria">
+          </div>
+
+          <div class="partners-category">
+            <h3 class="partners-category-title body-large-regular">Community & Technical Partners</h3>
+            <div class="partners-grid">
+              <div class="partner-card placeholder"><span>Tech:NYC</span></div>
+              <div class="partner-card placeholder"><span>Partnership for NYC</span></div>
+              <div class="partner-card placeholder"><span>NY Department of Labor</span></div>
+              <div class="partner-card placeholder"><span>New York Jobs CEO Council</span></div>
             </div>
           </div>
         </div>
       </div>
-      <!-- Fixed Hub title outside the scrolling step -->
-      <div class="wwd-hub-title-fixed">The Hub</div>
+      
+      <!-- STEP 7: Footer (separate page - lives at bottom of section) -->
+      <div class="wwd-step wwd-step-7" data-step="7">
+        <footer class="footer wwd-footer-fullwidth">
+          <div class="container">
+            <div class="footer-main">
+              <div class="footer-brand">
+                <img src="assets/images/AIJI_Logo_Acronym_Background.svg" alt="AIJI Logo" class="footer-logo">
+                <p class="footer-tagline footer-large-regular">Let's build an AI-first future.<br>For all of us.</p>
+                <form class="footer-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+                  <div class="form-group footer-form-group">
+                    <input 
+                      type="email" 
+                      name="email" 
+                      placeholder="Enter your email" 
+                      required
+                      class="footer-input footer-medium-regular"
+                    >
+                    <button type="submit" class="footer-button footer-medium-regular">
+                      Get Involved
+                    </button>
+                  </div>
+                  <input type="hidden" name="_subject" value="New AIJI Newsletter Signup (Footer)">
+                </form>
+                <div class="footer-links-section">
+                  <a href="https://pursuit.org" target="_blank" rel="noopener" class="footer-pursuit-link footer-medium-regular">PURSUIT.ORG</a>
+                  <div class="footer-social-icons">
+                    <a href="https://twitter.com/pursuit" target="_blank" rel="noopener" aria-label="X (Twitter)">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="#000000">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                      </svg>
+                    </a>
+                    <a href="https://instagram.com/joinpursuit" target="_blank" rel="noopener" aria-label="Instagram">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="#000000">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                      </svg>
+                    </a>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="footer-nav-links">
+                <a href="#" class="footer-small-semibold">Privacy Policy</a>
+                <a href="#" class="footer-small-semibold">Terms of Use</a>
+                <a href="#" class="footer-small-semibold">Contact</a>
+              </div>
+            </div>
+            <p class="footer-copyright footer-small-regular">© 2024 AI Jobs Institute. All rights reserved.</p>
+          </div>
+        </footer>
+      </div>
     </div>
   </header>
 
-  <!-- Builder Stories Section -->
-  <section class="builder-stories" id="builders">
-    <div class="container">
-      <div class="builder-stories-content">
-        <div class="builder-stories-text">
-          <span class="label-section-title">Meet Our Builders</span>
-          <h2 class="builder-stories-title">Real Stories of Transformation</h2>
-          <p class="builder-stories-description">
-            Every Builder who walks through our doors carries a unique story—of resilience, ambition, and the drive to create a better future. Watch how the AI Jobs Institute is changing lives, one Builder at a time.
-          </p>
-          <div class="builder-stories-stats">
-            <div class="builder-stat">
-              <span class="builder-stat-icon">✦</span>
-              <span class="builder-stat-text">From all walks of life</span>
-            </div>
-            <div class="builder-stat">
-              <span class="builder-stat-icon">✦</span>
-              <span class="builder-stat-text">Building the future of AI</span>
-            </div>
-            <div class="builder-stat">
-              <span class="builder-stat-icon">✦</span>
-              <span class="builder-stat-text">Transforming their communities</span>
-            </div>
-          </div>
-        </div>
-        <div class="builder-stories-video">
-          <div class="video-wrapper">
-            <iframe 
-              src="https://player.vimeo.com/video/1122028142?h=849ce33182&title=0&byline=0&portrait=0" 
-              frameborder="0" 
-              allow="autoplay; fullscreen; picture-in-picture" 
-              allowfullscreen
-              title="Builder Story - AI Jobs Institute"
-            ></iframe>
-          </div>
-          <div class="video-glow"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Salary Journey Section -->
-  <section class="salary-journey-section">
-    <div class="salary-journey">
-      <div class="salary-start">
-        <span class="label-salary">Pre-program</span>
-        <span class="salary-amount">$17K</span>
-      </div>
-      <div class="salary-arrow">
-        <svg viewBox="0 0 200 100" preserveAspectRatio="none">
-          <path d="M10 90 Q 100 90, 100 50 T 190 10" stroke="currentColor" stroke-width="3" fill="none"/>
-          <polygon points="185,5 195,10 185,15" fill="currentColor"/>
-        </svg>
-      </div>
-      <div class="salary-end">
-        <span class="salary-amount accent">$94K</span>
-        <span class="label-salary">Post-program</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- Pursuit Track Record -->
-  <section class="track-record" id="about">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-tag">Track Record</span>
-        <h2 class="section-title">For the past decade, Pursuit has delivered lasting economic change for individuals and families.</h2>
-      </div>
-      
-      <p class="track-record-subtitle">Our Fellows more than <strong>quadruple</strong> their salaries on average. And this translates to:</p>
-      
-      <div class="stats-grid">
-        <div class="stat-card">
-          <span class="stat-number">$2M</span>
-          <span class="stat-label">more in lifetime earnings per Fellow</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-number">$1B</span>
-          <span class="stat-label">projected lifetime wage gains to date</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-number">1000s</span>
-          <span class="stat-label">of New Yorkers trained</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-number">1st</span>
-          <span class="stat-label">tech registered apprenticeship in NY</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-number">84%</span>
-          <span class="stat-label">Completion Rate</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-number">77%</span>
-          <span class="stat-label">Job Placement Rate</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Press Quote -->
-  <section class="press-quote">
-    <div class="container">
+  <!-- Our Impact Section -->
+  <section class="builder-stories section-page" id="our-impact">
+    <!-- Fixed NYT content - centered in viewport like Mission/Vision (outside scrollable step) -->
+    <div class="nyt-content-fixed" id="nyt-content-fixed">
       <blockquote class="quote-block">
-        <p class="quote-text">"Pursuit is a key to the middle class."</p>
-        <cite class="quote-source">— The New York Times, 2024</cite>
+        <p class="quote-text headline-semibold">"Pursuit is a key to the middle class."</p>
+        <cite class="quote-source body-small-regular">— The New York Times, 2024</cite>
       </blockquote>
     </div>
-  </section>
 
-  <!-- Real People Section -->
-  <section class="real-people">
-    <div class="container">
-      <h2 class="section-title-left">Real People, Real Results</h2>
-      <div class="demographics-grid">
-        <div class="demo-card">
-          <span class="demo-number">100%</span>
-          <span class="demo-label">From Low-income Populations</span>
-        </div>
-        <div class="demo-card">
-          <span class="demo-number">60%</span>
-          <span class="demo-label">Do not have a Bachelor's Degree</span>
-        </div>
-        <div class="demo-card">
-          <span class="demo-number">63%</span>
-          <span class="demo-label">Black or Hispanic</span>
-        </div>
-        <div class="demo-card">
-          <span class="demo-number">50%</span>
-          <span class="demo-label">Women & Non-binary</span>
-        </div>
-        <div class="demo-card">
-          <span class="demo-number">40%</span>
-          <span class="demo-label">Immigrants</span>
-        </div>
-        <div class="demo-card">
-          <span class="demo-number">+50%</span>
-          <span class="demo-label">Public Assistance Recipients</span>
+    <!-- Impact step 1: Decade of Work - builder photos background + scroll spacer; copy is in fixed container -->
+    <div class="impact-step impact-decade" data-impact-step="1" aria-hidden="true">
+      <div class="impact-decade-bg" id="impact-decade-bg" aria-hidden="true"></div>
+    </div>
+
+    <!-- Press Quote (Our Impact) - Step 2: NYT - background only; copy is in nyt-content-fixed above -->
+    <div class="press-quote" data-impact-step="2">
+      <div class="press-quote-bg" id="press-quote-bg">
+        <img src="assets/images/AIJI_Artwork_NYT.png" alt="" class="nyt-bg-image">
+      </div>
+    </div>
+
+    <!-- Demography (Real People, Real Results) - Step 3 -->
+    <div class="real-people" data-impact-step="3">
+      <div class="real-people-content">
+        <h2 class="headline-regular real-people-headline">Real People. Real Results.</h2>
+        <p class="body-large-regular real-people-body">Our Builders come from all walks of life, united by the obsession to build an inclusive AI-first world and transform their communities.</p>
+        <div class="demographics-grid">
+          <div class="demo-card">
+            <span class="demo-number headline-semibold">100%</span>
+            <span class="demo-label body-small-regular">From Low-income Populations</span>
+          </div>
+          <div class="demo-card">
+            <span class="demo-number headline-semibold">60%</span>
+            <span class="demo-label body-small-regular">Do not have a Bachelor's Degree</span>
+          </div>
+          <div class="demo-card">
+            <span class="demo-number headline-semibold">63%</span>
+            <span class="demo-label body-small-regular">Black or Hispanic</span>
+          </div>
+          <div class="demo-card">
+            <span class="demo-number headline-semibold">50%</span>
+            <span class="demo-label body-small-regular">Women & Non-binary</span>
+          </div>
+          <div class="demo-card">
+            <span class="demo-number headline-semibold">40%</span>
+            <span class="demo-label body-small-regular">Immigrants</span>
+          </div>
+          <div class="demo-card">
+            <span class="demo-number headline-semibold">+50%</span>
+            <span class="demo-label body-small-regular">Public Assistance Recipients</span>
+          </div>
         </div>
       </div>
+    </div>
+
+    <!-- Economic Impact - Step 4 -->
+    <div class="real-people economic-impact-section" data-impact-step="4">
+      <div class="real-people-content">
+        <h2 class="headline-regular real-people-headline">From $17K to $94K.</h2>
+        <p class="body-large-regular real-people-body">Our Builders more than quadruple their salaries before and after Pursuit. Their transformation is creating lasting impact on our economy.</p>
+        <div class="demographics-grid">
+          <div class="demo-card">
+            <span class="demo-number headline-semibold">$2M</span>
+            <span class="demo-label body-small-regular">more in lifetime earnings per Fellow</span>
+          </div>
+          <div class="demo-card">
+            <span class="demo-number headline-semibold">$1B</span>
+            <span class="demo-label body-small-regular">projected lifetime wage gains to date</span>
+          </div>
+          <div class="demo-card">
+            <span class="demo-number headline-semibold">1000s</span>
+            <span class="demo-label body-small-regular">of New Yorkers trained</span>
+          </div>
+          <div class="demo-card">
+            <span class="demo-number headline-semibold">1st</span>
+            <span class="demo-label body-small-regular">tech registered apprenticeship in NY</span>
+          </div>
+          <div class="demo-card">
+            <span class="demo-number headline-semibold">84%</span>
+            <span class="demo-label body-small-regular">Completion Rate</span>
+          </div>
+          <div class="demo-card">
+            <span class="demo-number headline-semibold">77%</span>
+            <span class="demo-label body-small-regular">Job Placement Rate</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Meet Our Builders - Step 5 -->
+    <div class="container builder-stories-step" data-impact-step="5">
+      <div class="builder-stories-content">
+        <h2 class="headline-regular builder-stories-headline">Transformation Stories</h2>
+        <p class="body-large-regular builder-stories-description">
+          Resilience, ambition, and the drive to create a better future. That's the common thread among our Builders.
+        </p>
+        <div class="builder-stories-media">
+          <!-- Each card links to its Vimeo video: set href to the video URL (e.g. https://vimeo.com/1234567890) -->
+          <div class="builder-video-gallery" id="builder-video-gallery">
+            <a href="https://vimeo.com/1121956742/93a6978372" target="_blank" rel="noopener" class="builder-video-card" data-video-id="1121956742" data-video-hash="93a6978372">
+              <span class="builder-video-thumb"><img src="assets/images/AIJI_Video_Thumbnail_ChericeHeron.jpg" alt="Cherice Heron"><button type="button" class="builder-play-btn" aria-label="Play video"><svg class="builder-play-btn-svg" viewBox="0 0 64 64" aria-hidden="true"><circle class="builder-play-btn-circle" cx="32" cy="32" r="32"/><path class="builder-play-btn-triangle" d="M26 20v24l18-12z"/></svg></button></span>
+              <span class="builder-video-name body-large-regular">Cherice Heron</span>
+            </a>
+            <a href="https://vimeo.com/1122028142/849ce33182" target="_blank" rel="noopener" class="builder-video-card" data-video-id="1122028142" data-video-hash="849ce33182">
+              <span class="builder-video-thumb"><img src="assets/images/AIJI_Video_Thumbnail_RuthLee.jpg" alt="Ruth Seleamy & Lee Aulder"><button type="button" class="builder-play-btn" aria-label="Play video"><svg class="builder-play-btn-svg" viewBox="0 0 64 64" aria-hidden="true"><circle class="builder-play-btn-circle" cx="32" cy="32" r="32"/><path class="builder-play-btn-triangle" d="M26 20v24l18-12z"/></svg></button></span>
+              <span class="builder-video-name body-large-regular">Ruth Seleamy & Lee Aulder</span>
+            </a>
+            <a href="https://vimeo.com/1033908854" target="_blank" rel="noopener" class="builder-video-card" data-video-id="1033908854">
+              <span class="builder-video-thumb"><img src="assets/images/AIJI_Video_Thumbnail_RookRrica.jpg" alt="Rook Soto & Erica Stevens"><button type="button" class="builder-play-btn" aria-label="Play video"><svg class="builder-play-btn-svg" viewBox="0 0 64 64" aria-hidden="true"><circle class="builder-play-btn-circle" cx="32" cy="32" r="32"/><path class="builder-play-btn-triangle" d="M26 20v24l18-12z"/></svg></button></span>
+              <span class="builder-video-name body-large-regular">Rook Soto & Erica Stevens</span>
+            </a>
+            <a href="https://vimeo.com/1122028142" target="_blank" rel="noopener" class="builder-video-card" data-video-id="1122028142">
+              <span class="builder-video-thumb"><img src="assets/images/builders/2025Sept_Endy_Diaz.jpg" alt="Endy Diaz"><button type="button" class="builder-play-btn" aria-label="Play video"><svg class="builder-play-btn-svg" viewBox="0 0 64 64" aria-hidden="true"><circle class="builder-play-btn-circle" cx="32" cy="32" r="32"/><path class="builder-play-btn-triangle" d="M26 20v24l18-12z"/></svg></button></span>
+              <span class="builder-video-name body-large-regular">Endy Diaz</span>
+            </a>
+            <a href="https://vimeo.com/1122028142" target="_blank" rel="noopener" class="builder-video-card builder-video-card--hidden" data-video-id="1122028142">
+              <span class="builder-video-thumb"><img src="assets/images/builders/2025Sept_Ergash_Ruzehaji.jpg" alt="Ergash Ruzehaji"><button type="button" class="builder-play-btn" aria-label="Play video"><svg class="builder-play-btn-svg" viewBox="0 0 64 64" aria-hidden="true"><circle class="builder-play-btn-circle" cx="32" cy="32" r="32"/><path class="builder-play-btn-triangle" d="M26 20v24l18-12z"/></svg></button></span>
+              <span class="builder-video-name body-large-regular">Ergash Ruzehaji</span>
+            </a>
+            <a href="https://vimeo.com/1122028142" target="_blank" rel="noopener" class="builder-video-card builder-video-card--hidden" data-video-id="1122028142">
+              <span class="builder-video-thumb"><img src="assets/images/builders/2025Sept_Gamaliel_Leguista.jpg" alt="Gamaliel Leguista"><button type="button" class="builder-play-btn" aria-label="Play video"><svg class="builder-play-btn-svg" viewBox="0 0 64 64" aria-hidden="true"><circle class="builder-play-btn-circle" cx="32" cy="32" r="32"/><path class="builder-play-btn-triangle" d="M26 20v24l18-12z"/></svg></button></span>
+              <span class="builder-video-name body-large-regular">Gamaliel Leguista</span>
+            </a>
+            <a href="https://vimeo.com/1122028142" target="_blank" rel="noopener" class="builder-video-card builder-video-card--hidden" data-video-id="1122028142">
+              <span class="builder-video-thumb"><img src="assets/images/builders/2025Sept_Ibrahima_Diallo.jpg" alt="Ibrahima Diallo"><button type="button" class="builder-play-btn" aria-label="Play video"><svg class="builder-play-btn-svg" viewBox="0 0 64 64" aria-hidden="true"><circle class="builder-play-btn-circle" cx="32" cy="32" r="32"/><path class="builder-play-btn-triangle" d="M26 20v24l18-12z"/></svg></button></span>
+              <span class="builder-video-name body-large-regular">Ibrahima Diallo</span>
+            </a>
+            <a href="https://vimeo.com/1122028142" target="_blank" rel="noopener" class="builder-video-card builder-video-card--hidden" data-video-id="1122028142">
+              <span class="builder-video-thumb"><img src="assets/images/builders/2025Sept_Ismael_Caraballo.jpg" alt="Ismael Caraballo"><button type="button" class="builder-play-btn" aria-label="Play video"><svg class="builder-play-btn-svg" viewBox="0 0 64 64" aria-hidden="true"><circle class="builder-play-btn-circle" cx="32" cy="32" r="32"/><path class="builder-play-btn-triangle" d="M26 20v24l18-12z"/></svg></button></span>
+              <span class="builder-video-name body-large-regular">Ismael Caraballo</span>
+            </a>
+            <a href="https://vimeo.com/1122028142" target="_blank" rel="noopener" class="builder-video-card builder-video-card--hidden" data-video-id="1122028142">
+              <span class="builder-video-thumb"><img src="assets/images/builders/2025Sept_Jaun_Franco.jpg" alt="Jaun Franco"><button type="button" class="builder-play-btn" aria-label="Play video"><svg class="builder-play-btn-svg" viewBox="0 0 64 64" aria-hidden="true"><circle class="builder-play-btn-circle" cx="32" cy="32" r="32"/><path class="builder-play-btn-triangle" d="M26 20v24l18-12z"/></svg></button></span>
+              <span class="builder-video-name body-large-regular">Jaun Franco</span>
+            </a>
+            <a href="https://vimeo.com/1122028142" target="_blank" rel="noopener" class="builder-video-card builder-video-card--hidden" data-video-id="1122028142">
+              <span class="builder-video-thumb"><img src="assets/images/builders/2025Sept_Jawad_Ashraf.jpg" alt="Jawad Ashraf"><button type="button" class="builder-play-btn" aria-label="Play video"><svg class="builder-play-btn-svg" viewBox="0 0 64 64" aria-hidden="true"><circle class="builder-play-btn-circle" cx="32" cy="32" r="32"/><path class="builder-play-btn-triangle" d="M26 20v24l18-12z"/></svg></button></span>
+              <span class="builder-video-name body-large-regular">Jawad Ashraf</span>
+            </a>
+            <a href="https://vimeo.com/1122028142" target="_blank" rel="noopener" class="builder-video-card builder-video-card--hidden" data-video-id="1122028142">
+              <span class="builder-video-thumb"><img src="assets/images/builders/2025Sept_Letisha_Gary.jpg" alt="Letisha Gary"><button type="button" class="builder-play-btn" aria-label="Play video"><svg class="builder-play-btn-svg" viewBox="0 0 64 64" aria-hidden="true"><circle class="builder-play-btn-circle" cx="32" cy="32" r="32"/><path class="builder-play-btn-triangle" d="M26 20v24l18-12z"/></svg></button></span>
+              <span class="builder-video-name body-large-regular">Letisha Gary</span>
+            </a>
+            <a href="https://vimeo.com/1122028142" target="_blank" rel="noopener" class="builder-video-card builder-video-card--hidden" data-video-id="1122028142">
+              <span class="builder-video-thumb"><img src="assets/images/builders/2025Sept_Renee_Jackson.jpg" alt="Renee Jackson"><button type="button" class="builder-play-btn" aria-label="Play video"><svg class="builder-play-btn-svg" viewBox="0 0 64 64" aria-hidden="true"><circle class="builder-play-btn-circle" cx="32" cy="32" r="32"/><path class="builder-play-btn-triangle" d="M26 20v24l18-12z"/></svg></button></span>
+              <span class="builder-video-name body-large-regular">Renee Jackson</span>
+            </a>
+          </div>
+          <button type="button" class="builder-more-btn body-large-regular" id="builder-more-btn" aria-label="Show more builder videos">More</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 6: Footer (separate page - lives at bottom of section) -->
+    <div class="impact-step impact-footer" data-impact-step="6">
+      <footer class="footer impact-footer-fullwidth">
+        <div class="container">
+          <div class="footer-main">
+            <div class="footer-brand">
+              <img src="assets/images/AIJI_Logo_Acronym_Background.svg" alt="AIJI Logo" class="footer-logo">
+              <p class="footer-tagline footer-large-regular">Let's build an AI-first future.<br>For all of us.</p>
+              <form class="footer-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+                <div class="form-group footer-form-group">
+                  <input 
+                    type="email" 
+                    name="email" 
+                    placeholder="Enter your email" 
+                    required
+                    class="footer-input footer-medium-regular"
+                  >
+                  <button type="submit" class="footer-button footer-medium-regular">
+                    Get Involved
+                  </button>
+                </div>
+                <input type="hidden" name="_subject" value="New AIJI Newsletter Signup (Footer)">
+              </form>
+              <div class="footer-links-section">
+                <a href="https://pursuit.org" target="_blank" rel="noopener" class="footer-pursuit-link footer-medium-regular">PURSUIT.ORG</a>
+                <div class="footer-social-icons">
+                  <a href="https://twitter.com/pursuit" target="_blank" rel="noopener" aria-label="X (Twitter)">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#000000">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                  </a>
+                  <a href="https://instagram.com/joinpursuit" target="_blank" rel="noopener" aria-label="Instagram">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#000000">
+                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+            
+            <div class="footer-nav-links">
+              <a href="#" class="footer-small-semibold">Privacy Policy</a>
+              <a href="#" class="footer-small-semibold">Terms of Use</a>
+              <a href="#" class="footer-small-semibold">Contact</a>
+            </div>
+          </div>
+          
+          <p class="footer-copyright footer-small-regular">© 2024 AI Jobs Institute. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   </section>
 
   <!-- The Urgency Section -->
-  <section class="urgency" id="urgency">
+  <section class="urgency section-page" id="urgency">
     <div class="container">
       <div class="section-header">
         <span class="section-tag">The Urgency</span>
@@ -462,228 +659,17 @@
           <p class="investment-label">wage premium for workers with AI skills</p>
         </div>
       </div>
-    </div>
-  </section>
 
-  <!-- Second Press Quote -->
-  <section class="press-quote alt">
-    <div class="container">
-      <blockquote class="quote-block">
-        <p class="quote-text">"If we do this correctly, and it's successful, it could become a national model."</p>
-        <cite class="quote-source">— State Sen. Michael Gianaris, 2024</cite>
-      </blockquote>
-    </div>
-  </section>
-
-  <!-- Email Signup Section -->
-  <section class="signup-section" id="signup">
-    <div class="container">
-      <div class="signup-card">
-        <div class="signup-content">
-          <h2 class="signup-title">Join the Movement</h2>
-          <p class="signup-description">
-            Be the first to know about AI workforce initiatives, partnership opportunities, and how you can get involved in building America's AI workforce.
-          </p>
-        </div>
-        <form class="signup-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
-          <div class="form-group">
-            <input 
-              type="email" 
-              name="email" 
-              placeholder="Enter your email" 
-              required
-              class="form-input"
-            >
-            <button type="submit" class="form-button">
-              <span>Get Updates</span>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </button>
-          </div>
-          <input type="hidden" name="_subject" value="New AIJI Newsletter Signup">
-        </form>
-      </div>
-    </div>
-  </section>
-
-  <!-- Pursuit Section -->
-  <section class="initiatives" id="pursuit">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-tag">Pursuit</span>
-        <h2 class="section-title">Our Initiatives</h2>
-        <p class="section-description">Four pillars driving the future of AI workforce development</p>
+      <!-- Gianaris Quote within Urgency Section -->
+      <div class="urgency-quote">
+        <blockquote class="quote-block">
+          <p class="quote-text">"If we do this correctly, and it's successful, it could become a national model."</p>
+          <cite class="quote-source">— State Sen. Michael Gianaris, 2024</cite>
+        </blockquote>
       </div>
       
-      <div class="initiatives-grid">
-        <article class="initiative-card">
-          <div class="initiative-number">01</div>
-          <h3 class="initiative-title">Train AI Workers</h3>
-          <p class="initiative-description">
-            Developing comprehensive training programs to equip workers with cutting-edge AI skills—from prompting and data concepts to tools like Cursor, Claude, and more.
-          </p>
-        </article>
-
-        <article class="initiative-card">
-          <div class="initiative-number">02</div>
-          <h3 class="initiative-title">Support Small Businesses & Nonprofits</h3>
-          <p class="initiative-description">
-            Providing resources and guidance to help local organizations integrate AI into their operations effectively and responsibly.
-          </p>
-        </article>
-
-        <article class="initiative-card">
-          <div class="initiative-number">03</div>
-          <h3 class="initiative-title">Pilot Programs & Trials</h3>
-          <p class="initiative-description">
-            Testing innovative AI workforce solutions through real-world pilots with government and industry partners to prove what works.
-          </p>
-        </article>
-
-        <article class="initiative-card">
-          <div class="initiative-number">04</div>
-          <h3 class="initiative-title">Achieve Systemic Changes</h3>
-          <p class="initiative-description">
-            Working with policymakers to create lasting structural changes that ensure equitable access to AI opportunities for all.
-          </p>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <!-- Advisory Council Section -->
-  <section class="council" id="council">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-tag">Leadership</span>
-        <h2 class="section-title">Advisory Council</h2>
-        <p class="section-description">Guided by leaders across education, technology, and policy</p>
-      </div>
-      
-      <div class="council-grid">
-        <article class="council-card">
-          <div class="council-image placeholder">
-            <span>MC</span>
-          </div>
-          <div class="council-info">
-            <h3 class="council-name">Miguel Cardona</h3>
-            <p class="council-role">Former U.S. Secretary of Education</p>
-          </div>
-        </article>
-
-        <article class="council-card">
-          <div class="council-image placeholder">
-            <span>ML</span>
-          </div>
-          <div class="council-info">
-            <h3 class="council-name">MC Lader</h3>
-            <p class="council-role">Former President & COO, Uniswap Labs</p>
-          </div>
-        </article>
-
-        <article class="council-card">
-          <div class="council-image placeholder">
-            <span>JS</span>
-          </div>
-          <div class="council-info">
-            <h3 class="council-name">Jon Schnur</h3>
-            <p class="council-role">CEO, America Achieves</p>
-          </div>
-        </article>
-
-        <article class="council-card">
-          <div class="council-image placeholder">
-            <span>JS</span>
-          </div>
-          <div class="council-info">
-            <h3 class="council-name">Julie Samuels</h3>
-            <p class="council-role">CEO, Tech:NYC</p>
-          </div>
-        </article>
-
-        <article class="council-card">
-          <div class="council-image placeholder">
-            <span>RC</span>
-          </div>
-          <div class="council-info">
-            <h3 class="council-name">Ryan Craig</h3>
-            <p class="council-role">Managing Director, Achieve Partners</p>
-          </div>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <!-- Partners Section -->
-  <section class="partners" id="partners">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-tag">Ecosystem</span>
-        <h2 class="section-title">Our Partners</h2>
-        <p class="section-description">Unmatched public, private, and community partners ready to invest, hire, and collaborate</p>
-      </div>
-
-      <div class="partners-category">
-        <h3 class="partners-category-title">Anchor Capital Funders</h3>
-        <div class="partners-grid">
-          <div class="partner-card placeholder">
-            <span>Queens Borough President</span>
-          </div>
-          <div class="partner-card placeholder">
-            <span>Empire State Development</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="partners-category">
-        <h3 class="partners-category-title">Program Funders</h3>
-        <div class="partners-grid funders">
-          <div class="partner-card placeholder"><span>Siegel Family Endowment</span></div>
-          <div class="partner-card placeholder"><span>Google</span></div>
-          <div class="partner-card placeholder"><span>Robin Hood</span></div>
-          <div class="partner-card placeholder"><span>Amazon</span></div>
-          <div class="partner-card placeholder"><span>GitLab Foundation</span></div>
-          <div class="partner-card placeholder"><span>MetLife Foundation</span></div>
-          <div class="partner-card placeholder"><span>Goldman Sachs</span></div>
-          <div class="partner-card placeholder"><span>Andreessen Horowitz</span></div>
-          <div class="partner-card placeholder"><span>BlackRock</span></div>
-          <div class="partner-card placeholder"><span>Morgan Stanley</span></div>
-        </div>
-      </div>
-
-      <div class="partners-category">
-        <h3 class="partners-category-title">Employer Partners</h3>
-        <div class="partners-grid employers">
-          <div class="partner-card placeholder"><span>Uber</span></div>
-          <div class="partner-card placeholder"><span>Pinterest</span></div>
-          <div class="partner-card placeholder"><span>Spotify</span></div>
-          <div class="partner-card placeholder"><span>LinkedIn</span></div>
-          <div class="partner-card placeholder"><span>Airbnb</span></div>
-          <div class="partner-card placeholder"><span>Apple</span></div>
-          <div class="partner-card placeholder"><span>Microsoft</span></div>
-          <div class="partner-card placeholder"><span>JPMorgan Chase</span></div>
-          <div class="partner-card placeholder"><span>Citi</span></div>
-          <div class="partner-card placeholder"><span>Moody's</span></div>
-          <div class="partner-card placeholder"><span>Verizon</span></div>
-          <div class="partner-card placeholder"><span>The New York Times</span></div>
-        </div>
-      </div>
-
-      <div class="partners-category">
-        <h3 class="partners-category-title">Community & Technical Partners</h3>
-        <div class="partners-grid">
-          <div class="partner-card placeholder"><span>Tech:NYC</span></div>
-          <div class="partner-card placeholder"><span>Partnership for NYC</span></div>
-          <div class="partner-card placeholder"><span>NY Department of Labor</span></div>
-          <div class="partner-card placeholder"><span>New York Jobs CEO Council</span></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="footer">
+      <!-- Footer (The Urgency) -->
+      <footer class="footer">
     <div class="container">
       <div class="footer-main">
         <div class="footer-brand">
@@ -731,7 +717,21 @@
       <p class="footer-copyright footer-small-regular">© 2024 AI Jobs Institute. All rights reserved.</p>
     </div>
   </footer>
+    </div>
+  </section>
 
+  <!-- Builder video overlay: direct child of body so it sits above nav and all sections -->
+  <div class="builder-video-overlay" id="builder-video-overlay" role="dialog" aria-modal="true" aria-label="Video player" hidden>
+    <div class="builder-video-overlay__backdrop"></div>
+    <div class="builder-video-overlay__content">
+      <button type="button" class="builder-overlay-close" id="builder-overlay-close" aria-label="Close"><svg class="builder-overlay-close-svg" viewBox="0 0 64 64" aria-hidden="true"><circle class="builder-overlay-close-circle" cx="32" cy="32" r="32"/><path class="builder-overlay-close-x" fill="none" d="M20 20l24 24M44 20L20 44" stroke-width="3" stroke-linecap="round"/></svg></button>
+      <div class="builder-video-overlay__iframe-wrap">
+        <iframe id="builder-video-iframe" src="" title="Builder video" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://player.vimeo.com/api/player.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

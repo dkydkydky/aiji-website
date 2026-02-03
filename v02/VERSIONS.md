@@ -12,8 +12,668 @@ This file tracks all changes made to the AIJI website with version numbers for e
 
 ## Version History
 
-### v390 - 2026-01-29
+### v435 - 2026-02-02
 **Status: ✅ Current**
+
+**What We Do Content Fix & NYT Image Sizing:**
+
+Fixed mission content not loading after returning from Our Impact via logo click, and adjusted NYT background image sizing.
+
+**Changes Made:**
+
+1. **What We Do Content After Logo Click**
+   - Bug: After Our Impact → logo click → header video → swipe down, What We Do showed nav and progress bar but mission content was missing
+   - Cause: The `.wwd` section kept inline `opacity: 0` from the previous nav transition (fade out when leaving WWD)
+   - Fix: In logo click handler, clear inline `opacity` and `transition` on all section pages when resetting, and explicitly set WWD to `opacity: 1` when re-activating
+
+2. **Debug Cleanup**
+   - Removed visual debug panel and "FIX IT" button used during troubleshooting
+   - Removed all debug `console.log` statements from WWD init block, `handleScroll`, and `updateMissionEntrance`
+
+3. **NYT Background Image**
+   - Image is horizontally oriented; removed `transform: rotate(-90deg)`
+   - Set `width: 80vw` and `height: auto` so image is 80% of viewport width with aspect ratio preserved
+   - Removed `max-width: none` (no longer needed without rotation)
+
+**Files Modified:**
+- `public/script.js` - Logo click: clear section opacity on reset, set WWD opacity 1; removed debug panel and logs
+- `public/styles.css` - `.nyt-bg-image`: no rotation, width 80vw, height auto
+
+---
+
+### v434 - 2026-02-01
+**Status: Previous**
+
+**Advisory Council Layout & Images:**
+
+Redesigned the Advisory Council page with new layout, tighter row spacing, and real member photos.
+
+**Changes Made:**
+
+1. **Layout**
+   - 2-column grid with column flow (left: Miguel, Jon, Ryan; right: MC Lader, Julie)
+   - Row gap reduced to 40px (from 125px) for tighter vertical spacing within each column
+   - Column gap 125px; stagger 150px (right column lower)
+   - Ryan moved to left column below Jon (no longer centered spanning both columns)
+
+2. **Typography**
+   - Names: body-large-regular; titles: body-small-regular
+   - Thumbnails 300×300px; name/title max-width 300px
+
+3. **Images**
+   - Replaced all 5 placeholder divs with actual photos: AIJI_Advisory_MiguelCardona.jpg, AIJI_Advisory_MCLader.jpeg, AIJI_Advisory_JonSchnur.jpeg, AIJI_Advisory_JulieSamuels.jpg, AIJI_Advisory_RyanCraig .jpeg
+
+4. **Mobile**
+   - grid-auto-flow: row on small screens; stagger removed
+
+**Files Modified:**
+- `public/index.html` - Council card images
+- `public/styles.css` - Council grid layout, gaps, typography
+
+---
+
+### v433 - 2026-02-01
+**Status: Previous**
+
+**Footer Page Structure & Scroll Behavior:**
+
+Restructured the footer as a separate page (step 7), fixed scroll snap-back when scrolling up from footer, reduced gap between partners and footer, and ensured footer bottom aligns with viewport bottom when scrolled.
+
+**Changes Made:**
+
+1. **Footer as Separate Page (Step 7)**
+   - Extracted footer from inside Our Partners step into its own page (step 7)
+   - Footer now follows Section / Page / Elements structure correctly
+   - Page title "Our Partners" fades away when transitioning to footer page
+
+2. **Footer Scroll Behavior**
+   - Removed scroll-snap to fix aggressive snap-back when scrolling up from footer (no longer snaps back to bottom)
+   - Footer page never fades (always full opacity)
+   - Footer bottom aligns with viewport bottom when scrolled (via padding-bottom on step 7)
+   - Copyright sits 30px above viewport bottom
+   - overscroll-behavior-y: none to prevent rubber band past content bottom
+
+3. **Reduced Gap Between Partners and Footer**
+   - Reduced .wwd-partners-wrapper padding-bottom from var(--space-4xl) to var(--space-xl)
+   - Footer at top of step (justify-content: flex-start) - no empty space above footer
+   - padding-bottom on .wwd-step-7 ensures footer bottom = viewport bottom when scrolled
+
+**Files Modified:**
+- `public/index.html` - Footer moved to separate wwd-step-7
+- `public/styles.css` - Footer step styles, partners padding, overscroll behavior, scroll-snap removed
+- `public/script.js` - Footer step excluded from fade transitions, never fades in/out
+
+---
+
+### v432 - 2026-02-01
+**Status: Previous**
+
+**Transition Timing & Scroll Behavior Fixes:**
+
+Fixed the gap between Vision and How pages, locked How page content during pillar cycling, and fixed Hub page so all elements scroll together as a unit.
+
+**Changes Made:**
+
+1. **Vision → How Transition**
+   - Reduced Vision page min-height from 180vh to 150vh
+   - How content now triggers earlier (when page enters bottom 30% of viewport)
+   - Eliminates the long scroll gap between Vision exit and How content load
+
+2. **How Page Content Locked**
+   - Removed parallax scrolling from How page content
+   - Content stays LOCKED in position while cycling through 4 pillar categories
+   - All pillar descriptions (1-4) now visible during their active states
+   - Exit animation starts at 85% scroll progress (was 70%)
+
+3. **Hub Page - All Elements Scroll Together**
+   - Headline, body copy, and images now move UP as a UNIT
+   - After stagger loading completes, all elements scroll together
+   - Fixed issue where images were going behind headline/body
+   - Proper z-ordering maintained during scroll
+
+4. **Content Padding**
+   - Changed from 300px to 200px for both top and bottom
+
+**Files Modified:**
+- `public/styles.css` - Reduced Vision page height, updated padding
+- `public/script.js` - Fixed entrance timing, locked How content, unified Hub scrolling
+
+---
+
+### v431 - 2026-02-01
+**Status: Previous**
+
+**Loading Sequence Refinements and Page Title Updates:**
+
+Fixed loading sequences for How, Hub, Advisory Council, and Partners pages. Updated page titles and content padding.
+
+**Changes Made:**
+
+1. **Page Title Text Updates**
+   - "Leadership" → "Advisory Council"
+   - "Ecosystem" → "Our Partners"
+
+2. **Content Padding Update**
+   - Changed `--content-padding-top` and `--content-padding-bottom` from 100px to 300px
+
+3. **How Page Loading Sequence**
+   - Sequence: Headline → 4 pillar categories → First pillar description → Pathway (arrows)
+   - All elements load automatically when page enters viewport center
+   - Fixed issue where Vision page title showed while How content was loading
+   - Content now scrolls with page after initial load
+
+4. **Hub Page Loading Sequence**
+   - Sequence: Headline → Body copy → Images (left-right, top-bottom)
+   - Headline and body copy now move with background after initial load
+   - All elements scroll together as a unit
+
+5. **Advisory Council & Partners Loading Sequence**
+   - Sequence: Headline → Body copy (description) → Cards/items
+   - Added stagger classes for headlines and descriptions
+
+6. **Page Title Sync Fix**
+   - Page titles now check if corresponding content is visible
+   - Prevents mismatched title/content during transitions
+   - Added visibility checks for fixed content containers
+
+**Files Modified:**
+- `public/index.html` - Updated page title text
+- `public/styles.css` - Updated padding, added stagger styles for headlines/body
+- `public/script.js` - Rewrote stagger sequences, fixed page title logic, updated entrance animations
+
+---
+
+### v430 - 2026-02-01
+**Status: Previous**
+
+**Animation/Loading Sequence Consistency Overhaul:**
+
+Standardized page entry animations with consistent headline positioning, auto-loading staggered effects for multi-element sections, unified content padding, and footer adjustments.
+
+**Changes Made:**
+
+1. **Added Missing Page Titles (Steps 5 & 6)**
+   - Added `Leadership` title for Advisory Council page
+   - Added `Ecosystem` title for Partners page
+   - Titles now appear in the left-side fixed container like other pages
+
+2. **Headline Positioning for Multi-Element Pages**
+   - Headlines on How, Hub, Advisory Council, and Partners pages now appear 100px below the nav (172px from top)
+   - Changed `.wwd-how-content-fixed` and `.wwd-hub-content-fixed` from centered to top-based positioning
+   - Added entrance animations for Council and Partners wrappers
+
+3. **Auto-Loading Stagger Animations**
+   - Four Pillars (Step 3): Items load top-to-bottom with 100ms delay
+   - Hub Gallery (Step 4): Images load in grid order with 120ms delay
+   - Council Cards (Step 5): Cards load left-to-right with 100ms delay
+   - Partner Cards (Step 6): Cards load per category with 60ms delay
+   - Added CSS classes `.stagger-item` and `.stagger-revealed`
+   - Animations reset when scrolling back, replay on re-entry
+
+4. **Consistent Vertical Padding**
+   - Added CSS custom properties: `--content-padding-top`, `--content-padding-bottom`, `--nav-height`
+   - Reduced step heights for tighter transitions:
+     - Step 1 (Mission): 280vh → 250vh
+     - Step 2 (Vision): 200vh → 180vh
+     - Steps 3-4 (How, Hub): 200vh → 160vh
+     - Steps 5-6: Content-based height (min-height: auto)
+   - Applied consistent 100px padding top/bottom across all steps
+
+5. **Footer Height Adjustment**
+   - Changed footer from fixed 600px to content-based height
+   - Set `padding-bottom: 30px` for exactly 30px below copyright
+   - Enhanced bounce animation with multi-step easing
+   - Added scroll position correction after bounce
+
+**Files Modified:**
+- `public/index.html` - Added page titles for steps 5 and 6
+- `public/styles.css` - Updated positioning, padding, stagger animations, footer
+- `public/script.js` - Added stagger animation system, entrance handlers, bounce fix
+
+---
+
+### v429 - 2026-01-31
+**Status: Previous**
+
+**Fixed Scroll Blocking Issues:**
+
+**Problem:** Scrolling gets stuck right after Mission loads and at bottom of page when using trackpad.
+
+**Root Causes Found:**
+1. `scrollBehavior: 'smooth'` on WWD section conflicts with trackpad momentum scrolling
+2. Video header wheel handler checked `isAnimating` BEFORE checking `video-complete`, potentially blocking scroll
+
+**Fixes Applied:**
+
+1. **Removed `scrollBehavior: 'smooth'` from WWD section (line 1739)**
+   - This CSS property conflicts with native trackpad momentum
+   - Trackpad already has smooth momentum built in
+   - Removed to allow natural scrolling
+
+2. **Fixed video header wheel handler (lines 504-528)**
+   - Moved `video-complete` check to be the FIRST thing checked
+   - If `video-complete` is true, immediately `return` without calling `preventDefault()`
+   - This ensures the handler NEVER blocks scroll after entering the site
+
+**Before:**
+```javascript
+if (isAnimating) {
+  e.preventDefault(); // This could run even after video-complete!
+  return;
+}
+if (!document.body.classList.contains('video-complete') && ...) {
+```
+
+**After:**
+```javascript
+if (document.body.classList.contains('video-complete')) {
+  return; // FIRST check - never block after transition
+}
+if (isAnimating) {
+  e.preventDefault();
+  return;
+}
+```
+
+**Files Modified:**
+- `public/script.js` - Fixed wheel handler order, removed smooth scroll
+
+---
+
+### v428 - 2026-01-31
+**Status: Previous**
+
+**Removed All Residual Swipe/Gesture Navigation Code:**
+
+**Problem Identified:**
+The codebase had TWO competing navigation systems:
+1. **OLD: Swipe/Gesture-based** (`initWwdSwipePages`) - used wheel events with `preventDefault()` to control page transitions
+2. **NEW: Scroll-based** (`initWwdContinuousScroll` + `initAdvancedPageTransitions`) - uses scroll position to fade elements
+
+Although `initWwdSwipePages()` was commented out, the code was still present and causing confusion. Additionally, the video header wheel handler could intercept wheel events even after the video transition was complete.
+
+**Fixes Applied:**
+
+1. **Fixed Video Header Wheel Handler (lines 514-516):**
+   - Added `!document.body.classList.contains('video-complete')` check
+   - Now only intercepts wheel events BEFORE video transition completes
+   - After entering site, all wheel events pass through naturally
+
+2. **Deleted Entire `initWwdSwipePages` Function:**
+   - Removed ~776 lines of dead code (lines 585-1360)
+   - This function was already disabled but still in codebase
+   - Contained wheel event handlers with `preventDefault()` calls
+   - Contained gesture detection, subsection transitions, pillar state management
+
+3. **Updated Comments:**
+   - Removed references to old swipe navigation
+   - Updated `initLazyScrollReveal` comment
+   - Updated `initWwdContinuousScroll` comment
+
+**Architecture Now (Pure Scroll-Based):**
+- Video header wheel handler: Only active BEFORE video-complete
+- WWD section: NO wheel handlers - pure natural scrolling
+- Animations: Driven by scroll position via `initAdvancedPageTransitions()`
+- All pages visible: Via `initWwdContinuousScroll()`
+
+**Files Modified:**
+- `public/script.js` - Removed 776 lines of dead code, fixed video header handler
+
+**Code Reduction:**
+- Before: ~3200 lines
+- After: ~2425 lines
+- Removed: ~776 lines of swipe/gesture handling code
+
+---
+
+### v427 - 2026-01-31
+**Status: Previous**
+
+**Fixed Mission Page Image Cutoff & Height:**
+
+**Root Cause Found:**
+- Images positioned at: 20vh, 90vh, 160vh, 230vh
+- But Mission page was only `min-height: 200vh`
+- Last image at 230vh was beyond page bounds = CUT OFF
+
+**Fixes Applied:**
+1. Increased `.wwd-step-1` min-height from 200vh to 280vh
+2. Added `min-height: 280vh` to `.wwd-mission-bg-scroll` container
+3. Added `overflow: visible` to background container to prevent clipping
+
+**Note on Scroll Architecture:**
+- Body has `overflow: clip` and `height: 100vh` - NO page-level scrolling
+- `.section-page` has `height: 100vh` with `overflow-y: scroll` - scrolling happens INSIDE section
+- WWD content scrolls within the section container
+- `initWwdSwipePages()` is DISABLED - no wheel event blocking on WWD section
+- Only active wheel handler is on video header (for logo animation)
+
+**CSS Changes:**
+- `.wwd-step-1`: `min-height: 200vh` → `min-height: 280vh`
+- `.wwd-mission-bg-scroll`: Added `min-height: 280vh` and `overflow: visible`
+
+**Files Modified:**
+- `public/styles.css` - Fixed Mission page height and container overflow
+
+**Current Page Heights:**
+- **Mission (Step 1):** 280vh (for 4 images ending at 230vh)
+- **Vision (Step 2):** 200vh  
+- **Four Pillars (Step 3):** 200vh
+- **The Hub (Step 4):** 200vh
+
+---
+
+### v426 - 2026-01-31
+**Status: Previous**
+
+**Removed All Scroll Cooldowns - Scrolling Should Never Get Stuck:**
+
+**REMOVED:**
+1. ❌ Section entry cooldown (was 200ms) - REMOVED
+2. ❌ Scroll boundary cooldown (was 200ms) - REMOVED  
+3. ❌ Post-action cooldown (was 300ms) - REMOVED
+4. ❌ Blanket `preventDefault()` on scroll down - REMOVED
+
+**KEPT (only when necessary):**
+- `preventDefault()` only during active animations
+- `preventDefault()` only when triggering a specific page transition action
+- Natural scrolling allowed everywhere else
+
+**Changes:**
+- Removed section entry cooldown check entirely
+- Removed scroll boundary cooldown check entirely
+- Removed post-action cooldown (minCooldown) check entirely
+- Changed `wwdGestureActionTaken` block to NOT call preventDefault
+- Moved `preventDefault()` to only specific transition actions, not blanket all scroll down
+- Bounce animation at bottom no longer blocks scroll
+
+**JavaScript Changes:**
+- Lines 893-901: Removed section entry cooldown
+- Lines 931-937: Removed scroll boundary cooldown
+- Lines 945-955: Removed post-action cooldown
+- Line 949: Removed blanket `e.preventDefault()` for scrolling down
+- Only call `preventDefault()` when actually triggering pillar/page transition
+
+**Files Modified:**
+- `public/script.js` - Removed all scroll-blocking cooldowns
+
+**Expected Result:**
+- Scrolling should NEVER get stuck going down the page
+- Natural smooth scrolling throughout
+- Only blocks during active transition animations
+
+---
+
+### v425 - 2026-01-31
+**Status: Previous**
+
+**Hub Page Animation Fixes:**
+- FIXED: Hub headline and body copy now stay vertically centered in browser throughout animation
+- FIXED: Gallery and text now move in unison (both stay in place, no independent upward movement)
+- FIXED: Gallery exits much later (85% instead of 70%) - stays visible longer
+
+**Changes:**
+1. **Text Centering:** Hub text (`wwd-hub-content-fixed`) now stays at `translate(-50%, -50%)` throughout all phases
+   - Entrance: Fades in at center (no upward movement)
+   - Visible: Stays centered (removed lock phase upward movement)
+   - Exit: Fades out at center (no upward movement)
+
+2. **Gallery Movement:** Gallery (`wwd-hub-gallery`) simplified to stay in place
+   - Entrance: Moves up from bottom (15-40% scroll)
+   - Visible: Stays in place at `translateY(0)` (40-85% scroll)
+   - Exit: Fades out in place (85-95% scroll)
+
+3. **Exit Timing:** Extended visibility window
+   - Exit start: 70% → 85% (15% more scroll before fading)
+   - Gallery now visible for 45% of page (was 30%)
+
+**JavaScript Changes:**
+- Removed text upward movement in lock phase (lines 2930-2940)
+- Removed gallery upward movement during visible phase
+- Changed `exitStartProgress` from 0.7 to 0.85
+- Text and gallery now exit together with same timing
+
+**Files Modified:**
+- `public/script.js` - Updated `updateHubEntrance()` function
+
+**Page Heights (All Pages):**
+- **Mission (Step 1):** `min-height: 200vh; height: auto` (grows with images)
+- **Vision (Step 2):** `min-height: 200vh; height: auto` (less content = shorter)
+- **Four Pillars (Step 3):** `min-height: 200vh; height: auto`
+- **The Hub (Step 4):** `min-height: 200vh; height: auto`
+
+All pages have same baseline (200vh) but grow based on content amount.
+
+---
+
+### v424 - 2026-01-31
+**Status: Previous**
+
+**Scroll Blocking & Transition Timing Fixes:**
+- FIXED: Scrolling getting stuck after page transitions
+- FIXED: Long delay before Four Pillars appears after Vision page
+
+**Changes:**
+- Reduced post-action cooldown from 700ms to 300ms (was causing stuck feeling after transitions)
+- Unified cooldown for all transitions (subsections and pillars) to 300ms
+- Improved Four Pillars entrance timing - now starts fading in when page enters viewport bottom (instead of waiting for center)
+- Increased Four Pillars entrance zone from 0.25vh to 0.5vh for faster appearance
+
+**JavaScript Changes:**
+- `minCooldown`: 700ms → 300ms for subsection transitions
+- `howPageEntering`: Now triggers when `rect.top < viewportHeight` (was `rect.top < viewportCenter`)
+- `entranceZone`: 0.25vh → 0.5vh for faster fade-in
+- Changed entrance calculation from `distancePastCenter` to `distanceIntoViewport`
+
+**Files Modified:**
+- `public/script.js` - Reduced cooldowns, improved How page entrance timing
+
+**Expected Improvements:**
+- No more stuck scrolling after page transitions
+- Four Pillars appears immediately after Vision text fades (no blank screen)
+- Smoother overall scrolling experience
+
+---
+
+### v423 - 2026-01-31
+**Status: Previous**
+
+**Dynamic Page Heights & Scroll Improvements:**
+- Set all WWD pages to `min-height: 200vh` baseline (allows content to enter from bottom, stay visible, exit from top)
+- Changed all WWD steps to `height: auto` so pages grow naturally based on content
+- Mission page (more images) will now be taller than Vision page (less content)
+- Pages no longer forced to same artificial heights
+
+**Scroll Blocking Fixes:**
+- REDUCED section entry cooldown from 800ms to 200ms (was blocking scrolling too long)
+- REDUCED scroll boundary cooldown from 800ms to 200ms (was causing stuck feeling)
+- REMOVED `hubMomentumBlocking` flag that was preventing scrolling
+- REMOVED bottom-of-section wheel event blocking
+- REDUCED excessive `preventDefault()` calls - only prevent during actual animations
+- Enabled natural scroll back to video header from mission page
+
+**CSS Changes:**
+- `.wwd-step`: Changed from `min-height: 100vh` to `min-height: 200vh; height: auto`
+- `.wwd-step-1`: Changed from `min-height: 300vh` to `min-height: 200vh; height: auto`
+- `.wwd-step-2`: Changed from `min-height: 250vh` to `min-height: 200vh; height: auto`
+- `.wwd-step-3`: Changed from `min-height: 250vh` to `min-height: 200vh; height: auto`
+- `.wwd-step-4`: Changed from `min-height: 250vh` to `min-height: 200vh; height: auto`
+- `.wwd-step-6`: Changed from `height: 100vh !important` to `height: auto !important; min-height: 200vh`
+
+**JavaScript Changes:**
+- Section entry cooldown: 800ms → 200ms
+- Scroll boundary cooldown: 800ms → 200ms
+- Removed `hubMomentumBlocking` flag
+- Removed bottom-of-section wheel blocking
+- Improved scroll-up logic to allow natural back-navigation to video header
+- Reduced `preventDefault()` calls to only essential cases
+
+**Preserved:**
+- ✅ All fade in/out logic
+- ✅ Text centering and sticky/fixed containers
+- ✅ Parallax effects (Mission, Vision, Hub)
+- ✅ Rotating words animation
+- ✅ Logo animation
+- ✅ All existing animations
+
+**Files Modified:**
+- `public/styles.css` - Updated all .wwd-step min-height values
+- `public/script.js` - Removed scroll blocking, reduced cooldowns, enabled back-navigation
+
+**Expected Improvements:**
+- Smoother scrolling throughout site
+- No more "stuck" feeling when scrolling
+- Vision page transitions faster (less empty scroll space)
+- Can scroll back to video header from mission page
+- Each page height now matches its content
+
+---
+
+### v397 - 2026-01-30
+**Status: Previous**
+
+**Fixes for Section Structure:**
+- Fixed WWD footer HTML structure - now properly nested inside wwd-step-5
+- Fixed HTML indentation and closing tags for WWD footer
+- Added !important to section-page styles to ensure they override section-specific styles
+- Increased section-page z-index to 100 to ensure they're above other elements
+- Added CSS for .wwd-footer-inner styling
+- Made wwd-step-5 height: auto with min-height: 100vh to allow scrolling to footer
+
+**Files Modified:**
+- `public/index.html` - Fixed WWD footer HTML structure inside step 5
+- `public/styles.css` - Added !important to section-page, increased z-index, added wwd-footer-inner and wwd-step-5 overrides
+
+---
+
+### v396 - 2026-01-30
+**Status: Previous**
+
+**THREE INDEPENDENT SECTIONS - Complete Redesign:**
+- Created truly independent sections that cannot scroll into each other
+- Each section (What We Do, Our Impact, The Urgency) is now a fixed, full-screen container
+- Only ONE section is visible at a time - navigation switches between them
+- Each section has internal scrolling with footer at the bottom
+
+**Architecture Changes:**
+- Body: `overflow: hidden; height: 100vh` - prevents page-level scrolling
+- New `.section-page` CSS class: `position: fixed; display: none` by default
+- `.section-page.active` shows the active section
+- Navigation clicks switch which section has `.active` class
+
+**Files Modified:**
+- `public/index.html` - Added `section-page` class to WWD, Our Impact, Urgency sections; WWD has `active` by default
+- `public/styles.css` - Added `.section-page` class system; updated body to `overflow: hidden`; simplified section-specific styles
+- `public/script.js` - Added `initSectionSwitching()` function to handle navigation clicks and section switching
+
+**Section Structure:**
+1. What We Do: Mission → Vision → 4 Pillars → Council → Partners → Footer → END
+2. Our Impact: Stories → Salary Journey → Demographics → Press → Footer → END
+3. The Urgency: Stats → Quote → Footer → END
+
+---
+
+### v395 - 2026-01-30
+**Status: Previous (Broken - sections still scrolled into each other)**
+
+**CRITICAL FIX - Proper Section Isolation:**
+- Fixed fundamental architecture issue where sections weren't truly isolated
+- Moved all footers INSIDE their respective section containers (were previously outside)
+- Converted all sections to 100vh containers with internal scrolling (overflow-y: auto)
+- Each section now scrolls independently within its own viewport
+- Footers now visible at bottom of each section's scrollable content
+- Improved bounce animation - triggers on scroll event and prevents wheel events at bottom
+- Sections can no longer scroll into each other - completely isolated
+- Users must use navigation menu to switch between sections
+
+**Files Modified:**
+- `public/index.html` - Moved footers inside wwd-content, builder-stories container, and urgency container
+- `public/styles.css` - Changed sections to height: 100vh with overflow-y: auto
+- `public/script.js` - Updated initSectionScrollBoundaries to include WWD, improved bounce detection
+
+**What Changed:**
+- WWD: Footer now inside wwd-content div, section has overflow-y: auto
+- Our Impact: Footer now inside builder-stories container, section is 100vh with overflow-y: auto  
+- Urgency: Footer now inside urgency container, section is 100vh with overflow-y: auto
+
+---
+
+### v394 - 2026-01-30
+**Status: Previous (Broken - footers were outside sections)**
+
+**Footer Duplication & Section Isolation:**
+- Removed simple section footers added in v393 (wwd-footer, section-footer)
+- Duplicated full main footer to end of each major section (What We Do, Our Impact, The Urgency)
+- Each section now has complete footer with logo, tagline, email signup, social links, and navigation
+- Disabled automatic scrolling between sections - sections are now completely isolated
+- Removed exitWwdSection() function - WWD no longer auto-scrolls to Our Impact
+- Removed scroll-up handler from Our Impact section
+- Added bounce animation when reaching bottom of any section
+- Users must use navigation menu or footer links to move between sections
+
+**Files Modified:**
+- `public/index.html` - Removed v393 footers, added full footer after WWD, Our Impact, and Urgency sections
+- `public/styles.css` - Removed v393 footer styles, added bounce animation keyframes
+- `public/script.js` - Removed updateWwdFooter() function, removed exitWwdSection(), added scroll boundary detection with bounce for all sections
+
+---
+
+### v393 - 2026-01-30
+**Status: Previous**
+
+**Added Footer Elements to All Sections:**
+- Added footer navigation to What We Do section (fixed at bottom, visible on Step 5 - Partners)
+- Added footer navigation to Our Impact section
+- Added footer navigation to The Urgency section
+- Footer includes Privacy Policy, Terms of Use, Contact links and copyright
+- WWD footer shows/hides dynamically based on current subsection (visible only on Partners)
+- Section footers are always visible at bottom of their respective sections
+
+**Files Modified:**
+- `public/index.html` - Added wwd-footer, section-footer elements to WWD, Our Impact, and Urgency sections
+- `public/styles.css` - Added .wwd-footer, .section-footer styling with responsive mobile adjustments
+- `public/script.js` - Added updateWwdFooter() function and calls throughout subsection transitions
+
+---
+
+### v392 - 2026-01-30
+**Status: Previous**
+
+**Major Site Restructure - Advisory Council & Partners moved to What We Do:**
+- Removed The Hub as standalone section
+- Moved Advisory Council to WWD Step 4 (after Four Pillars)
+- Moved Our Partners to WWD Step 5 (after Council)
+- Updated navigation: removed "The Hub" link
+- Navigation now shows: What We Do, Our Impact, The Urgency, Get Updates
+- Updated WWD to have 5 subsections: Mission, Vision, How, Leadership, Ecosystem
+- Exit from WWD now scrolls to Our Impact (formerly Builders)
+- Scroll back from Our Impact returns to Partners (Step 5)
+
+**Files Modified:**
+- `public/index.html` - Restructured sections, moved Council/Partners into WWD, removed hub-section
+- `public/script.js` - Updated maxSubsection to 5, added step4/step5 transitions, updated scroll behavior
+- `public/styles.css` - Added wwd-council-wrapper and wwd-partners-wrapper styling, removed hub-section styles
+
+---
+
+### v391 - 2026-01-29
+**Status: Previous**
+
+**Navigation bar blur effect:**
+- Added 60% opacity background with frosted glass effect
+- Implemented backdrop-filter with 20px blur and 180% saturation
+- Fixed content positioning to allow text/images to show through nav with blur
+- Changed .wwd overflow from hidden to visible
+- Content now extends behind nav for proper blur effect
+
+**Files Modified:**
+- `public/styles.css` - Updated .nav, .nav.scrolled, .nav.hidden-on-video, body.logo-at-top .nav.hidden-on-video, .wwd, .wwd-step
+- `public/script.js` - Updated nav background animation to use rgba with backdrop-filter
+
+---
+
+### v390 - 2026-01-29
+**Status: Previous**
 
 **Footer button swipe direction:**
 - Changed from left-to-right to bottom-to-top
