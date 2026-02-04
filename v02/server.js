@@ -22,8 +22,11 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'healthy' });
 });
 
-const server = app.listen(PORT, () => {
-  console.log(`AIJI Website running on http://localhost:${PORT}`);
+const server = app.listen(PORT, '0.0.0.0', () => {
+  console.log(`\n  AIJI Website is running.\n`);
+  console.log(`  Open in your browser:\n`);
+  console.log(`    http://localhost:${PORT}`);
+  console.log(`    http://127.0.0.1:${PORT}\n`);
 });
 
 server.on('error', (err) => {

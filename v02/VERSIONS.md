@@ -12,8 +12,113 @@ This file tracks all changes made to the AIJI website with version numbers for e
 
 ## Version History
 
-### v435 - 2026-02-02
+### v437 - 2026-02-04
 **Status: ✅ Current**
+
+**Visibility Fixes, Navigation Updates & Typography Refinements:**
+
+Fixed persistent visibility issues across Steps 5-9 (Decade of Work, NYT Quote, Demography, Economic Impact, Transformation Stories), updated navigation section labels, and refined typography throughout the site.
+
+**Changes Made:**
+
+1. **Fixed Parent Container Opacity Issue (Steps 5-9)**
+   - Root cause: `#our-work` section was getting `section-hidden` class with `opacity: 0.3`, cascading to all children
+   - Fix: Added CSS override `#our-work.section-hidden { opacity: 1 !important; }` in `script.js` injected styles
+   - Result: All content in Steps 5-9 now displays at full opacity
+
+2. **Added Missing Stagger Animation Classes**
+   - **Step 7 (Demography)**: Added `stagger-item stagger-demo-headline`, `stagger-item stagger-demo-body`, `stagger-item stagger-demo-grid` classes
+   - **Step 8 (Economic Impact)**: Added `stagger-item stagger-econ-headline`, `stagger-item stagger-econ-body`, `stagger-item stagger-econ-grid` classes
+   - **Step 9 (Transformation Stories)**: Added `stagger-item stagger-trans-headline`, `stagger-item stagger-trans-desc`, `stagger-item stagger-trans-gallery` classes
+   - JavaScript trigger functions can now find and animate these elements properly
+
+3. **Fixed NYT Background Image Visibility (Step 6)**
+   - Issue: CSS selectors required `.wwd` parent class that didn't exist in HTML structure
+   - Fix: Added alternative selectors without `.wwd` parent requirement for all Step 6 rules
+   - Updated `.wwd-step-6` comment from "Partners" to "NYT Quote" for clarity
+   - Set `min-height: 150vh` and `overflow-y: visible` for proper scroll effect
+   - Added explicit `opacity: 1 !important` for `.press-quote-bg` and `.nyt-bg-image`
+
+4. **Fixed Builder Photos Visibility (Step 5)**
+   - Added CSS override for `#impact-decade-bg` container: `opacity: 1 !important`
+   - Added JavaScript fallback in `updateBuilderPhotosExit()` to force photo visibility when in viewport
+   - Ensures photos become visible even if IntersectionObserver doesn't trigger
+
+5. **Fixed CSS Selector Specificity Issues**
+   - Added alternative selectors without `.wwd` parent for Steps 5-9 throughout `styles.css`
+   - Ensures all styling rules apply correctly regardless of parent class structure
+
+6. **Fixed Navigation Underline on "Get Involved"**
+   - Issue: Generic `.nav-links a::after` rule created underline for all links including pill button
+   - Fix: Updated base `::after` rules to exclude `.nav-cta-pill`: `.nav-links a:not(.nav-cta-pill)::after`
+   - "Get Involved" pill button no longer shows underline when active
+
+7. **Updated Navigation Section Labels**
+   - "Our Vision" → "Our Work" (first section, still links to `#our-vision`)
+   - "Our Work" → "Pursuit" (second section, still links to `#our-work`)
+   - "The Urgency" and "Leadership & Partners" unchanged
+   - Section IDs preserved for backward compatibility with existing links
+
+8. **Fixed Urgency Page Percentage Font Weight**
+   - Issue: 64% and 4% displayed at font-weight 900 instead of intended 600 (semibold)
+   - Root cause: `.urgency-gap-percent` selector required `.wwd` or `.urgency` parent that didn't exist
+   - Fix: Added `.wwd-step-urgency .urgency-gap-percent` selector to match actual HTML structure
+   - Percentages now correctly display at semibold (600) weight
+
+9. **Typography Updates**
+   - **Body Medium line-height**: Changed from `1.2` to `1.4` for `.body-medium-regular` and `.body-medium-semibold`
+   - **Navigation Typography**: 
+     - Created `nav-regular` class (15px, weight 400, based on `footer-small-regular`)
+     - Created `nav-semibold` class (15px, weight 600)
+     - Applied `nav-semibold` to section names (Our Work, The Urgency, Pursuit, Leadership & Partners)
+     - Applied `nav-regular` to "Get Involved" button
+   - **Navigation Spacing**: Reduced gap between nav items from `2rem` (32px) to `1rem` (16px) - 50% reduction
+
+**Files Modified:**
+- `public/script.js` - Parent container opacity fix, builder photos fallback, comment updates
+- `public/index.html` - Added stagger classes to Steps 7-9, updated nav labels, applied nav typography classes
+- `public/styles.css` - Fixed NYT background rules, added CSS overrides for Steps 5-9, fixed nav underline, updated urgency percent selector, created nav typography classes, adjusted body-medium line-height, reduced nav gap
+
+---
+
+### v436 - 2026-02-03
+**Status: ✅ Superseded**
+
+**Console Cleanup & Demography/Economic Impact Exit Animation Fix:**
+
+Removed excessive debug logging from console and fixed the abrupt disappearing of Demography (step 7) and Economic Impact (step 8) pages, especially in Cursor's native browser.
+
+**Changes Made:**
+
+1. **Console Debug Logging Cleanup**
+   - Removed `[Demo Exit]` and `[Econ Exit]` messages that fired on every scroll frame
+   - Removed `📜 WWD scroll` logging (fired every 500px of scroll)
+   - Removed `🎥 videoHeader wheel` logging (fired on every wheel event)
+   - Removed `🚫 BLOCKING` warnings during animation
+   - Removed `🔴 SCROLL STUCK!` detector and its verbose logging
+   - Removed all initialization logs (pillar state, mission backgrounds, rotating words, page transitions, stagger animations, section switching)
+   - Removed all page sequence trigger logs (How, Hub, Council, Partners, Urgency, Demography, Economic Impact, Transformation Stories)
+   - Kept only essential error handling logs (video play errors, Vimeo init warnings, DEBUG_DECADE developer flag)
+
+2. **Demography & Economic Impact Exit Animation Fix**
+   - Bug: Pages disappeared abruptly in Cursor's browser but worked in Chrome
+   - Root cause: `updatePageTransitions()` treated ~100vh pages as "short steps" and hid them instantly when `stepRect.bottom <= 0`
+   - Fix: Added custom exit logic for steps 7 and 8 that excludes them from the standard short-step instant-hide behavior
+   - Exit now based on **content bottom position** (`.demographics-grid`) rather than page bottom
+   - Fade starts when content bottom hits viewport center (50%)
+   - Fade completes when content bottom hits 25% from viewport top (faster fade over 25vh)
+   - Consistent behavior across all browsers
+
+3. **Removed Unused Variables**
+   - Cleaned up `_lastDemoLogTime` and `_lastEconLogTime` variables that were no longer needed after removing debug logging
+
+**Files Modified:**
+- `public/script.js` - Console cleanup, demography/economic exit animation fix
+
+---
+
+### v435 - 2026-02-02
+**Status: Previous**
 
 **What We Do Content Fix & NYT Image Sizing:**
 

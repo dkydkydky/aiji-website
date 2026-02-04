@@ -12,37 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Force scroll to top on page load to ensure clean state
   window.scrollTo(0, 0);
   
-  // DEBUG: Scroll-stuck detector - logs when wheel events fire but scroll doesn't move
-  let lastWheelTime = 0;
-  let lastScrollTop = -1;
-  let stuckCount = 0;
-  let stuckLogged = false;
-  document.addEventListener('wheel', (e) => {
-    const wwdSection = document.querySelector('.wwd');
-    const currentScroll = wwdSection ? wwdSection.scrollTop : window.scrollY;
-    const now = Date.now();
-    if (now - lastWheelTime < 100 && currentScroll === lastScrollTop && Math.abs(e.deltaY) > 5) {
-      stuckCount++;
-      if (stuckCount > 5 && !stuckLogged) {
-        // Only log once per stuck episode to reduce spam
-        const missionText = document.querySelector('.wwd-mission-text-fixed');
-        console.error('🔴 SCROLL STUCK!', {
-          scrollTop: currentScroll,
-          maxScroll: wwdSection ? wwdSection.scrollHeight - wwdSection.clientHeight : 'n/a',
-          videoComplete: document.body.classList.contains('video-complete'),
-          missionPointerEvents: missionText ? getComputedStyle(missionText).pointerEvents : 'n/a',
-          eventTarget: e.target?.className || e.target?.tagName
-        });
-        stuckLogged = true;
-      }
-    } else {
-      stuckCount = 0;
-      stuckLogged = false;
-    }
-    lastWheelTime = now;
-    lastScrollTop = currentScroll;
-  }, { passive: true });
-  console.log('🔍 Scroll-stuck detector active (CSS pointer-events fix applied)');
   
   // AGGRESSIVE CLEANUP: Remove any stray logo elements and black images
   document.querySelectorAll('body > .video-header-logo').forEach(el => el.remove());
@@ -99,261 +68,23 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', positionInitiativeArrows);
   }
   
-  // Initialize pillar state (01 active by default)
-  initPillarState();
+  // Pillar state removed - cards are self-contained
   
   // Initialize stagger animations for multi-element pages
   initStaggerAnimations();
 });
 
 /**
- * Initialize pillar state for The How page
- * Sets pillar 01 as active on load
+ * Keep body background in sync with section overlay so site and page background always match.
  */
-function initPillarState() {
-  // Target elements in the fixed container
-  const fixedContainer = document.querySelector('.wwd-how-content-fixed');
-  const initiativeItems = fixedContainer ? fixedContainer.querySelectorAll('.wwd-initiative-item') : document.querySelectorAll('.wwd-initiative-item');
-  
-  if (!initiativeItems.length) return;
-  
-  // Set first pillar as active
-  updatePillarState(1);
-  
-  // Position arrows initially and on resize
-  positionInitiativeArrows();
-  window.addEventListener('resize', positionInitiativeArrows);
-  
-  // Add click handlers
-  initiativeItems.forEach((item, index) => {
-    item.addEventListener('click', () => {
-      updatePillarState(index + 1);
-    });
-  });
-  
-  console.log('Pillar state initialized');
+function syncBodyBackgroundToOverlay() {
+  const overlay = document.getElementById('section-bg-overlay');
+  if (!overlay) return;
+  document.body.classList.toggle('urgency-active', overlay.classList.contains('urgency-active'));
+  document.body.classList.toggle('our-impact-active', overlay.classList.contains('our-impact-active'));
 }
 
-/**
- * Update which pillar is active
- */
-function updatePillarState(pillarNum) {
-  // Target elements in the fixed container
-  const fixedContainer = document.querySelector('.wwd-how-content-fixed');
-  const initiativeItems = fixedContainer ? fixedContainer.querySelectorAll('.wwd-initiative-item') : document.querySelectorAll('.wwd-initiative-item');
-  const initiativeDescs = fixedContainer ? fixedContainer.querySelectorAll('.wwd-initiative-desc') : document.querySelectorAll('.wwd-initiative-desc');
-  const arrowLines = fixedContainer ? fixedContainer.querySelectorAll('.initiative-arrow-line') : document.querySelectorAll('.initiative-arrow-line');
-  const arrowHeads = fixedContainer ? fixedContainer.querySelectorAll('.initiative-arrowhead') : document.querySelectorAll('.initiative-arrowhead');
-  
-  // Update items
-  initiativeItems.forEach((item, index) => {
-    if (index + 1 === pillarNum) {
-      item.classList.add('active');
-    } else {
-      item.classList.remove('active');
-    }
-  });
-  
-  // Update descriptions
-  initiativeDescs.forEach((desc, index) => {
-    const descPillar = parseInt(desc.getAttribute('data-initiative'));
-    if (descPillar === pillarNum) {
-      desc.classList.add('active');
-    } else {
-      desc.classList.remove('active');
-    }
-  });
-  
-  // Update arrows
-  arrowLines.forEach(arrow => {
-    const arrowPillar = parseInt(arrow.getAttribute('data-arrow'));
-    if (arrowPillar === pillarNum) {
-      arrow.classList.add('active');
-    } else {
-      arrow.classList.remove('active');
-    }
-  });
-  
-  arrowHeads.forEach(arrow => {
-    const arrowPillar = parseInt(arrow.getAttribute('data-arrow'));
-    if (arrowPillar === pillarNum) {
-      arrow.classList.add('active');
-    } else {
-      arrow.classList.remove('active');
-    }
-  });
-  
-  // Reposition arrows for active pillar
-  positionInitiativeArrows();
-}
-
-/**
- * Position initiative arrows - connects last letter of category name to first letter of description
- * Arrow endpoints form a pathway between category and description
- */
-function positionInitiativeArrows() {
-  // Look in the fixed container first, then fall back to the old location
-  let contentWrapper = document.querySelector('.wwd-how-content-fixed .wwd-initiatives-content-wrapper');
-  if (!contentWrapper) {
-    contentWrapper = document.querySelector('.wwd-initiatives-content-wrapper');
-  }
-  const initiativeItems = document.querySelectorAll('.wwd-how-content-fixed .wwd-initiative-item');
-  const initiativeDescs = document.querySelectorAll('.wwd-how-content-fixed .wwd-initiative-desc');
-  
-  if (!contentWrapper || !initiativeItems.length || !initiativeDescs.length) return;
-  
-  // Target arrows in the fixed container
-  const fixedContainer = document.querySelector('.wwd-how-content-fixed');
-  const arrowLines = fixedContainer ? fixedContainer.querySelectorAll('.initiative-arrow-line') : document.querySelectorAll('.initiative-arrow-line');
-  const arrowHeads = fixedContainer ? fixedContainer.querySelectorAll('.initiative-arrowhead') : document.querySelectorAll('.initiative-arrowhead');
-  
-  // Get the first description for the END position reference
-  const firstDesc = initiativeDescs[0];
-  if (!firstDesc) return;
-  
-  const wrapperRect = contentWrapper.getBoundingClientRect();
-  
-  // Get the Y position of the first character of the first description (arrow END point)
-  const range = document.createRange();
-  const firstDescTextNode = firstDesc.firstChild;
-  if (!firstDescTextNode || firstDescTextNode.nodeType !== Node.TEXT_NODE) {
-    return;
-  }
-  
-  range.setStart(firstDescTextNode, 0);
-  range.setEnd(firstDescTextNode, 1);
-  const firstDescCharRect = range.getBoundingClientRect();
-  
-  // All arrows END at the same point (first letter of description)
-  const endX = firstDescCharRect.left - wrapperRect.left - 10; // 10px before first letter
-  const endY = firstDescCharRect.top - wrapperRect.top + (firstDescCharRect.height / 2); // Center of character
-  
-  arrowLines.forEach((arrowLine) => {
-    const arrowNum = parseInt(arrowLine.getAttribute('data-arrow'));
-    const categoryItem = initiativeItems[arrowNum - 1];
-    // Find arrowhead in the same container
-    const arrowHead = fixedContainer 
-      ? fixedContainer.querySelector(`.initiative-arrowhead[data-arrow="${arrowNum}"]`)
-      : document.querySelector(`.initiative-arrowhead[data-arrow="${arrowNum}"]`);
-    
-    if (!categoryItem) return;
-    
-    const categoryName = categoryItem.querySelector('.wwd-initiative-name');
-    if (!categoryName) return;
-    
-    // Use Range API to get the actual end position of the first line of text
-    const textNode = categoryName.firstChild;
-    
-    if (!textNode || textNode.nodeType !== Node.TEXT_NODE) return;
-    
-    // Find where the first line ends by checking character positions
-    const text = textNode.textContent;
-    
-    // Get the Y position of the first character to establish the baseline
-    range.setStart(textNode, 0);
-    range.setEnd(textNode, 1);
-    const firstCharRect = range.getBoundingClientRect();
-    const baselineY = firstCharRect.top;
-    
-    // Find the last character on the first line (same Y as first character)
-    let lastCharOnFirstLine = 0;
-    for (let i = 0; i < text.length; i++) {
-      range.setStart(textNode, i);
-      range.setEnd(textNode, i + 1);
-      const charRect = range.getBoundingClientRect();
-      
-      // If this character is significantly below the baseline, we've wrapped
-      if (charRect.top > baselineY + 5) {
-        break;
-      }
-      lastCharOnFirstLine = i;
-    }
-    
-    // Get the position of the last character on the first line
-    range.setStart(textNode, lastCharOnFirstLine);
-    range.setEnd(textNode, lastCharOnFirstLine + 1);
-    const lastCharRect = range.getBoundingClientRect();
-    
-    // Arrow START point: right edge of last character + small gap
-    const startX = lastCharRect.right - wrapperRect.left + 8;
-    const startY = lastCharRect.top - wrapperRect.top + (lastCharRect.height / 2);
-    
-    // Calculate the angle of the line (for arrowhead rotation)
-    const dx = endX - startX;
-    const dy = endY - startY;
-    const angleRad = Math.atan2(dy, dx);
-    const angleDeg = angleRad * (180 / Math.PI);
-    
-    // Position and size the arrow line SVG
-    const padding = 20;
-    const minX = Math.min(startX, endX) - padding;
-    const maxX = Math.max(startX, endX) + padding;
-    const minY = Math.min(startY, endY) - padding;
-    const maxY = Math.max(startY, endY) + padding;
-    
-    const width = maxX - minX;
-    const height = maxY - minY;
-    
-    arrowLine.style.left = `${minX}px`;
-    arrowLine.style.top = `${minY}px`;
-    arrowLine.style.width = `${width}px`;
-    arrowLine.style.height = `${height}px`;
-    
-    // Update the path within the SVG
-    const path = arrowLine.querySelector('path');
-    if (path) {
-      const localStartX = startX - minX;
-      const localStartY = startY - minY;
-      
-      // End the line at the arrowhead BASE (14px before the tip)
-      // This prevents the line from overlapping the arrowhead
-      const cosAngle = Math.cos(angleRad);
-      const sinAngle = Math.sin(angleRad);
-      const arrowBaseOffset = 14; // Distance from tip to base
-      const lineEndX = endX - (arrowBaseOffset * cosAngle);
-      const lineEndY = endY - (arrowBaseOffset * sinAngle);
-      
-      const localEndX = lineEndX - minX;
-      const localEndY = lineEndY - minY;
-      
-      // Control points for smooth curve
-      const midX = (localStartX + localEndX) / 2;
-      const curveStrength = 20;
-      
-      // Create a smooth S-curve path
-      const newPath = `M ${localStartX},${localStartY} C ${localStartX + 30},${localStartY} ${midX},${localStartY + curveStrength} ${midX},${(localStartY + localEndY) / 2} S ${localEndX - 30},${localEndY} ${localEndX},${localEndY}`;
-      path.setAttribute('d', newPath);
-    }
-    
-    // Update viewBox to match dimensions
-    arrowLine.setAttribute('viewBox', `0 0 ${width} ${height}`);
-    
-    // Position the ARROWHEAD at the END point
-    // The arrowhead SVG (32x32) has tip at (30,16), center at (16,16)
-    // We want the TIP to be at the line endpoint, with arms evenly on each side
-    if (arrowHead) {
-      // Distance from SVG center to tip = 14px (30-16)
-      const tipOffset = 14;
-      
-      // Calculate SVG center position so that after rotation, tip lands at (endX, endY)
-      // After rotation around center (16,16), the tip (originally at 30,16) moves to:
-      // center + (tipOffset * cos(angle), tipOffset * sin(angle))
-      // So: center = endpoint - (tipOffset * cos(angle), tipOffset * sin(angle))
-      const cosAngle = Math.cos(angleRad);
-      const sinAngle = Math.sin(angleRad);
-      
-      const svgCenterX = endX - (tipOffset * cosAngle);
-      const svgCenterY = endY - (tipOffset * sinAngle);
-      
-      // Position SVG so its center (16,16) is at (svgCenterX, svgCenterY)
-      arrowHead.style.left = `${svgCenterX - 16}px`;
-      arrowHead.style.top = `${svgCenterY - 16}px`;
-      arrowHead.style.transformOrigin = 'center center';
-      // Rotate to match line angle - arms will be evenly on each side of the line
-      arrowHead.style.transform = `rotate(${angleDeg}deg)`;
-    }
-  });
-}
+// Pillar state functions removed - cards are self-contained and don't need active state switching or arrow positioning
 
 /**
  * Section Snapping - Programmatic snap to sections on scroll
@@ -363,11 +94,10 @@ let isSnappingBack = false;
 
 function initSectionSnapping() {
   const videoHeader = document.querySelector('.video-header');
-  const wwdSection = document.querySelector('.wwd');
   const videoPlayer = videoHeader ? videoHeader.querySelector('.video-header-player') : null;
   const contentWrapper = videoHeader ? videoHeader.querySelector('.video-header-content-wrapper') : null;
   
-  if (!videoHeader || !wwdSection || !videoPlayer || !contentWrapper) return;
+  if (!videoHeader || !videoPlayer || !contentWrapper) return;
   
   const videoHeaderHeight = videoHeader.offsetHeight;
   let isAnimating = false;
@@ -377,7 +107,6 @@ function initSectionSnapping() {
   function animateLogoToTop() {
     if (isAnimating) return;
     isAnimating = true;
-    console.log('🚀 Animation started - isAnimating=true (scroll blocked for ~900ms)');
     
     const nav = document.querySelector('.nav');
     const videoHeaderLogo = videoHeader.querySelector('.video-header-logo');
@@ -446,7 +175,6 @@ function initSectionSnapping() {
     function completeVideoTransition() {
       const nav = document.querySelector('.nav');
       const videoHeaderLogo = videoHeader.querySelector('.video-header-logo');
-      const wwdSection = document.querySelector('.wwd');
       
       // FIX: Reset all fixed container styles BEFORE showing them (synchronous)
       // This prevents stale opacity values from causing visual flash
@@ -454,7 +182,6 @@ function initSectionSnapping() {
       const visionContent = document.querySelector('.wwd-vision-content-fixed');
       const missionText = document.querySelector('.wwd-mission-text-fixed');
       
-      console.log('🔄 Resetting fixed container styles BEFORE video-complete');
       [howContent, visionContent].forEach(el => {
         if (el) {
           el.style.cssText = 'opacity: 0; pointer-events: none; transition: none;';
@@ -464,14 +191,18 @@ function initSectionSnapping() {
         missionText.style.cssText = 'opacity: 1; pointer-events: none; transition: none;';
       }
       
-      // Reset WWD scroll position BEFORE it becomes visible
-      if (wwdSection) {
-        wwdSection.scrollTop = 0;
-      }
+      // Reset window scroll position BEFORE content becomes visible
+      window.scrollTo(0, 0);
       
       // NOW add video-complete class to show section pages and nav
       document.body.classList.add('video-complete');
-      console.log('✅ video-complete class added');
+      
+      // After video-complete, init Decade photos (step is now visible with real dimensions)
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          initDecadeBuilderPhotos();
+        });
+      });
       
       // Setup nav with logo - clear inline styles and set visibility
       if (nav) {
@@ -481,12 +212,12 @@ function initSectionSnapping() {
         nav.style.visibility = 'visible';
         nav.style.pointerEvents = 'auto';
         
-        // Set "What We Do" as the active nav link
+        // Set "Our Work" (first section) as the active nav link
         const navLinks = nav.querySelectorAll('.nav-links a');
-        const wwdLink = nav.querySelector('a[href="#what-we-do"]');
-        if (wwdLink && navLinks) {
+        const visionLink = nav.querySelector('a[href="#our-vision"]');
+        if (visionLink && navLinks) {
           navLinks.forEach(link => link.classList.remove('active'));
-          wwdLink.classList.add('active');
+          visionLink.classList.add('active');
         }
       }
       
@@ -506,7 +237,6 @@ function initSectionSnapping() {
       
       // Reset everything
       isAnimating = false;
-      console.log('🏁 Animation ended - isAnimating=false (scroll unblocked)');
       hasDetectedSwipe = false;
       if (contentWrapper) {
         contentWrapper.style.transform = '';
@@ -518,46 +248,34 @@ function initSectionSnapping() {
         [howContent, visionContent, missionText].forEach(el => {
           if (el) el.style.transition = '';
         });
-        // If What We Do is the active section (e.g. after logo click then swipe down), init its content
-        const activeSection = document.querySelector('.section-page.active');
         
-        if (activeSection && activeSection.id === 'what-we-do') {
-          // Reset ALL WWD step inline styles (they may have stale opacity from previous visit)
-          document.querySelectorAll('.wwd-step').forEach((step, index) => {
-            // Step 1 should be visible, others hidden (scroll logic will show them)
-            if (index === 0) {
-              step.style.opacity = '1';
-              step.style.transform = 'translateY(0)';
-            } else {
-              step.style.opacity = '';
-              step.style.transform = '';
-            }
-          });
-          
-          resetWwdSection();
-          
-          // Set mission text visible explicitly AFTER reset (so it's not cleared by resetWwdSection)
-          const missionTextEl = document.querySelector('.wwd-mission-text-fixed');
-          if (missionTextEl) {
-            missionTextEl.style.opacity = '1';
-            missionTextEl.style.transform = 'translateY(-50%)';
-            missionTextEl.style.pointerEvents = 'auto';
-            missionTextEl.classList.add('visible');
+        // Reset ALL WWD step inline styles (they may have stale opacity from previous visit)
+        document.querySelectorAll('.wwd-step').forEach((step, index) => {
+          // Step 1 should be visible, others hidden (scroll logic will show them)
+          if (index === 0) {
+            step.style.opacity = '1';
+            step.style.transform = 'translateY(0)';
+          } else {
+            step.style.opacity = '';
+            step.style.transform = '';
           }
-          
-          // Use 50ms delay (same as nav-click path) so layout is stable before scroll handlers run
-          setTimeout(() => {
-            updatePageTitleFade();
-            updatePageTransitions();
-          }, 50);
-        } else {
-          // For other sections, trigger scroll handlers immediately
-          window.dispatchEvent(new Event('scroll'));
-          if (wwdSection) {
-            wwdSection.dispatchEvent(new Event('scroll'));
-          }
-          console.log('✅ Transitions re-enabled, scroll handlers triggered');
+        });
+        
+        // Set mission text visible explicitly
+        const missionTextEl = document.querySelector('.wwd-mission-text-fixed');
+        if (missionTextEl) {
+          missionTextEl.style.opacity = '1';
+          missionTextEl.style.transform = 'translateY(-50%)';
+          missionTextEl.style.pointerEvents = 'auto';
+          missionTextEl.classList.add('visible');
         }
+        
+        // Use 50ms delay so layout is stable before scroll handlers run
+        setTimeout(() => {
+          updatePageTransitions();
+          // Trigger scroll handlers to init content
+          window.dispatchEvent(new Event('scroll'));
+        }, 50);
       });
     }
     
@@ -593,12 +311,8 @@ function initSectionSnapping() {
   let snapBackTimeout = null;
   
   videoHeader.addEventListener('wheel', (e) => {
-    // DEBUG: Log all wheel events on video header
-    console.log('🎥 videoHeader wheel:', { videoComplete: document.body.classList.contains('video-complete'), isAnimating, hasDetectedSwipe, deltaY: e.deltaY });
-    
     // FIRST CHECK: If video transition is complete, NEVER block scroll
     if (document.body.classList.contains('video-complete')) {
-      console.log('✅ video-complete - allowing scroll through');
       return; // Allow natural scroll - don't call preventDefault
     }
     
@@ -606,14 +320,12 @@ function initSectionSnapping() {
     
     // Prevent scrolling past target during animation (only before video-complete)
     if (isAnimating) {
-      console.warn('🚫 BLOCKING: isAnimating=true');
       e.preventDefault();
       return;
     }
     
     // Only intercept if we're at the top and not already animating
     if (currentScroll === 0 && !hasDetectedSwipe) {
-      console.warn('🚫 BLOCKING: at top, starting animation');
       e.preventDefault();
       
       // Detect scroll direction on first movement
@@ -642,8 +354,8 @@ function initSectionSnapping() {
       return;
     }
     
-    // Snap back to header if any part of video is visible
-    if (currentScroll > 0 && currentScroll < videoHeaderHeight && !isAnimating && !isManualScrolling) {
+    // Snap back to header if any part of video is visible (only BEFORE video transition completes)
+    if (currentScroll > 0 && currentScroll < videoHeaderHeight && !isAnimating && !isManualScrolling && !document.body.classList.contains('video-complete')) {
       // If ANY part of the video header is still visible, snap back to header
       isManualScrolling = true;
       isSnappingBack = true;
@@ -686,14 +398,15 @@ function initSectionSnapping() {
  * Section Transitions - Handle snap scrolling and fade effects between sections
  */
 function initSectionTransitions() {
-  const sections = document.querySelectorAll('.video-header, .wwd, .builder-stories, .salary-journey-section, .track-record, .press-quote, .real-people, .urgency, .signup-section, .footer');
+  // Note: .press-quote and .real-people are NOT observed here anymore
+  // They're inside steps 5-9 which handle their own visibility via stagger animations
+  const sections = document.querySelectorAll('.video-header, .section-content, .salary-journey-section, .track-record, .urgency, .signup-section, .footer');
   
   if (sections.length === 0) return;
   
   const videoHeader = document.querySelector('.video-header');
   const videoPlayer = videoHeader ? videoHeader.querySelector('.video-header-player') : null;
   const videoOverlay = videoHeader ? videoHeader.querySelector('.video-header-overlay') : null;
-  const wwdSection = document.querySelector('.wwd');
   
   // Handle overlay fade on scroll
   let lastScrollPosition = 0;
@@ -911,10 +624,8 @@ function initLogoAnimation() {
   
   // Check if video intro is already complete (e.g., page reload after transition)
   const isVideoComplete = document.body.classList.contains('video-complete');
-  const activeSectionPage = document.querySelector('.section-page.active');
-  
-  if (isVideoComplete && activeSectionPage) {
-    // Video complete and section page active - show nav
+  if (isVideoComplete) {
+    // Video complete - show nav
     nav.classList.remove('hidden-on-video');
     nav.classList.add('logo-at-top');
     nav.style.opacity = '1';
@@ -944,17 +655,12 @@ function initLogoAnimation() {
       return;
     }
     
-    // Skip scroll handling if a section-page is active (they have their own scrolling)
-    const activeSectionPage = document.querySelector('.section-page.active');
-    if (activeSectionPage) {
-      // Ensure nav stays visible when on section pages
-      nav.classList.remove('hidden-on-video');
-      nav.classList.add('logo-at-top'); // Add to nav for link visibility
-      nav.style.opacity = '1';
-      nav.style.visibility = 'visible';
-      document.body.classList.add('logo-at-top');
-      return;
-    }
+    // After video complete, ensure nav stays visible
+    nav.classList.remove('hidden-on-video');
+    nav.classList.add('logo-at-top');
+    nav.style.opacity = '1';
+    nav.style.visibility = 'visible';
+    document.body.classList.add('logo-at-top');
     
     const scrollY = window.scrollY;
     const progress = Math.min(scrollY / videoHeaderHeight, 1);
@@ -1007,10 +713,10 @@ function initLogoAnimation() {
           
           nav.classList.remove('hidden-on-video');
           nav.style.opacity = navProgress;
-          nav.style.backgroundColor = `rgba(255, 243, 233, ${0.6 * navProgress})`;
+          nav.style.backgroundColor = 'transparent'; /* Site background shows through */
           nav.style.backdropFilter = `blur(${20 * navProgress}px) saturate(${100 + (80 * navProgress)}%)`;
           nav.style.webkitBackdropFilter = `blur(${20 * navProgress}px) saturate(${100 + (80 * navProgress)}%)`;
-          nav.style.transition = 'opacity 0.5s cubic-bezier(0.43, 0.195, 0.02, 1), background-color 0.5s cubic-bezier(0.43, 0.195, 0.02, 1), backdrop-filter 0.5s cubic-bezier(0.43, 0.195, 0.02, 1)';
+          nav.style.transition = 'opacity 0.5s cubic-bezier(0.43, 0.195, 0.02, 1), backdrop-filter 0.5s cubic-bezier(0.43, 0.195, 0.02, 1)';
           
           // Stagger nav links
           navLinks.forEach((link, index) => {
@@ -1176,9 +882,9 @@ function initRotatingWords() {
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     
-    // Calculate max spread based on viewport (use smaller dimension, leave some margin)
-    const maxSpreadX = Math.min(vw * 0.8, 600); // 80% of viewport width, max 600px
-    const maxSpreadY = Math.min(vh * 0.6, 400); // 60% of viewport height, max 400px
+    // Calculate max spread based on viewport - full width and height distribution
+    const maxSpreadX = vw * 0.9; // 90% of viewport width (no cap)
+    const maxSpreadY = vh * 0.7; // 70% of viewport height (no cap)
     
     const x = (Math.random() - 0.5) * maxSpreadX * 2; // Spread across width
     const y = (Math.random() - 0.5) * maxSpreadY * 2; // Spread across height
@@ -1281,9 +987,7 @@ function initRotatingWords() {
   
   // Expose functions for external control
   window.startRotatingWords = function() {
-    console.log('startRotatingWords called, interval exists:', !!rotatingWordsInterval);
     if (rotatingWordsInterval) {
-      console.log('Already running, returning');
       return; // Already running
     }
     
@@ -1296,25 +1000,20 @@ function initRotatingWords() {
     // Force a reflow to ensure styles are applied
     rotatingWordEl.offsetHeight;
     
-    console.log('Building initial word:', words[currentIndex]);
     // Build the word and start rotation
     buildWord(words[currentIndex]);
     
-    console.log('Starting interval');
     rotatingWordsInterval = setInterval(rotateWord, 2000);
   };
   
   window.stopRotatingWords = function() {
-    console.log('stopRotatingWords called');
     if (rotatingWordsInterval) {
       clearInterval(rotatingWordsInterval);
       rotatingWordsInterval = null;
-      console.log('Interval cleared');
     }
   };
   
   // Initial build so text is there (but hidden until step 2 is active)
-  console.log('Initial rotating words setup');
   buildWord(words[0]);
 }
 
@@ -1348,6 +1047,27 @@ function initScrollEffects() {
     
     .section-hidden {
       opacity: 0.3;
+    }
+    
+    /* Override section-hidden for elements inside steps 5-9 */
+    /* These steps handle their own visibility via stagger animations */
+    .wwd-step-5 .section-hidden,
+    .wwd-step-6 .section-hidden,
+    .wwd-step-7 .section-hidden,
+    .wwd-step-8 .section-hidden,
+    .wwd-step-9 .section-hidden,
+    .wwd-step-5.section-hidden,
+    .wwd-step-6.section-hidden,
+    .wwd-step-7.section-hidden,
+    .wwd-step-8.section-hidden,
+    .wwd-step-9.section-hidden {
+      opacity: 1 !important;
+    }
+    
+    /* Override section-hidden for #our-work parent container */
+    /* This section contains steps 5-9 and should never fade */
+    #our-work.section-hidden {
+      opacity: 1 !important;
     }
     
     .video-header.initial-load {
@@ -1787,24 +1507,14 @@ function initLogoClick() {
     hideWwdFixedContent();
     
     // Step 4c: Clear Our Impact background so next section (e.g. What We Do) shows correct color
-    const bgOverlay = document.getElementById('section-bg-overlay');
-    if (bgOverlay) bgOverlay.classList.remove('our-impact-active');
+  const bgOverlay = document.getElementById('section-bg-overlay');
+  if (bgOverlay) {
+    bgOverlay.classList.remove('our-impact-active');
+    bgOverlay.classList.remove('urgency-active');
+    syncBodyBackgroundToOverlay();
+  }
     
-    // Step 5: Reset section pages - IMPORTANT: clear inline opacity from previous transitions
-    document.querySelectorAll('.section-page').forEach(page => {
-      page.classList.remove('active');
-      page.style.opacity = '';  // Clear any inline opacity from fade transitions
-      page.style.transition = '';
-    });
-    
-    // Step 6: Re-activate "What We Do" section (but it will be hidden until video transition)
-    const wwdSection = document.querySelector('#what-we-do');
-    if (wwdSection) {
-      wwdSection.classList.add('active');
-      wwdSection.style.opacity = '1';  // Explicitly ensure opacity is 1
-    }
-    
-    // Step 7: Scroll to top
+    // Step 5: Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
     
     // Set cursor pointer for logo
@@ -1848,8 +1558,7 @@ function splitTextIntoWords(element) {
   ).join(' ');
 }
 
-// Microsoft AI-style background image configuration
-// Vertical/horizontal only, Mission_01 largest, no overlap, vertical stack
+// Mission background image configuration - single image
 const MISSION_BG_CONFIG = [
   {
     src: 'assets/images/AIJI_Artwork_Mission_01.png',
@@ -1857,27 +1566,6 @@ const MISSION_BG_CONFIG = [
     size: 'large', // Largest image
     position: { top: '20vh' },
     opacity: 1.0 // Full opacity for watercolor effect
-  },
-  {
-    src: 'assets/images/AIJI_Artwork_Mission_02.png',
-    orientation: 'horizontal', // Fully horizontal
-    size: 'medium',
-    position: { top: '90vh' },
-    opacity: 0.95 // Near full opacity
-  },
-  {
-    src: 'assets/images/AIJI_Artwork_Mission_03.png',
-    orientation: 'vertical', // Fully vertical
-    size: 'medium',
-    position: { top: '160vh' },
-    opacity: 0.95 // Near full opacity
-  },
-  {
-    src: 'assets/images/AIJI_Artwork_Mission_04.png',
-    orientation: 'horizontal', // Fully horizontal
-    size: 'medium',
-    position: { top: '230vh' },
-    opacity: 0.95 // Near full opacity
   }
 ];
 
@@ -1904,15 +1592,13 @@ function createBackgroundArtwork() {
     container.appendChild(img);
   });
   
-  console.log('Mission background images created:', MISSION_BG_CONFIG.length);
 }
 
 // Microsoft AI-style fade in/out for Mission background images
 function initMissionBackgroundFade() {
   const images = document.querySelectorAll('.mission-bg-art');
-  const wwdSection = document.querySelector('.wwd');
   
-  if (!images.length || !wwdSection) return;
+  if (!images.length) return;
   
   function updateImageVisibility() {
     const viewportHeight = window.innerHeight;
@@ -1945,16 +1631,12 @@ function initMissionBackgroundFade() {
     });
   }
   
-  // Listen to WWD section scroll (since it's the scrolling container)
-  wwdSection.addEventListener('scroll', updateImageVisibility, { passive: true });
-  
-  // Also listen to window scroll for initial load
+  // Listen to window scroll (body now scrolls)
   window.addEventListener('scroll', updateImageVisibility, { passive: true });
   
   // Initial check
   updateImageVisibility();
   
-  console.log('Mission background fade initialized');
 }
 
 // Initialize Mission page animations
@@ -1970,13 +1652,11 @@ function initMissionPageAnimations() {
   // Initialize fade in/out effect
   initMissionBackgroundFade();
   
-  console.log('Mission page animations initialized');
 }
 
 // Parallax scroll effect - DISABLED for Microsoft AI-style (text stays fixed, images scroll naturally)
 function initMissionParallax() {
   // Parallax disabled - using natural scroll with fade in/out instead
-  console.log('Mission parallax disabled - using Microsoft AI-style fade');
 }
 
 // Add scroll boundary detection for all sections
@@ -1985,10 +1665,9 @@ function initMissionParallax() {
  * All pages visible, animations driven by scroll position
  */
 function initWwdContinuousScroll() {
-  const wwdSection = document.querySelector('.wwd');
   const allSteps = document.querySelectorAll('.wwd-step');
   
-  if (!wwdSection || !allSteps.length) return;
+  if (!allSteps.length) return;
   
   // Make all steps visible for continuous scroll
   allSteps.forEach(step => {
@@ -2000,11 +1679,10 @@ function initWwdContinuousScroll() {
   
   // Note: Don't set scrollBehavior = 'smooth' - it conflicts with trackpad momentum
   
-  console.log('WWD continuous scroll enabled - all steps visible');
 }
 
-const PAGE_TITLES = ['The Mission', 'The Vision', 'The How', 'The Hub', 'Leadership', 'Ecosystem'];
-const IMPACT_PAGE_TITLES = ['Decade of Work', 'NYT', 'Demography', 'Economic Impact', 'Builders'];
+const PAGE_TITLES = ['The Mission', 'The Vision', 'The How', 'The Urgency', 'Decade of Work', 'NYT', 'Builders Demography', 'Economic Impact', 'Transformation Stories', 'The Hub', 'Leadership', 'Ecosystem'];
+const IMPACT_PAGE_TITLES = ['Decade of Work', 'NYT', 'Builders Demography', 'Economic Impact', 'Transformation Stories'];
 let _lastTitleStepIndex = -1;
 let _lastImpactStepIndex = -1;
 let _decadeEntrancePlayed = false;
@@ -2065,13 +1743,13 @@ function updatePageTitleFade() {
 
   let usedClosestFallback = false;
   // If no step contains viewport center (e.g. gap between Hub and How), pick step whose center is closest
-  if (currentStepIndex < 1 || currentStepIndex > 6) {
+  if (currentStepIndex < 1 || currentStepIndex > 12) {
     usedClosestFallback = true;
     let bestIndex = 1;
     let bestDist = Infinity;
     steps.forEach((step, index) => {
       const stepNum = index + 1;
-      if (stepNum === 7) return; // skip footer
+      if (stepNum === 13) return; // skip footer
       const rect = step.getBoundingClientRect();
       const stepCenter = (rect.top + rect.bottom) / 2;
       const dist = Math.abs(stepCenter - viewportCenter);
@@ -2084,8 +1762,8 @@ function updatePageTitleFade() {
     currentStep = steps[currentStepIndex - 1];
   }
 
-  // Footer (step 7) - show Our Partners as last; steps 1-6 for progress bar
-  const displayStep = currentStepIndex >= 1 && currentStepIndex <= 6 ? currentStepIndex : (currentStepIndex === 7 ? 6 : 1);
+  // Footer (step 13) - show Ecosystem as last; steps 1-12 for progress bar
+  const displayStep = currentStepIndex >= 1 && currentStepIndex <= 12 ? currentStepIndex : (currentStepIndex === 13 ? 12 : 1);
 
   // Only rebuild DOM when step changes
   if (displayStep !== _lastTitleStepIndex) {
@@ -2106,7 +1784,7 @@ function updatePageTitleFade() {
     titleEl.textContent = toTitleCase(PAGE_TITLES[displayStep - 1]);
     titlesCurrent.appendChild(titleEl);
 
-    for (let i = displayStep + 1; i <= 6; i++) {
+    for (let i = displayStep + 1; i <= 12; i++) {
       const dot = document.createElement('div');
       dot.className = 'title-dot';
       titlesBelow.appendChild(dot);
@@ -2312,24 +1990,28 @@ const DECADE_BUILDER_ROW_GAP_PX = 30;
 
 function initDecadeBuilderPhotos() {
   const container = document.getElementById('impact-decade-bg');
-  const decadeStep = document.querySelector('#our-impact [data-impact-step="1"]');
+  const decadeStep = document.querySelector('.wwd-step-5');
   const decadeContent = document.getElementById('impact-decade-content-fixed');
   if (!container || !decadeStep || decadeBuilderPhotosInitialized) return;
 
   const stepW = decadeStep.offsetWidth || window.innerWidth;
   const stepH = decadeStep.offsetHeight;
   if (stepH < 100 || stepW < 100) return;
-  const stepRect = decadeStep.getBoundingClientRect();
-  const bodyEl = decadeContent ? decadeContent.querySelector('.impact-decade-body') : null;
-  let firstImageMinTopPx;
-  if (bodyEl) {
-    const bodyRect = bodyEl.getBoundingClientRect();
-    firstImageMinTopPx = bodyRect.bottom - stepRect.top + DECADE_BUILDER_GAP_BELOW_COPY_PX;
-  } else {
-    const contentHeight = decadeContent ? decadeContent.offsetHeight : 200;
-    const viewportCenter = window.innerHeight / 2;
-    firstImageMinTopPx = viewportCenter + contentHeight / 2 + DECADE_BUILDER_GAP_BELOW_COPY_PX;
-  }
+
+  // Calculate where the first row of images should start.
+  // The fixed copy (.impact-decade-content-fixed) is centered at ~50vh when in view.
+  // We want images to start 100px below the bottom of that copy.
+  // Use the copy's actual height to compute its bottom edge relative to viewport center.
+  const viewportHeight = window.innerHeight;
+  const copyHeight = decadeContent ? decadeContent.offsetHeight : 200;
+  // Copy is vertically centered at (50vh - 75px), so its center is at that point
+  // Copy bottom = (viewportHeight / 2 - 75) + copyHeight / 2
+  const copyBottomInViewport = (viewportHeight / 2 - 75) + (copyHeight / 2);
+  // When user scrolls step 5 into view (step top at 0), images should start at copyBottomInViewport + 100px
+  let firstImageMinTopPx = copyBottomInViewport + DECADE_BUILDER_GAP_BELOW_COPY_PX;
+  
+  // Clamp so images stay inside step
+  firstImageMinTopPx = Math.max(0, firstImageMinTopPx);
   if (firstImageMinTopPx >= stepH - 100) firstImageMinTopPx = Math.max(0, stepH * 0.2);
   const bottomMargin = 20;
   const availableHeight = Math.max(100, stepH - firstImageMinTopPx - bottomMargin);
@@ -2416,7 +2098,8 @@ function initDecadeBuilderPhotos() {
 
   // Set the step height dynamically based on actual image positions + 150px padding
   const BOTTOM_PADDING = 150;
-  const requiredHeight = globalLowestBottom + BOTTOM_PADDING;
+  const minStepHeight = Math.max(stepH, 800); /* keep at least current or 800px so layout doesn't collapse */
+  const requiredHeight = Math.max(globalLowestBottom + BOTTOM_PADDING, minStepHeight);
   decadeStep.style.minHeight = requiredHeight + 'px';
 
   // Delay image visibility until copy entrance animation completes (0.5s + 0.25s delay = 750ms)
@@ -2441,31 +2124,18 @@ function updateBuilderPhotosVisibility() {
  * Single container: slides up/fades in, slides up/fades out. Rect-based so animation runs reliably.
  */
 function updateDecadeEntrance() {
-  const impactSection = document.getElementById('our-impact');
   const decadeContent = document.getElementById('impact-decade-content-fixed');
-  const decadeStep = impactSection && impactSection.querySelector('[data-impact-step="1"]');
+  const decadeStep = document.querySelector('.wwd-step-5');
 
   if (window.DEBUG_DECADE) {
     console.log('[Decade] updateDecadeEntrance called', {
-      hasImpactSection: !!impactSection,
       hasDecadeContent: !!decadeContent,
       hasDecadeStep: !!decadeStep,
-      impactActive: impactSection ? impactSection.classList.contains('active') : false,
       _decadeEntrancePlayed
     });
   }
 
   if (!decadeContent || !decadeStep) return;
-
-  if (!impactSection || !impactSection.classList.contains('active')) {
-    if (window.DEBUG_DECADE) console.log('[Decade] section not active -> hide, reset _decadeEntrancePlayed');
-    decadeContent.style.opacity = '0';
-    decadeContent.style.transform = 'translate(-50%, calc(-50% + 30px))';
-    decadeContent.style.pointerEvents = 'none';
-    _decadeEntrancePlayed = false;
-    _decadeEntranceInProgress = false;
-    return;
-  }
 
   const rect = decadeStep.getBoundingClientRect();
   const viewportHeight = window.innerHeight;
@@ -2522,14 +2192,16 @@ function updateDecadeEntrance() {
       decadeContent.style.opacity = progress;
       decadeContent.style.transform = `translate(-50%, calc(-50% + ${(1 - progress) * 30}px))`;
       decadeContent.style.pointerEvents = progress > 0.5 ? 'auto' : 'none';
-    } else {
+      /* Trigger staggered entrance (headline then body) on first time in entrance zone */
       if (!_decadeEntrancePlayed) {
         _decadeEntrancePlayed = true;
         _decadeEntranceInProgress = true;
         decadeContent.style.pointerEvents = 'none';
+        decadeContent.classList.remove('decade-entrance-done');
         decadeContent.classList.add('decade-entrance-animate');
         const onEntranceDone = () => {
           decadeContent.classList.remove('decade-entrance-animate');
+          decadeContent.classList.add('decade-entrance-done');
           decadeContent.style.opacity = '1';
           decadeContent.style.transform = 'translate(-50%, -50%)';
           decadeContent.style.pointerEvents = 'auto';
@@ -2543,7 +2215,10 @@ function updateDecadeEntrance() {
             onEntranceDone();
           }
         }, 750);
-      } else if (!_decadeEntranceInProgress) {
+      }
+    } else {
+      /* Fully visible: keep content visible */
+      if (!_decadeEntranceInProgress) {
         decadeContent.style.opacity = '1';
         decadeContent.style.transform = 'translate(-50%, -50%)';
         decadeContent.style.pointerEvents = 'auto';
@@ -2563,21 +2238,27 @@ function updateDecadeEntrance() {
 
 /**
  * Update builder photos exit - fade out entire container when the lowest image bottom hits 50% viewport
+ * Also ensures photos become visible when step is active (fallback for IntersectionObserver)
  */
 function updateBuilderPhotosExit() {
-  const impactSection = document.getElementById('our-impact');
   const container = document.getElementById('impact-decade-bg');
-  const decadeStep = impactSection && impactSection.querySelector('[data-impact-step="1"]');
+  const decadeStep = document.querySelector('.wwd-step-5');
   
   if (!container || !decadeStep) return;
-  if (!impactSection || !impactSection.classList.contains('active')) {
-    container.style.opacity = '1'; // Reset when not active
-    return;
-  }
   
   // Find the actual lowest image bottom
   const photos = container.querySelectorAll('.builder-photo');
   if (photos.length === 0) return;
+  
+  // Fallback: force photos visible when they're in viewport (backup for IntersectionObserver)
+  const viewportHeight = window.innerHeight;
+  photos.forEach((photo) => {
+    const photoRect = photo.getBoundingClientRect();
+    // Photo is in viewport
+    if (photoRect.top < viewportHeight && photoRect.bottom > 0) {
+      photo.style.opacity = '1';
+    }
+  });
   
   let lowestBottom = 0;
   photos.forEach((photo) => {
@@ -2587,7 +2268,6 @@ function updateBuilderPhotosExit() {
     }
   });
   
-  const viewportHeight = window.innerHeight;
   const viewportCenter = viewportHeight / 2;
   const exitZone = viewportHeight * 0.15;
   
@@ -2613,15 +2293,10 @@ function updateBuilderPhotosExit() {
  * Uses hysteresis (buffer) at boundaries to prevent appear/disappear flicker.
  */
 function updateNYTEntrance() {
-  const impactSection = document.getElementById('our-impact');
-  const nytPage = impactSection && impactSection.querySelector('[data-impact-step="2"]');
+  const nytPage = document.querySelector('.wwd-step-6');
   const nytContent = document.getElementById('nyt-content-fixed');
 
   if (!nytPage || !nytContent) return;
-  if (!impactSection || !impactSection.classList.contains('active')) {
-    nytContent.style.opacity = '0';
-    return;
-  }
 
   const rect = nytPage.getBoundingClientRect();
   const viewportHeight = window.innerHeight;
@@ -2676,118 +2351,21 @@ function updateNYTEntrance() {
 }
 
 /**
- * Update Stats (Demography) page entrance/exit animation
- * Content is centered and fades in when page top hits viewport center
+ * Update Stats (Demography) page - no-op
+ * Exit animations removed for cross-browser consistency.
+ * Entrance handled by stagger system; natural scroll handles exit.
  */
 function updateStatsEntrance() {
-  const impactSection = document.getElementById('our-impact');
-  const statsPage = impactSection && impactSection.querySelector('[data-impact-step="3"]'); // Demography
-  const statsContent = statsPage ? statsPage.querySelector('.real-people-content') : null;
-  const nextStep = impactSection && impactSection.querySelector('[data-impact-step="4"]'); // Economic Impact
-
-  if (!statsPage || !statsContent) return;
-  if (!impactSection || !impactSection.classList.contains('active')) {
-    statsContent.style.opacity = '0';
-    statsContent.style.transform = 'translateY(20px)';
-    return;
-  }
-
-  const rect = statsPage.getBoundingClientRect();
-  const viewportHeight = window.innerHeight;
-  const viewportCenter = viewportHeight / 2;
-  const entranceZone = viewportHeight * 0.2; // Smaller zone for quicker fade
-  const exitZoneHeight = viewportHeight * 0.25;
-  
-  // Entrance starts when page top approaches viewport center
-  const distanceFromCenter = viewportCenter - rect.top;
-
-  // Exit when next step approaches (bottom of page hits viewport center)
-  const inExitZone = rect.bottom > viewportCenter && rect.bottom < viewportCenter + exitZoneHeight;
-  const pastExit = rect.bottom <= viewportCenter;
-  
-  if (pastExit) {
-    statsContent.style.opacity = '0';
-    statsContent.style.transform = 'translateY(-20px)';
-    return;
-  }
-  
-  if (inExitZone) {
-    const exitProgress = (viewportCenter + exitZoneHeight - rect.bottom) / exitZoneHeight;
-    const opacity = Math.max(0, Math.min(1, 1 - exitProgress));
-    statsContent.style.opacity = opacity;
-    statsContent.style.transform = `translateY(-${exitProgress * 20}px)`;
-    return;
-  }
-
-  // Entrance - fade in when page top passes viewport center
-  if (distanceFromCenter > 0 && distanceFromCenter < entranceZone) {
-    const progress = Math.min(1, distanceFromCenter / entranceZone);
-    statsContent.style.opacity = progress;
-    statsContent.style.transform = `translateY(${(1 - progress) * 20}px)`;
-  } else if (distanceFromCenter >= entranceZone) {
-    statsContent.style.opacity = '1';
-    statsContent.style.transform = 'translateY(0)';
-  } else {
-    // Page top hasn't reached viewport center yet
-    statsContent.style.opacity = '0';
-    statsContent.style.transform = 'translateY(30px)';
-  }
+  // No exit animation - let natural scroll handle it
 }
 
 /**
- * Update Economic Impact section entrance/exit animation
- * Same pattern as Demography section
+ * Update Economic Impact section - no-op
+ * Exit animations removed for cross-browser consistency.
+ * Entrance handled by stagger system; natural scroll handles exit.
  */
 function updateEconomicImpactEntrance() {
-  const impactSection = document.getElementById('our-impact');
-  const economicPage = impactSection && impactSection.querySelector('[data-impact-step="4"]');
-  const economicContent = economicPage ? economicPage.querySelector('.real-people-content') : null;
-
-  if (!economicPage || !economicContent) return;
-  if (!impactSection || !impactSection.classList.contains('active')) {
-    economicContent.style.opacity = '0';
-    economicContent.style.transform = 'translateY(20px)';
-    return;
-  }
-
-  const rect = economicPage.getBoundingClientRect();
-  const viewportHeight = window.innerHeight;
-  const viewportCenter = viewportHeight / 2;
-  const entranceZone = viewportHeight * 0.2;
-  const exitZoneHeight = viewportHeight * 0.25;
-  
-  const distanceFromCenter = viewportCenter - rect.top;
-
-  // Exit when bottom of page hits viewport center
-  const inExitZone = rect.bottom > viewportCenter && rect.bottom < viewportCenter + exitZoneHeight;
-  const pastExit = rect.bottom <= viewportCenter;
-  
-  if (pastExit) {
-    economicContent.style.opacity = '0';
-    economicContent.style.transform = 'translateY(-20px)';
-    return;
-  }
-  
-  if (inExitZone) {
-    const exitProgress = (viewportCenter + exitZoneHeight - rect.bottom) / exitZoneHeight;
-    const opacity = Math.max(0, Math.min(1, 1 - exitProgress));
-    economicContent.style.opacity = opacity;
-    economicContent.style.transform = `translateY(-${exitProgress * 20}px)`;
-    return;
-  }
-
-  // Entrance - fade in when page top passes viewport center
-  if (distanceFromCenter > 0 && distanceFromCenter < entranceZone) {
-    const progress = Math.min(1, distanceFromCenter / entranceZone);
-    economicContent.style.opacity = progress;
-    economicContent.style.transform = `translateY(${(1 - progress) * 20}px)`;
-  } else if (distanceFromCenter >= entranceZone) {
-    economicContent.style.opacity = '1';
-    economicContent.style.transform = 'translateY(0)';
-  } else {
-    economicContent.style.opacity = '0';
-    economicContent.style.transform = 'translateY(30px)';
-  }
+  // No exit animation - let natural scroll handle it
 }
 
 /**
@@ -2795,17 +2373,10 @@ function updateEconomicImpactEntrance() {
  * Same logic as What We Do: page-progress-based exit at 90-115%, content + progress bar fade together
  */
 function updateBuildersStoriesExit() {
-  const impactSection = document.getElementById('our-impact');
-  const buildersStep = impactSection && impactSection.querySelector('[data-impact-step="5"]');
+  const buildersStep = document.querySelector('.wwd-step-9');
   const buildersContent = buildersStep && buildersStep.querySelector('.builder-stories-content');
-  const titlesFixed = document.getElementById('wwd-titles-fixed');
 
   if (!buildersStep || !buildersContent) return;
-  if (!impactSection || !impactSection.classList.contains('active')) {
-    buildersContent.style.opacity = '1';
-    buildersContent.style.transform = 'translateY(0)';
-    return;
-  }
 
   const viewportHeight = window.innerHeight;
   const stepRect = buildersStep.getBoundingClientRect();
@@ -2816,7 +2387,6 @@ function updateBuildersStoriesExit() {
     const inView = stepRect.top < viewportHeight && stepRect.bottom > 0;
     buildersContent.style.opacity = inView ? '1' : '0';
     buildersContent.style.transform = inView ? 'translateY(0)' : 'translateY(-30px)';
-    if (titlesFixed) titlesFixed.style.opacity = inView ? '1' : '0';
     return;
   }
 
@@ -2828,17 +2398,12 @@ function updateBuildersStoriesExit() {
     const fadeProgress = Math.min(1, (pageProgress - 0.90) / 0.25);
     buildersContent.style.opacity = 1 - fadeProgress;
     buildersContent.style.transform = `translateY(${-30 * fadeProgress}px)`;
-    if (titlesFixed) {
-      titlesFixed.style.opacity = 1 - fadeProgress;
-      titlesFixed.style.transition = 'opacity 0.4s ease';
-    }
   } else if (pageProgress <= 0.90) {
     buildersContent.style.opacity = '1';
     buildersContent.style.transform = 'translateY(0)';
   } else {
     buildersContent.style.opacity = '0';
     buildersContent.style.transform = 'translateY(-30px)';
-    if (titlesFixed) titlesFixed.style.opacity = '0';
   }
 }
 
@@ -2853,17 +2418,34 @@ function updatePageTransitions() {
 
   steps.forEach((step, index) => {
     // Footer step never fades - always fully visible
-    if (step.classList.contains('wwd-step-7')) {
+    if (step.classList.contains('wwd-step-13')) {
       step.style.opacity = '1';
       step.style.transform = 'translateY(0)';
       step.classList.remove('fading-out', 'fading-in');
       return;
     }
-
+    
+    // Steps 5-9 have their own visibility handling via dedicated functions:
+    // - Step 5: updateDecadeEntrance() and updateBuilderPhotosExit()
+    // - Step 6: updateNYTEntrance() for fixed content; background always visible
+    // - Steps 7-8: Stagger animations handle content visibility
+    // - Step 9: updateBuildersStoriesExit()
+    // Keep parent step at full opacity so children (backgrounds, stagger items) are visible
+    if (step.classList.contains('wwd-step-5') ||
+        step.classList.contains('wwd-step-6') ||
+        step.classList.contains('wwd-step-7') ||
+        step.classList.contains('wwd-step-8') ||
+        step.classList.contains('wwd-step-9')) {
+      step.style.opacity = '1';
+      step.style.transform = 'translateY(0)';
+      step.classList.remove('fading-out', 'fading-in');
+      return;
+    }
+    
     const stepRect = step.getBoundingClientRect();
     const nextStep = steps[index + 1];
     const stepHeight = step.offsetHeight;
-    const isLastContentStep = nextStep && nextStep.classList.contains('wwd-step-7');
+    const isLastContentStep = nextStep && nextStep.classList.contains('wwd-step-13');
     if (!isLastContentStep && titlesFixed) progressBarOpacity = 1;
 
     // Steps shorter than viewport: pageProgress formula breaks (negative denominator).
@@ -2891,7 +2473,7 @@ function updatePageTransitions() {
       
       // Fade in next page (footer step 7 never fades - always full opacity)
       if (nextStep) {
-        if (nextStep.classList.contains('wwd-step-7')) {
+        if (nextStep.classList.contains('wwd-step-13')) {
           nextStep.style.opacity = '1';
           nextStep.style.transform = 'translateY(0)';
         } else {
@@ -2924,90 +2506,64 @@ function updatePageTransitions() {
  * Update Vision page background - scrolls up with page and scales
  * Starts at 75% scale at browser bottom, scales up to 100% as it scrolls up
  */
-function updateVisionBackgroundScale() {
-  const visionPage = document.querySelector('.wwd-step-2');
-  const bgContainer = document.querySelector('.wwd-vision-bg-container');
-  const bgImage = document.querySelector('.wwd-vision-bg-image');
-  
-  if (!visionPage || !bgImage || !bgContainer) return;
-  
-  const rect = visionPage.getBoundingClientRect();
-  const viewportHeight = window.innerHeight;
-  
-  // Calculate scroll progress through Vision page (0 = just entered, 1 = exiting)
-  const scrollProgress = -rect.top / (visionPage.offsetHeight - viewportHeight);
-  
-  // Also check if Vision page is entering (before scrollProgress = 0)
-  const isEntering = rect.top > 0 && rect.top < viewportHeight;
-  
-  if (isEntering) {
-    // Vision page is entering from bottom
-    // Calculate entrance progress (0 = at bottom, 1 = top at viewport top)
-    const entranceProgress = 1 - (rect.top / viewportHeight);
-    
-    // Start at 75% scale, grow to 100% as it enters
-    const scale = 0.75 + (entranceProgress * 0.25); // 0.75 → 1.0
-    
-    // Position background - starts at bottom, moves up
-    const yPosition = viewportHeight - (entranceProgress * viewportHeight * 0.5);
-    
-    bgContainer.style.top = `${yPosition}px`;
-    bgImage.style.transform = `scale(${scale})`;
-  } else if (scrollProgress >= 0 && scrollProgress <= 1) {
-    // Scrolling through Vision page
-    
-    // Move background up with scroll
-    const scrollOffset = scrollProgress * (visionPage.offsetHeight - viewportHeight) * 0.5;
-    
-    // Scale from 1.0 to 1.75 (100% to 175%)
-    const scale = 1 + (scrollProgress * 0.75);
-    
-    // Update background position and scale
-    bgContainer.style.top = `calc(50vh - ${scrollOffset}px)`;
-    bgImage.style.transform = `scale(${scale})`;
-  } else if (scrollProgress < 0) {
-    // Before Vision page is visible
-    bgContainer.style.top = `${viewportHeight}px`;
-    bgImage.style.transform = 'scale(0.75)';
-  } else {
-    // After exiting
-    bgImage.style.transform = 'scale(1.75)';
-  }
-}
 
 /**
  * Initialize advanced page transitions - integrate all scroll effects
  */
 function initAdvancedPageTransitions() {
-  const wwdSection = document.querySelector('.wwd');
   const visionPage = document.querySelector('.wwd-step-2');
   const visionContent = document.querySelector('.wwd-vision-content-fixed');
   const missionPage = document.querySelector('.wwd-step-1');
   const missionText = document.querySelector('.wwd-mission-text-fixed');
   let rotatingWordsStarted = false;
   
-  if (!wwdSection) return;
+  // Check if any steps exist
+  if (!document.querySelector('.wwd-step')) return;
   
-  // DEBUG: Log WWD scroll events (every 500px)
-  let lastLoggedScrollTop = -1;
-  wwdSection.addEventListener('scroll', () => {
-    const currentScrollTop = wwdSection.scrollTop;
-    if (Math.abs(currentScrollTop - lastLoggedScrollTop) > 500) {
-      console.log('📜 WWD scroll:', { scrollTop: currentScrollTop, scrollHeight: wwdSection.scrollHeight, clientHeight: wwdSection.clientHeight });
-      lastLoggedScrollTop = currentScrollTop;
-    }
-  }, { passive: true });
   
   function handleScroll() {
-    if (document.querySelector('.wwd.active')) {
-      updatePageTitleFade();
+    // Skip scroll handling if video intro is not complete
+    if (!document.body.classList.contains('video-complete')) return;
+    
+    // Update fixed content entrance/exit animations
+    updateDecadeEntrance();
+    updateBuilderPhotosExit();
+    updateNYTEntrance();
+    updateStatsEntrance();
+    updateEconomicImpactEntrance();
+    updateBuildersStoriesExit();
+    
+    // Site background mapping based on current step in viewport:
+    //   Steps 1–3, 10:  default (Our Vision)      → no class
+    //   Step 4:         urgency (The Urgency)     → .urgency-active
+    //   Steps 5–9:      our-work (Our Work)       → .our-impact-active
+    //   Steps 11–12:    default (Leadership)      → no class
+    const bgOverlay = document.getElementById('section-bg-overlay');
+    if (bgOverlay) {
+      const steps = document.querySelectorAll('.wwd-step');
+      const vh = window.innerHeight;
+      const vc = vh / 2;
+      let onUrgencyStep = false;
+      let onImpactStep = false;
+      steps.forEach((step) => {
+        const stepNum = parseInt(step.getAttribute('data-step'), 10);
+        const rect = step.getBoundingClientRect();
+        const inView = rect.top < vc && rect.bottom > vc;
+        if (stepNum === 4 && inView) onUrgencyStep = true;
+        if (stepNum >= 5 && stepNum <= 9 && inView) onImpactStep = true;
+      });
+      bgOverlay.classList.toggle('urgency-active', onUrgencyStep);
+      bgOverlay.classList.toggle('our-impact-active', onImpactStep);
+      syncBodyBackgroundToOverlay();
     }
+    
+    // Update active nav state based on current section
+    updateActiveNavOnScroll();
+    
     updatePageTransitions();
-    updateVisionBackgroundScale();
     updateMissionEntrance();
     updateVisionEntrance();
     updateHowPageEntrance();
-    updatePillarScrollProgress();
     updateHubEntrance();
     updateCouncilEntrance();
     updatePartnersEntrance();
@@ -3022,7 +2578,6 @@ function initAdvancedPageTransitions() {
         if (window.startRotatingWords) {
           window.startRotatingWords();
           rotatingWordsStarted = true;
-          console.log('Rotating words animation started');
         }
       }
     }
@@ -3033,9 +2588,9 @@ function initAdvancedPageTransitions() {
    * Content scrolls with page; exit when Partners (step 6) approaches
    */
   function updateCouncilEntrance() {
-    const councilPage = document.querySelector('.wwd-step-5');
+    const councilPage = document.querySelector('.wwd-step-11');
     const councilWrapper = councilPage ? councilPage.querySelector('.wwd-council-wrapper') : null;
-    const nextStep = document.querySelector('.wwd-step-6');
+    const nextStep = document.querySelector('.wwd-step-12');
     if (!councilPage || !councilWrapper) return;
 
     const rect = councilPage.getBoundingClientRect();
@@ -3082,9 +2637,9 @@ function initAdvancedPageTransitions() {
    * Content scrolls with page; exit when step 7 (footer) approaches
    */
   function updatePartnersEntrance() {
-    const partnersPage = document.querySelector('.wwd-step-6');
+    const partnersPage = document.querySelector('.wwd-step-12');
     const partnersWrapper = partnersPage ? partnersPage.querySelector('.wwd-partners-wrapper') : null;
-    const nextStep = document.querySelector('.wwd-step-7');
+    const nextStep = document.querySelector('.wwd-step-13');
     if (!partnersPage || !partnersWrapper) return;
 
     const rect = partnersPage.getBoundingClientRect();
@@ -3160,7 +2715,7 @@ function initAdvancedPageTransitions() {
         const opacity = Math.max(0, Math.min(1, exitProgress));
         
         howContent.style.opacity = opacity;
-        howContent.style.transform = `translateX(-50%) translateY(${-(1 - opacity) * 30}px)`;
+        howContent.style.transform = `translate(-50%, calc(-50% + ${-(1 - opacity) * 30}px))`;
         howContent.style.pointerEvents = opacity > 0.5 ? 'auto' : 'none';
       } else if (!howPageActive && rect.top > 0) {
         // ENTRANCE phase - fading in as page enters
@@ -3168,12 +2723,12 @@ function initAdvancedPageTransitions() {
         const opacity = Math.max(0, Math.min(1, entranceProgress));
         
         howContent.style.opacity = opacity;
-        howContent.style.transform = `translateX(-50%) translateY(${(1 - opacity) * 20}px)`;
+        howContent.style.transform = `translate(-50%, calc(-50% + ${(1 - opacity) * 20}px))`;
         howContent.style.pointerEvents = opacity > 0.5 ? 'auto' : 'none';
       } else {
         // Content LOCKED in position - no parallax/scrolling movement
         howContent.style.opacity = '1';
-        howContent.style.transform = 'translateX(-50%)';
+        howContent.style.transform = 'translate(-50%, -50%)';
         howContent.style.pointerEvents = 'auto';
       }
     } else {
@@ -3181,58 +2736,27 @@ function initAdvancedPageTransitions() {
       if (rect.top >= earlyTriggerPoint) {
         // Before entering - hidden
         howContent.style.opacity = '0';
-        howContent.style.transform = 'translateX(-50%) translateY(30px)';
+        howContent.style.transform = 'translate(-50%, calc(-50% + 30px))';
         howContent.style.pointerEvents = 'none';
       } else {
         // After exiting - hidden above
         howContent.style.opacity = '0';
-        howContent.style.transform = 'translateX(-50%) translateY(-30px)';
+        howContent.style.transform = 'translate(-50%, calc(-50% - 30px))';
         howContent.style.pointerEvents = 'none';
       }
     }
   }
   
-  /**
-   * Update pillar state based on scroll progress through The How page
-   */
-  function updatePillarScrollProgress() {
-    const howPage = document.querySelector('.wwd-step-3');
-    if (!howPage) return;
-    
-    const rect = howPage.getBoundingClientRect();
-    const viewportHeight = window.innerHeight;
-    const viewportCenter = viewportHeight / 2;
-    
-    // Only update if How page is active
-    const isHowActive = rect.top < viewportCenter && rect.bottom > viewportCenter;
-    if (!isHowActive) return;
-    
-    // Calculate scroll progress (0 to 1)
-    const scrollProgress = Math.max(0, Math.min(1, -rect.top / (howPage.offsetHeight - viewportHeight)));
-    
-    // Divide into 4 sections for 4 pillars (with entrance and exit zones)
-    // 0-15% = entrance, 15-70% = pillars, 70-100% = exit
-    const pillarZoneStart = 0.15;
-    const pillarZoneEnd = 0.70;
-    
-    if (scrollProgress >= pillarZoneStart && scrollProgress <= pillarZoneEnd) {
-      const pillarProgress = (scrollProgress - pillarZoneStart) / (pillarZoneEnd - pillarZoneStart);
-      const pillarNum = Math.min(4, Math.floor(pillarProgress * 4) + 1);
-      
-      if (typeof updatePillarState === 'function') {
-        updatePillarState(pillarNum);
-      }
-    }
-  }
+  // updatePillarScrollProgress removed - cards don't need scroll-based state switching
   
   /**
    * Update Hub page (Step 4) entrance/exit animation
    * Content in document flow - scrolls with page; exit when Leadership (step 5) approaches
    */
   function updateHubEntrance() {
-    const hubPage = document.querySelector('.wwd-step-4');
+    const hubPage = document.querySelector('.wwd-step-10');
     const hubWrapper = hubPage ? hubPage.querySelector('.wwd-hub-wrapper') : null;
-    const nextStep = document.querySelector('.wwd-step-5');
+    const nextStep = document.querySelector('.wwd-step-11');
     if (!hubPage || !hubWrapper) return;
 
     const rect = hubPage.getBoundingClientRect();
@@ -3362,45 +2886,15 @@ function initAdvancedPageTransitions() {
     // Check if Vision page covers the center of viewport
     const isVisionActive = rect.top < viewportCenter && rect.bottom > viewportCenter;
     
-    // Only start showing Vision when its TOP has crossed the viewport center
-    const visionTopPastCenter = rect.top < viewportCenter;
+    // Calculate how much of Vision page is visible from top
+    const visibleFromTop = viewportHeight - rect.top;
+    const entranceThreshold = viewportHeight * 0.25; // 25vh to fully reveal
     
-    // Calculate scroll progress through Vision page
-    const scrollProgress = -rect.top / (visionPage.offsetHeight - viewportHeight);
+    // Exit threshold - start fading out before leaving viewport
+    const exitThreshold = viewportHeight * 0.6; // Start exit when 60vh from bottom
     
-    if (isVisionActive && visionTopPastCenter) {
-      // Vision is active - show content
-      
-      // Calculate entrance progress (0 to 1 as Vision top moves past center)
-      const distancePastCenter = viewportCenter - rect.top;
-      const entranceZone = viewportHeight * 0.25; // 25vh to fully fade in
-      
-      // Start exit earlier - when 50% through the page (background near top)
-      const exitStartProgress = 0.5; // Start fading at 50% through page
-      const exitEndProgress = 0.8; // Fully faded by 80%
-      
-      if (scrollProgress > exitStartProgress) {
-        // Exiting - fade out based on scroll progress
-        const exitProgress = 1 - ((scrollProgress - exitStartProgress) / (exitEndProgress - exitStartProgress));
-        const opacity = Math.max(0, Math.min(1, exitProgress));
-        
-        visionContent.style.opacity = opacity;
-        visionContent.style.transform = `translate(-50%, calc(-50% - ${(1 - opacity) * 30}px))`;
-        visionContent.style.pointerEvents = opacity > 0.5 ? 'auto' : 'none';
-      } else if (distancePastCenter < entranceZone && distancePastCenter > 0) {
-        // Entrance - fading in
-        const progress = distancePastCenter / entranceZone;
-        visionContent.style.opacity = progress;
-        visionContent.style.transform = `translate(-50%, calc(-50% + ${(1 - progress) * 30}px))`;
-        visionContent.style.pointerEvents = progress > 0.5 ? 'auto' : 'none';
-      } else {
-        // Fully visible
-        visionContent.style.opacity = '1';
-        visionContent.style.transform = 'translate(-50%, -50%)';
-        visionContent.style.pointerEvents = 'auto';
-      }
-    } else {
-      // Vision is not active - hide content
+    if (!isVisionActive) {
+      // Vision is not the active page - hide it
       visionContent.style.opacity = '0';
       visionContent.style.pointerEvents = 'none';
       
@@ -3411,53 +2905,59 @@ function initAdvancedPageTransitions() {
         // After exiting
         visionContent.style.transform = 'translate(-50%, calc(-50% - 30px))';
       }
+      return;
+    }
+    
+    // Check if we're near the exit (bottom of Vision approaching viewport)
+    if (rect.bottom < viewportHeight + exitThreshold && rect.bottom > viewportCenter) {
+      // Calculate exit progress - fade out as we approach How page
+      const distanceToExit = rect.bottom - viewportCenter;
+      const exitProgress = Math.min(1, distanceToExit / exitThreshold);
+      
+      visionContent.style.opacity = exitProgress;
+      visionContent.style.transform = `translate(-50%, calc(-50% - ${(1 - exitProgress) * 30}px))`;
+      visionContent.style.pointerEvents = exitProgress > 0.5 ? 'auto' : 'none';
+    }
+    // Check entrance
+    else if (visibleFromTop > 0 && visibleFromTop < entranceThreshold) {
+      // Calculate entrance progress (0 to 1)
+      const progress = visibleFromTop / entranceThreshold;
+      
+      // Content fades in and moves up
+      visionContent.style.opacity = progress;
+      visionContent.style.transform = `translate(-50%, calc(-50% + ${(1 - progress) * 30}px))`;
+      visionContent.style.pointerEvents = progress > 0.5 ? 'auto' : 'none';
+    } else if (visibleFromTop >= entranceThreshold) {
+      // Fully visible
+      visionContent.style.opacity = '1';
+      visionContent.style.transform = 'translate(-50%, -50%)';
+      visionContent.style.pointerEvents = 'auto';
     }
   }
   
-  // Listen to WWD section scroll (primary container)
-  wwdSection.addEventListener('scroll', handleScroll, { passive: true });
-  
-  // Also listen to window scroll for initial load
+  // Listen to window scroll (body now scrolls directly)
   window.addEventListener('scroll', handleScroll, { passive: true });
   
-  // Our Impact section: update progress bar and Decade of Work fixed content when scrolling
-  const impactSection = document.getElementById('our-impact');
+  // Initialize decade builder photos
   initDecadeBuilderPhotos();
-  if (impactSection) {
-    impactSection.addEventListener('scroll', () => {
-      updateImpactPageTitleFade();
-      requestAnimationFrame(updateDecadeEntrance);
-      requestAnimationFrame(updateBuilderPhotosExit);
-      requestAnimationFrame(updateNYTEntrance);
-      requestAnimationFrame(updateStatsEntrance);
-      requestAnimationFrame(updateEconomicImpactEntrance);
-      requestAnimationFrame(updateBuildersStoriesExit);
-    }, { passive: true });
-  }
   
   // Initial update
   handleScroll();
-  if (impactSection && impactSection.classList.contains('active')) {
-    requestAnimationFrame(() => {
-      updateImpactPageTitleFade();
-      updateDecadeEntrance();
-      updateBuilderPhotosExit();
-      updateNYTEntrance();
-      updateStatsEntrance();
-      updateEconomicImpactEntrance();
-      updateBuildersStoriesExit();
-    });
-  }
+  requestAnimationFrame(() => {
+    updateDecadeEntrance();
+    updateBuilderPhotosExit();
+    updateNYTEntrance();
+    updateStatsEntrance();
+    updateEconomicImpactEntrance();
+    updateBuildersStoriesExit();
+  });
 
-  console.log('Advanced page transitions initialized');
 }
 
 function initSectionScrollBoundaries() {
-  const sections = [
-    document.querySelector('.wwd'),             // What We Do
-    document.querySelector('.builder-stories'), // Our Impact
-    document.querySelector('.urgency')          // The Urgency
-  ];
+  // With continuous scroll, section boundaries are no longer needed
+  // This function is kept for compatibility but does nothing
+  return;
   
   sections.forEach(section => {
     if (!section) return;
@@ -3514,13 +3014,19 @@ function hideWwdFixedContent() {
   const visionContent = document.querySelector('.wwd-vision-content-fixed');
   const howContent = document.querySelector('.wwd-how-content-fixed');
   const missionText = document.querySelector('.wwd-mission-text-fixed');
-  [titlesFixed, visionContent, howContent, missionText].forEach((el) => {
+  const decadeContent = document.getElementById('impact-decade-content-fixed');
+  const nytContentFixed = document.getElementById('nyt-content-fixed');
+  [titlesFixed, visionContent, howContent, missionText, decadeContent, nytContentFixed].forEach((el) => {
     if (el) {
       el.style.opacity = '0';
       el.style.pointerEvents = 'none';
     }
   });
-  // Reset impact step index so progress bar re-renders on next visit
+  if (decadeContent) {
+    decadeContent.classList.remove('decade-entrance-animate');
+    decadeContent.classList.remove('decade-entrance-done');
+  }
+  _decadeEntrancePlayed = false;
   _lastImpactStepIndex = -1;
 }
 
@@ -3534,6 +3040,7 @@ function hideImpactFixedContent() {
     decadeContent.style.opacity = '0';
     decadeContent.style.pointerEvents = 'none';
     decadeContent.classList.remove('decade-entrance-animate');
+    decadeContent.classList.remove('decade-entrance-done');
   }
   
   const nytContentFixed = document.getElementById('nyt-content-fixed');
@@ -3556,28 +3063,16 @@ function hideImpactFixedContent() {
 }
 
 /**
- * Reset What We Do section to initial state (scroll position and fixed content).
+ * Reset page to initial state (scroll position and fixed content).
  */
 function resetWwdSection() {
-  const wwdSection = document.getElementById('what-we-do');
-  if (wwdSection) {
-    // Force scroll to very top using multiple methods
-    wwdSection.scrollTop = 0;
-    wwdSection.scrollTo(0, 0);
-  }
+  // Scroll to top of page
+  window.scrollTo(0, 0);
   
   // Reset fixed content inline styles so scroll-based animations can work again
-  const titlesFixed = document.getElementById('wwd-titles-fixed');
   const visionContent = document.querySelector('.wwd-vision-content-fixed');
   const howContent = document.querySelector('.wwd-how-content-fixed');
   const missionText = document.querySelector('.wwd-mission-text-fixed');
-  
-  // Titles - clear to let scroll logic take over
-  if (titlesFixed) {
-    titlesFixed.style.opacity = '';
-    titlesFixed.style.pointerEvents = '';
-    titlesFixed.style.transform = '';
-  }
   
   // Vision and How should be HIDDEN at scroll 0 (not visible until user scrolls)
   // Explicitly set opacity 0 to prevent flash before scroll logic runs
@@ -3598,9 +3093,6 @@ function resetWwdSection() {
     missionText.style.transform = '';
     missionText.classList.add('visible');
   }
-  
-  // Reset title step index so progress bar re-renders
-  _lastTitleStepIndex = -1;
 }
 
 /**
@@ -3636,6 +3128,7 @@ function resetImpactSection() {
     decadeContent.style.opacity = '';
     decadeContent.style.transform = '';
     decadeContent.classList.remove('decade-entrance-animate');
+    decadeContent.classList.remove('decade-entrance-done');
   }
   
   // Reset NYT fixed content
@@ -3662,41 +3155,13 @@ function resetImpactSection() {
 /**
  * Section Switching - Switch between independent sections via navigation
  */
+/**
+ * Section Navigation - Smooth scroll to section anchors
+ * (Continuous scroll architecture - no section switching needed)
+ */
 function initSectionSwitching() {
   const navLinks = document.querySelectorAll('.nav-links a[href^="#"], .mobile-menu a[href^="#"]');
-  const sectionPages = document.querySelectorAll('.section-page');
   const nav = document.querySelector('.nav');
-  
-  // Set initial background overlay state based on currently active section
-  const bgOverlay = document.getElementById('section-bg-overlay');
-  const impactSection = document.getElementById('our-impact');
-  if (bgOverlay && impactSection && impactSection.classList.contains('active')) {
-    bgOverlay.classList.add('our-impact-active');
-  }
-  
-  // Function to show nav for section pages
-  function showNavForSectionPage() {
-    // Only show nav if video intro is complete
-    if (!document.body.classList.contains('video-complete')) {
-      return;
-    }
-    
-    if (nav) {
-      nav.classList.remove('hidden-on-video');
-      nav.classList.add('logo-at-top'); // Add to nav for link visibility
-      nav.style.opacity = '1';
-      nav.style.visibility = 'visible';
-      nav.style.pointerEvents = 'auto';
-      document.body.classList.add('logo-at-top');
-    }
-  }
-  
-  // Only show nav if video is complete and section-page is active
-  const isVideoComplete = document.body.classList.contains('video-complete');
-  const activeSection = document.querySelector('.section-page.active');
-  if (isVideoComplete && activeSection) {
-    showNavForSectionPage();
-  }
   
   navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
@@ -3706,115 +3171,21 @@ function initSectionSwitching() {
       const targetId = href.substring(1); // Remove #
       const targetSection = document.getElementById(targetId);
       
-      // Only handle section-page elements
-      if (targetSection && targetSection.classList.contains('section-page')) {
+      if (targetSection) {
         e.preventDefault();
         
-        // Determine which section we're leaving
-        const currentSection = document.querySelector('.section-page.active');
-        const leavingImpact = currentSection && currentSection.id === 'our-impact';
-        const leavingWwd = currentSection && currentSection.id === 'what-we-do';
+        // Smooth scroll to section
+        targetSection.scrollIntoView({ behavior: 'smooth' });
         
-        // Hide fixed content of sections we're leaving (so it doesn't persist on the next section)
-        if (leavingImpact) {
-          hideImpactFixedContent();
-        }
-        if (leavingWwd) {
-          hideWwdFixedContent();
-        }
-        
-        // Start background color transition
-        const bgOverlay = document.getElementById('section-bg-overlay');
-        if (bgOverlay) {
-          if (targetId === 'our-impact') {
-            bgOverlay.classList.add('our-impact-active');
-          } else {
-            bgOverlay.classList.remove('our-impact-active');
+        // Update active nav state immediately
+        navLinks.forEach(navLink => {
+          if (!navLink.classList.contains('nav-cta')) {
+            navLink.classList.remove('active');
           }
+        });
+        if (!link.classList.contains('nav-cta')) {
+          link.classList.add('active');
         }
-        
-        // Fade out current section content, then switch
-        if (currentSection) {
-          currentSection.style.transition = 'opacity 0.5s ease-out';
-          currentSection.style.opacity = '0';
-        }
-        
-        // After fade out, switch sections and fade in
-        setTimeout(() => {
-          // Remove active from all section-pages. Only clear opacity/transition on the
-          // target section so the section we're leaving stays at opacity 0 and never flashes.
-          sectionPages.forEach(section => {
-            section.classList.remove('active');
-            if (section === targetSection) {
-              section.style.opacity = '';
-              section.style.transition = '';
-            }
-          });
-
-          // Reset target section to initial state before showing
-          if (targetId === 'our-impact') {
-            resetImpactSection();
-          } else if (targetId === 'what-we-do') {
-            resetWwdSection();
-          }
-          
-          // Force scroll to top multiple times to ensure it sticks
-          targetSection.scrollTop = 0;
-          targetSection.scrollTo(0, 0);
-
-          // When switching to WWD, hide all steps so they don't flash before updatePageTransitions runs
-          if (targetId === 'what-we-do') {
-            document.querySelectorAll('.wwd-step').forEach((step) => {
-              step.style.opacity = '0';
-              step.style.transform = 'translateY(-30px)';
-            });
-          }
-
-          // Add active to target section with fade-in
-          targetSection.style.opacity = '0';
-          targetSection.classList.add('active');
-          
-          // Force scroll to top again after becoming active
-          targetSection.scrollTop = 0;
-          targetSection.scrollTo(0, 0);
-          
-          // Trigger reflow, then fade in
-          targetSection.offsetHeight;
-          targetSection.style.transition = 'opacity 0.5s ease-in';
-          targetSection.style.opacity = '1';
-          
-          // Clean up inline styles after animation
-          setTimeout(() => {
-            targetSection.style.opacity = '';
-            targetSection.style.transition = '';
-          }, 500);
-          
-          // Update progress bar and animations for the active section
-          // Use a small delay to ensure scroll position is set first
-          setTimeout(() => {
-            if (targetId === 'our-impact') {
-              initDecadeBuilderPhotos();
-              updateImpactPageTitleFade();
-              updateDecadeEntrance();
-              updateBuilderPhotosExit();
-              updateNYTEntrance();
-              updateStatsEntrance();
-              updateEconomicImpactEntrance();
-              updateBuildersStoriesExit();
-            } else if (targetId === 'what-we-do') {
-              // Trigger all WWD update functions to properly show content
-              updatePageTitleFade();
-              updatePageTransitions();
-            }
-          }, 50);
-        }, 500); // Wait for fade out
-        
-        // Show nav when on section pages
-        showNavForSectionPage();
-        
-        // Update active nav state
-        navLinks.forEach(navLink => navLink.classList.remove('active'));
-        link.classList.add('active');
         
         // Close mobile menu if open
         const mobileMenu = document.querySelector('.mobile-menu');
@@ -3823,13 +3194,38 @@ function initSectionSwitching() {
           mobileMenu.classList.remove('active');
           if (hamburger) hamburger.classList.remove('active');
         }
-        
-        console.log('Switching to section:', targetId);
       }
     });
   });
+}
+
+/**
+ * Update active nav link based on which section is in viewport center
+ */
+function updateActiveNavOnScroll() {
+  const sections = document.querySelectorAll('.section-content');
+  const navLinks = document.querySelectorAll('.nav-links a:not(.nav-cta)');
+  const viewportCenter = window.innerHeight / 2;
   
-  console.log('Section switching initialized for', sectionPages.length, 'sections');
+  let activeSection = null;
+  
+  // Find which section's center is closest to viewport center
+  sections.forEach(section => {
+    const rect = section.getBoundingClientRect();
+    if (rect.top < viewportCenter && rect.bottom > viewportCenter) {
+      activeSection = section.id;
+    }
+  });
+  
+  // Update nav link active states
+  navLinks.forEach(link => {
+    const href = link.getAttribute('href');
+    if (href === `#${activeSection}`) {
+      link.classList.add('active');
+    } else {
+      link.classList.remove('active');
+    }
+  });
 }
 
 // Initialize section switching
@@ -3842,60 +3238,101 @@ initSectionSwitching();
 function initStaggerAnimations() {
   // Track which pages have been animated
   const animatedPages = {
-    step3: false, // The How - pillars
-    step4: false, // The Hub - gallery
-    step5: false, // Advisory Council - cards
-    step6: false  // Partners - cards
+    step3: false,  // The How - pillars
+    step4: false,  // The Hub - gallery
+    step5: false,  // Advisory Council - cards
+    step6: false,  // Partners - cards
+    urgency: false,      // Step 4: The Urgency
+    demography: false,   // Step 7: Builders Demography
+    economic: false,     // Step 8: Economic Impact
+    transformation: false // Step 9: Transformation Stories
   };
   
   // Add stagger-item class to elements
   function setupStaggerItems() {
-    // Step 3: How page elements (headline, pillars, description, arrows)
+    // Step 3: How page elements (headline and pillar cards)
     const howHeadline = document.querySelector('.wwd-how-content-fixed .wwd-initiatives-headline');
     if (howHeadline) howHeadline.classList.add('stagger-item', 'stagger-how-headline');
     
-    const pillarItems = document.querySelectorAll('.wwd-how-content-fixed .wwd-initiative-item');
-    pillarItems.forEach(item => item.classList.add('stagger-item', 'stagger-how-pillar'));
+    const pillarCards = document.querySelectorAll('.wwd-how-content-fixed .wwd-pillar-card');
+    pillarCards.forEach(card => card.classList.add('stagger-item', 'stagger-how-card'));
     
-    const pillarDescs = document.querySelectorAll('.wwd-how-content-fixed .wwd-initiative-desc');
-    pillarDescs.forEach(desc => desc.classList.add('stagger-item', 'stagger-how-desc'));
-    
-    const arrows = document.querySelectorAll('.wwd-how-content-fixed .initiative-arrow-line, .wwd-how-content-fixed .initiative-arrowhead');
-    arrows.forEach(arrow => arrow.classList.add('stagger-item', 'stagger-how-arrow'));
-    
-    // Step 4: Hub elements (headline, body, gallery)
-    const hubHeadline = document.querySelector('.wwd-step-4 .wwd-hub-headline');
+    // Step 10: Hub elements (headline, body, gallery)
+    const hubHeadline = document.querySelector('.wwd-step-10 .wwd-hub-headline');
     if (hubHeadline) hubHeadline.classList.add('stagger-item', 'stagger-hub-headline');
     
-    const hubBody = document.querySelector('.wwd-step-4 .wwd-hub-body');
+    const hubBody = document.querySelector('.wwd-step-10 .wwd-hub-body');
     if (hubBody) hubBody.classList.add('stagger-item', 'stagger-hub-body');
     
     const galleryImages = document.querySelectorAll('#wwd-hub-gallery .wwd-hub-image');
     galleryImages.forEach(img => img.classList.add('stagger-item', 'stagger-hub-gallery'));
     
-    // Step 5: Council elements (headline, description, cards)
-    const councilHeadline = document.querySelector('.wwd-step-5 .wwd-council-headline');
+    // Step 11: Council elements (headline, description, cards)
+    const councilHeadline = document.querySelector('.wwd-step-11 .wwd-council-headline');
     if (councilHeadline) councilHeadline.classList.add('stagger-item', 'stagger-council-headline');
     
-    const councilDesc = document.querySelector('.wwd-step-5 .wwd-council-description');
+    const councilDesc = document.querySelector('.wwd-step-11 .wwd-council-description');
     if (councilDesc) councilDesc.classList.add('stagger-item', 'stagger-council-desc');
     
-    const councilCards = document.querySelectorAll('.wwd-step-5 .council-card');
+    const councilCards = document.querySelectorAll('.wwd-step-11 .council-card');
     councilCards.forEach(card => card.classList.add('stagger-item', 'stagger-council-card'));
     
-    // Step 6: Partners elements (headline, description, cards)
-    const partnersHeadline = document.querySelector('.wwd-step-6 .wwd-partners-headline');
+    // Step 12: Partners elements (headline, description, cards)
+    const partnersHeadline = document.querySelector('.wwd-step-12 .wwd-partners-headline');
     if (partnersHeadline) partnersHeadline.classList.add('stagger-item', 'stagger-partners-headline');
     
-    const partnersDesc = document.querySelector('.wwd-step-6 .wwd-partners-description');
+    const partnersDesc = document.querySelector('.wwd-step-12 .wwd-partners-description');
     if (partnersDesc) partnersDesc.classList.add('stagger-item', 'stagger-partners-desc');
     
-    const partnerCards = document.querySelectorAll('.wwd-step-6 .partner-card');
+    const partnerCards = document.querySelectorAll('.wwd-step-12 .partner-card');
     partnerCards.forEach(card => card.classList.add('stagger-item', 'stagger-partners-card'));
+    
+    // Step 4: Urgency elements (headline, body, grid, gap visual)
+    const urgencyHeadline = document.querySelector('.wwd-step-4 .urgency-headline');
+    if (urgencyHeadline) urgencyHeadline.classList.add('stagger-item', 'stagger-urgency-headline');
+    
+    const urgencyBody = document.querySelector('.wwd-step-4 .urgency-body');
+    if (urgencyBody) urgencyBody.classList.add('stagger-item', 'stagger-urgency-body');
+    
+    const urgencyGrid = document.querySelector('.wwd-step-4 .urgency-grid');
+    if (urgencyGrid) urgencyGrid.classList.add('stagger-item', 'stagger-urgency-grid');
+    
+    const gapVisual = document.querySelector('.wwd-step-4 .gap-visual');
+    if (gapVisual) gapVisual.classList.add('stagger-item', 'stagger-urgency-gap');
+    
+    // Step 7: Demography elements (headline, body, grid)
+    const demoHeadline = document.querySelector('.wwd-step-7 .real-people-headline');
+    if (demoHeadline) demoHeadline.classList.add('stagger-item', 'stagger-demo-headline');
+    
+    const demoBody = document.querySelector('.wwd-step-7 .real-people-body');
+    if (demoBody) demoBody.classList.add('stagger-item', 'stagger-demo-body');
+    
+    const demoGrid = document.querySelector('.wwd-step-7 .demographics-grid');
+    if (demoGrid) demoGrid.classList.add('stagger-item', 'stagger-demo-grid');
+    
+    // Step 8: Economic Impact elements (headline, body, grid)
+    const econHeadline = document.querySelector('.wwd-step-8 .real-people-headline');
+    if (econHeadline) econHeadline.classList.add('stagger-item', 'stagger-econ-headline');
+    
+    const econBody = document.querySelector('.wwd-step-8 .real-people-body');
+    if (econBody) econBody.classList.add('stagger-item', 'stagger-econ-body');
+    
+    const econGrid = document.querySelector('.wwd-step-8 .demographics-grid');
+    if (econGrid) econGrid.classList.add('stagger-item', 'stagger-econ-grid');
+    
+    // Step 9: Transformation Stories elements (headline, description, video gallery)
+    const transHeadline = document.querySelector('.wwd-step-9 .builder-stories-headline');
+    if (transHeadline) transHeadline.classList.add('stagger-item', 'stagger-trans-headline');
+    
+    const transDesc = document.querySelector('.wwd-step-9 .builder-stories-description');
+    if (transDesc) transDesc.classList.add('stagger-item', 'stagger-trans-desc');
+    
+    const transGallery = document.querySelector('.wwd-step-9 .builder-video-gallery');
+    if (transGallery) transGallery.classList.add('stagger-item', 'stagger-trans-gallery');
   }
   
   // Trigger sequential animation for How page
-  // Sequence: 1. Headline → 2. Pillars → 3. First description → 4. Arrows
+  // Sequence: 1. Headline → 2. Cards (left to right)
   function triggerHowSequence() {
     let delay = 0;
     const baseDelay = 100;
@@ -3907,27 +3344,11 @@ function initStaggerAnimations() {
       delay += 200;
     }
     
-    // 2. Four pillar categories (staggered)
-    const pillars = document.querySelectorAll('.stagger-how-pillar');
-    pillars.forEach((pillar, i) => {
-      setTimeout(() => pillar.classList.add('stagger-revealed'), delay + i * baseDelay);
+    // 2. Four pillar cards (staggered left to right)
+    const cards = document.querySelectorAll('.stagger-how-card');
+    cards.forEach((card, i) => {
+      setTimeout(() => card.classList.add('stagger-revealed'), delay + i * baseDelay);
     });
-    delay += pillars.length * baseDelay + 150;
-    
-    // 3. First pillar description
-    const firstDesc = document.querySelector('.wwd-initiative-desc[data-initiative="1"]');
-    if (firstDesc) {
-      setTimeout(() => firstDesc.classList.add('stagger-revealed'), delay);
-      delay += 150;
-    }
-    
-    // 4. Arrows (only the active one)
-    const activeArrows = document.querySelectorAll('.initiative-arrow-line[data-arrow="1"], .initiative-arrowhead[data-arrow="1"]');
-    activeArrows.forEach(arrow => {
-      setTimeout(() => arrow.classList.add('stagger-revealed'), delay);
-    });
-    
-    console.log('How page sequence triggered');
   }
   
   // Trigger sequential animation for Hub page
@@ -3955,8 +3376,6 @@ function initStaggerAnimations() {
     images.forEach((img, i) => {
       setTimeout(() => img.classList.add('stagger-revealed'), delay + i * 120);
     });
-    
-    console.log('Hub page sequence triggered');
   }
   
   // Trigger sequential animation for Council page
@@ -3983,8 +3402,6 @@ function initStaggerAnimations() {
     cards.forEach((card, i) => {
       setTimeout(() => card.classList.add('stagger-revealed'), delay + i * 100);
     });
-    
-    console.log('Council page sequence triggered');
   }
   
   // Trigger sequential animation for Partners page
@@ -4007,7 +3424,7 @@ function initStaggerAnimations() {
     }
     
     // 3. Cards per category
-    const partnersPage = document.querySelector('.wwd-step-6');
+    const partnersPage = document.querySelector('.wwd-step-12');
     if (partnersPage) {
       const categories = partnersPage.querySelectorAll('.partners-category');
       categories.forEach(category => {
@@ -4018,8 +3435,117 @@ function initStaggerAnimations() {
         delay += cards.length * 60 + 150;
       });
     }
+  }
+  
+  // Trigger sequential animation for Urgency page
+  // Sequence: 1. Headline → 2. Body → 3. Grid → 4. Gap visual
+  function triggerUrgencySequence() {
+    let delay = 0;
     
-    console.log('Partners page sequence triggered');
+    // 1. Headline
+    const headline = document.querySelector('.stagger-urgency-headline');
+    if (headline) {
+      setTimeout(() => headline.classList.add('stagger-revealed'), delay);
+      delay += 200;
+    }
+    
+    // 2. Body
+    const body = document.querySelector('.stagger-urgency-body');
+    if (body) {
+      setTimeout(() => body.classList.add('stagger-revealed'), delay);
+      delay += 200;
+    }
+    
+    // 3. Grid
+    const grid = document.querySelector('.stagger-urgency-grid');
+    if (grid) {
+      setTimeout(() => grid.classList.add('stagger-revealed'), delay);
+      delay += 200;
+    }
+    
+    // 4. Gap visual
+    const gap = document.querySelector('.stagger-urgency-gap');
+    if (gap) {
+      setTimeout(() => gap.classList.add('stagger-revealed'), delay);
+    }
+  }
+  
+  // Trigger sequential animation for Demography page
+  // Sequence: 1. Headline → 2. Body → 3. Grid
+  function triggerDemographySequence() {
+    let delay = 0;
+    
+    // 1. Headline
+    const headline = document.querySelector('.stagger-demo-headline');
+    if (headline) {
+      setTimeout(() => headline.classList.add('stagger-revealed'), delay);
+      delay += 200;
+    }
+    
+    // 2. Body
+    const body = document.querySelector('.stagger-demo-body');
+    if (body) {
+      setTimeout(() => body.classList.add('stagger-revealed'), delay);
+      delay += 200;
+    }
+    
+    // 3. Grid
+    const grid = document.querySelector('.stagger-demo-grid');
+    if (grid) {
+      setTimeout(() => grid.classList.add('stagger-revealed'), delay);
+    }
+  }
+  
+  // Trigger sequential animation for Economic Impact page
+  // Sequence: 1. Headline → 2. Body → 3. Grid
+  function triggerEconomicSequence() {
+    let delay = 0;
+    
+    // 1. Headline
+    const headline = document.querySelector('.stagger-econ-headline');
+    if (headline) {
+      setTimeout(() => headline.classList.add('stagger-revealed'), delay);
+      delay += 200;
+    }
+    
+    // 2. Body
+    const body = document.querySelector('.stagger-econ-body');
+    if (body) {
+      setTimeout(() => body.classList.add('stagger-revealed'), delay);
+      delay += 200;
+    }
+    
+    // 3. Grid
+    const grid = document.querySelector('.stagger-econ-grid');
+    if (grid) {
+      setTimeout(() => grid.classList.add('stagger-revealed'), delay);
+    }
+  }
+  
+  // Trigger sequential animation for Transformation Stories page
+  // Sequence: 1. Headline → 2. Description → 3. Video gallery
+  function triggerTransformationSequence() {
+    let delay = 0;
+    
+    // 1. Headline
+    const headline = document.querySelector('.stagger-trans-headline');
+    if (headline) {
+      setTimeout(() => headline.classList.add('stagger-revealed'), delay);
+      delay += 200;
+    }
+    
+    // 2. Description
+    const desc = document.querySelector('.stagger-trans-desc');
+    if (desc) {
+      setTimeout(() => desc.classList.add('stagger-revealed'), delay);
+      delay += 200;
+    }
+    
+    // 3. Video gallery
+    const gallery = document.querySelector('.stagger-trans-gallery');
+    if (gallery) {
+      setTimeout(() => gallery.classList.add('stagger-revealed'), delay);
+    }
   }
   
   // Check which pages are active and trigger animations
@@ -4039,8 +3565,8 @@ function initStaggerAnimations() {
       }
     }
     
-    // Step 4: The Hub
-    const hubPage = document.querySelector('.wwd-step-4');
+    // Step 10: The Hub
+    const hubPage = document.querySelector('.wwd-step-10');
     if (hubPage && !animatedPages.step4) {
       const rect = hubPage.getBoundingClientRect();
       // Trigger when Hub page top crosses viewport center
@@ -4050,8 +3576,8 @@ function initStaggerAnimations() {
       }
     }
     
-    // Step 5: Advisory Council
-    const councilPage = document.querySelector('.wwd-step-5');
+    // Step 11: Advisory Council
+    const councilPage = document.querySelector('.wwd-step-11');
     if (councilPage && !animatedPages.step5) {
       const rect = councilPage.getBoundingClientRect();
       if (rect.top < viewportCenter && rect.bottom > viewportCenter) {
@@ -4060,13 +3586,56 @@ function initStaggerAnimations() {
       }
     }
     
-    // Step 6: Partners
-    const partnersPage = document.querySelector('.wwd-step-6');
+    // Step 12: Partners
+    const partnersPage = document.querySelector('.wwd-step-12');
     if (partnersPage && !animatedPages.step6) {
       const rect = partnersPage.getBoundingClientRect();
       if (rect.top < viewportCenter && rect.bottom > viewportCenter) {
         animatedPages.step6 = true;
         triggerPartnersSequence();
+      }
+    }
+    
+    // Step 4: The Urgency
+    const urgencyPage = document.querySelector('.wwd-step-4');
+    if (urgencyPage && !animatedPages.urgency) {
+      const rect = urgencyPage.getBoundingClientRect();
+      if (rect.top < viewportCenter && rect.bottom > viewportCenter) {
+        animatedPages.urgency = true;
+        triggerUrgencySequence();
+      }
+    }
+    
+    // Step 7: Builders Demography - trigger when top enters bottom 30% of viewport
+    const demoPage = document.querySelector('.wwd-step-7');
+    if (demoPage && !animatedPages.demography) {
+      const rect = demoPage.getBoundingClientRect();
+      const earlyTrigger = viewportHeight * 0.7;
+      if (rect.top < earlyTrigger && rect.bottom > 0) {
+        animatedPages.demography = true;
+        triggerDemographySequence();
+      }
+    }
+    
+    // Step 8: Economic Impact - trigger when top enters bottom 30% of viewport
+    const econPage = document.querySelector('.wwd-step-8');
+    if (econPage && !animatedPages.economic) {
+      const rect = econPage.getBoundingClientRect();
+      const earlyTrigger = viewportHeight * 0.7;
+      if (rect.top < earlyTrigger && rect.bottom > 0) {
+        animatedPages.economic = true;
+        triggerEconomicSequence();
+      }
+    }
+    
+    // Step 9: Transformation Stories - trigger when top enters bottom 30% of viewport
+    const transPage = document.querySelector('.wwd-step-9');
+    if (transPage && !animatedPages.transformation) {
+      const rect = transPage.getBoundingClientRect();
+      const earlyTrigger = viewportHeight * 0.7;
+      if (rect.top < earlyTrigger && rect.bottom > 0) {
+        animatedPages.transformation = true;
+        triggerTransformationSequence();
       }
     }
   }
@@ -4087,37 +3656,85 @@ function initStaggerAnimations() {
       }
     }
     
-    // Reset Step 4 if scrolled before it
-    const hubPage = document.querySelector('.wwd-step-4');
+    // Reset Step 10 if scrolled before it
+    const hubPage = document.querySelector('.wwd-step-10');
     if (hubPage && animatedPages.step4) {
       const rect = hubPage.getBoundingClientRect();
       if (rect.top > viewportHeight) {
         animatedPages.step4 = false;
+        document.querySelectorAll('.wwd-step-10 .stagger-item').forEach(el => {
+          el.classList.remove('stagger-revealed');
+        });
+      }
+    }
+    
+    // Reset Step 11 if scrolled before it
+    const councilPage = document.querySelector('.wwd-step-11');
+    if (councilPage && animatedPages.step5) {
+      const rect = councilPage.getBoundingClientRect();
+      if (rect.top > viewportHeight) {
+        animatedPages.step5 = false;
+        document.querySelectorAll('.wwd-step-11 .stagger-item').forEach(el => {
+          el.classList.remove('stagger-revealed');
+        });
+      }
+    }
+    
+    // Reset Step 12 if scrolled before it
+    const partnersPage = document.querySelector('.wwd-step-12');
+    if (partnersPage && animatedPages.step6) {
+      const rect = partnersPage.getBoundingClientRect();
+      if (rect.top > viewportHeight) {
+        animatedPages.step6 = false;
+        document.querySelectorAll('.wwd-step-12 .stagger-item').forEach(el => {
+          el.classList.remove('stagger-revealed');
+        });
+      }
+    }
+    
+    // Reset Step 4 (Urgency) if scrolled before it
+    const urgencyPage = document.querySelector('.wwd-step-4');
+    if (urgencyPage && animatedPages.urgency) {
+      const rect = urgencyPage.getBoundingClientRect();
+      if (rect.top > viewportHeight) {
+        animatedPages.urgency = false;
         document.querySelectorAll('.wwd-step-4 .stagger-item').forEach(el => {
           el.classList.remove('stagger-revealed');
         });
       }
     }
     
-    // Reset Step 5 if scrolled before it
-    const councilPage = document.querySelector('.wwd-step-5');
-    if (councilPage && animatedPages.step5) {
-      const rect = councilPage.getBoundingClientRect();
+    // Reset Step 7 (Demography) if scrolled before it
+    const demoPage = document.querySelector('.wwd-step-7');
+    if (demoPage && animatedPages.demography) {
+      const rect = demoPage.getBoundingClientRect();
       if (rect.top > viewportHeight) {
-        animatedPages.step5 = false;
-        document.querySelectorAll('.wwd-step-5 .stagger-item').forEach(el => {
+        animatedPages.demography = false;
+        document.querySelectorAll('.wwd-step-7 .stagger-item').forEach(el => {
           el.classList.remove('stagger-revealed');
         });
       }
     }
     
-    // Reset Step 6 if scrolled before it
-    const partnersPage = document.querySelector('.wwd-step-6');
-    if (partnersPage && animatedPages.step6) {
-      const rect = partnersPage.getBoundingClientRect();
+    // Reset Step 8 (Economic Impact) if scrolled before it
+    const econPage = document.querySelector('.wwd-step-8');
+    if (econPage && animatedPages.economic) {
+      const rect = econPage.getBoundingClientRect();
       if (rect.top > viewportHeight) {
-        animatedPages.step6 = false;
-        document.querySelectorAll('.wwd-step-6 .stagger-item').forEach(el => {
+        animatedPages.economic = false;
+        document.querySelectorAll('.wwd-step-8 .stagger-item').forEach(el => {
+          el.classList.remove('stagger-revealed');
+        });
+      }
+    }
+    
+    // Reset Step 9 (Transformation Stories) if scrolled before it
+    const transPage = document.querySelector('.wwd-step-9');
+    if (transPage && animatedPages.transformation) {
+      const rect = transPage.getBoundingClientRect();
+      if (rect.top > viewportHeight) {
+        animatedPages.transformation = false;
+        document.querySelectorAll('.wwd-step-9 .stagger-item').forEach(el => {
           el.classList.remove('stagger-revealed');
         });
       }
@@ -4127,20 +3744,10 @@ function initStaggerAnimations() {
   // Setup elements
   setupStaggerItems();
   
-  // Listen for scroll to trigger animations
-  const wwdSection = document.querySelector('.wwd');
-  if (wwdSection) {
-    wwdSection.addEventListener('scroll', () => {
-      checkAndTriggerStagger();
-      resetStaggerIfNeeded();
-    }, { passive: true });
-  }
-  
-  // Also listen to window scroll
+  // Listen for scroll to trigger animations (body scrolls now)
   window.addEventListener('scroll', () => {
     checkAndTriggerStagger();
     resetStaggerIfNeeded();
   }, { passive: true });
   
-  console.log('Stagger animations initialized');
 }

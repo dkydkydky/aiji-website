@@ -27,6 +27,15 @@
   --color-blue: #4a7dff;
   --color-blue-dim: rgba(74, 125, 255, 0.2);
   
+  /* Page backgrounds – single source of truth (site + section overlay)
+     Steps 1–3:  --bg-default   (What We Do)
+     Step 4:     --bg-urgency   (The Urgency)
+     Steps 5–9:  --bg-our-impact (Our Impact)
+     Steps 10+:  --bg-default   (What We Do cont.) */
+  --bg-default: #FFF3E9;      /* What We Do (1–3) + What We Do cont. (10+) */
+  --bg-urgency: #F5FFF3;      /* The Urgency (step 4) */
+  --bg-our-impact: #F5FAFB;   /* Our Impact (steps 5–9) */
+  
   /* Typography */
   --font-display: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -92,6 +101,22 @@
   color: #000000;
 }
 
+.body-xlarge-regular {
+  font-family: "fractul-variable", sans-serif;
+  font-size: clamp(3rem, 4vw, 3.875rem); /* 48px - 62px */
+  font-weight: 400;
+  line-height: 1.2;
+  color: #333;
+}
+
+.body-xlarge-semibold {
+  font-family: "fractul-variable", sans-serif;
+  font-size: clamp(3rem, 4vw, 3.875rem); /* 48px - 62px */
+  font-weight: 600;
+  line-height: 1.2;
+  color: #333;
+}
+
 .body-large-regular {
   font-family: "fractul-variable", sans-serif;
   font-size: clamp(1.6875rem, 2.7vw, 2.7rem); /* 27px - 43px (90% of original) */
@@ -116,10 +141,26 @@
   color: #333;
 }
 
+.body-small-semibold {
+  font-family: "fractul-variable", sans-serif;
+  font-size: clamp(1rem, 1.5vw, 1.125rem); /* 16px - 18px */
+  font-weight: 600;
+  line-height: 1.4;
+  color: #333;
+}
+
 .body-medium-regular {
   font-family: "fractul-variable", sans-serif;
   font-size: clamp(1.25rem, 2vw, 1.5rem); /* 20px - 24px */
   font-weight: 400;
+  line-height: 1.4;
+  color: #333;
+}
+
+.body-medium-semibold {
+  font-family: "fractul-variable", sans-serif;
+  font-size: clamp(1.25rem, 2vw, 1.5rem); /* 20px - 24px */
+  font-weight: 600;
   line-height: 1.4;
   color: #333;
 }
@@ -184,6 +225,24 @@
   /* No text-transform - case controlled by input */
 }
 
+.nav-regular {
+  font-family: "fractul-variable", sans-serif;
+  font-variation-settings: "wght" 400;
+  font-size: 15px !important;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: #000000;
+}
+
+.nav-semibold {
+  font-family: "fractul-variable", sans-serif;
+  font-variation-settings: "wght" 600;
+  font-size: 15px !important;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: #000000;
+}
+
 /* Removed - moved to body section above */
 
 /* Scroll snapping container - snap between major sections */
@@ -191,7 +250,7 @@ html {
   height: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #FFF3E9;
+  background-color: var(--bg-default);
 }
 
 body {
@@ -199,28 +258,41 @@ body {
   font-size: 16px;
   line-height: 1.6;
   color: var(--color-white);
-  background-color: #FFF3E9;
+  background-color: var(--bg-default);
   margin: 0;
   padding: 0;
-  height: 100vh; /* Full viewport height */
-  /* Use clip instead of hidden to prevent page scroll but allow child scrolling */
-  overflow: clip;
+  /* Continuous scroll - body scrolls, not individual sections */
+  overflow-y: auto;
+  overflow-x: hidden;
   /* Hide scrollbar */
   scrollbar-width: none; /* Firefox */
+  transition: background-color 1s ease-in-out;
 }
 
-/* Section Background Transition Overlay */
+/* Site background stays in sync with section overlay (same classes on body) */
+body.urgency-active {
+  background-color: var(--bg-urgency);
+}
+body.our-impact-active {
+  background-color: var(--bg-our-impact);
+}
+
+/* Section Background Transition Overlay – same colors as body */
 .section-bg-overlay {
   position: fixed;
   inset: 0;
   z-index: 0; /* Behind everything else */
-  background-color: #FFF3E9; /* Default: What We Do background */
+  background-color: var(--bg-default);
   transition: background-color 1s ease-in-out;
   pointer-events: none;
 }
 
 .section-bg-overlay.our-impact-active {
-  background-color: #F5FAFB; /* Our Impact background */
+  background-color: var(--bg-our-impact);
+}
+
+.section-bg-overlay.urgency-active {
+  background-color: var(--bg-urgency);
 }
 
 body::-webkit-scrollbar,
@@ -285,6 +357,44 @@ body:not(.video-complete) .section-page.active {
   -webkit-overflow-scrolling: touch;
 }
 
+/* --------------------------------------------------------------------------
+   Section Content - Continuous scroll sections (new architecture)
+   -------------------------------------------------------------------------- */
+.section-content {
+  position: relative;
+  width: 100%;
+  /* Sections are in normal document flow, no fixed height */
+}
+
+.section-steps {
+  position: relative;
+  width: 100%;
+}
+
+/* Show sections after video intro is complete */
+body:not(.video-complete) .section-content {
+  display: none;
+}
+
+body.video-complete .section-content {
+  display: block;
+}
+
+/* Site footer */
+.site-footer {
+  position: relative;
+  width: 100%;
+  background: transparent;
+}
+
+body:not(.video-complete) .site-footer {
+  display: none;
+}
+
+body.video-complete .site-footer {
+  display: block;
+}
+
 /* Ensure builder-stories content doesn't block scrolling */
 /* Impact Step 2: Builders */
 .section-page.builder-stories > .container {
@@ -293,14 +403,14 @@ body:not(.video-complete) .section-page.active {
   padding: var(--content-padding-top) var(--container-padding) var(--content-padding-bottom);
 }
 
-/* WWD Step 6 (Partners) - page content only; footer is separate step 7 */
+/* WWD Step 6 (NYT Quote) - tall page for background image scroll */
 .wwd-step-6 {
   height: auto !important;
-  min-height: auto; /* Content-based height for tighter transitions */
-  overflow-y: auto !important;
+  min-height: 150vh; /* Tall page for NYT background scroll effect */
+  overflow-y: visible !important;
   flex-direction: column !important;
-  justify-content: flex-start !important;
-  align-items: stretch !important;
+  justify-content: center !important;
+  align-items: center !important;
 }
 
 /* Content inside Step 6 - padding before footer page */
@@ -358,9 +468,15 @@ strong {
    -------------------------------------------------------------------------- */
 .container {
   width: 100%;
-  max-width: var(--container-max);
+  max-width: 1000px; /* < 1400px viewport */
   margin: 0 auto;
   padding: 0 var(--container-padding);
+}
+
+@media (min-width: 1400px) {
+  .container {
+    max-width: 1200px; /* >= 1400px viewport */
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -377,11 +493,11 @@ strong {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  background-color: rgba(255, 243, 233, 0) !important; /* Fully transparent, blur only */
+  background-color: transparent !important; /* Site background shows through */
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;
   border-bottom: none;
-  transition: background-color 0.5s ease-in, backdrop-filter 0.5s ease-in, all var(--transition-base);
+  transition: backdrop-filter 0.5s ease-in, all var(--transition-base);
   opacity: 0;
   visibility: hidden;
 }
@@ -411,7 +527,7 @@ body.logo-at-top .nav.hidden-on-video {
   opacity: 1;
   pointer-events: auto;
   visibility: visible;
-  background-color: rgba(255, 243, 233, 0) !important; /* Fully transparent, blur only */
+  background-color: transparent !important; /* Site background shows through */
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;
 }
@@ -420,7 +536,7 @@ body.logo-at-top .nav.hidden-on-video {
   padding: 0;
   height: 72px; /* Keep same height for consistency */
   border-bottom: none;
-  background-color: rgba(255, 243, 233, 0); /* Fully transparent, blur only */
+  background-color: transparent; /* Site background shows through */
 }
 
 .nav-container {
@@ -514,15 +630,18 @@ body.logo-at-top .nav.hidden-on-video {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: var(--space-lg);
+  gap: 1rem; /* 50% of var(--space-lg) which is 2rem */
   padding-right: 25px;
   height: 56px; /* Match nav height to ensure proper centering */
   transform: translateY(2px); /* Move nav items 2px down */
 }
 
+/* Nav links and Get Involved: body-small-regular */
 .nav-links a {
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-family: "fractul-variable", sans-serif;
+  font-size: clamp(1rem, 1.5vw, 1.125rem);
+  font-weight: 400;
+  line-height: 1.4;
   color: #000000;
   transition: color var(--transition-fast), opacity 0.4s ease, transform 0.4s ease;
   position: relative;
@@ -530,8 +649,8 @@ body.logo-at-top .nav.hidden-on-video {
   transform: translateX(-10px);
 }
 
-/* Animated underline for active nav item */
-.nav-links a::after {
+/* Animated underline for active nav item - exclude pill buttons */
+.nav-links a:not(.nav-cta-pill)::after {
   content: '';
   position: absolute;
   bottom: -4px;
@@ -542,7 +661,7 @@ body.logo-at-top .nav.hidden-on-video {
   transition: width 0.3s ease;
 }
 
-.nav-links a.active::after {
+.nav-links a.active:not(.nav-cta-pill)::after {
   width: 100%;
 }
 
@@ -567,10 +686,10 @@ body.logo-at-top .nav.hidden-on-video {
 
 .nav-links a.active {
   color: #000000;
-  font-weight: 600;
+  font-weight: 600; /* semibold for active */
 }
 
-.nav-links a.active:not(.nav-cta)::after {
+.nav-links a.active:not(.nav-cta):not(.nav-cta-pill)::after {
   content: '';
   position: absolute;
   bottom: -8px;
@@ -591,7 +710,7 @@ body.logo-at-top .nav.hidden-on-video {
   background: #000000;
   color: #FFF3E9 !important;
   border-radius: var(--radius-sm);
-  font-weight: 600;
+  font-weight: 400; /* body-small-regular; active overrides to 600 */
 }
 
 .nav-cta-pill {
@@ -599,7 +718,7 @@ body.logo-at-top .nav.hidden-on-video {
   padding: 10px 24px;
   background: #000000;
   color: #FFF3E9 !important;
-  font-weight: 600;
+  font-weight: 400; /* body-small-regular; active overrides to 600 */
 }
 
 .nav-cta:hover,
@@ -721,7 +840,7 @@ body.video-complete .video-header {
   left: 0;
   width: 100%;
   height: 100%;
-  background: #FFF3E9; /* Match page background */
+  background: var(--bg-default); /* Match page background */
   opacity: 0;
   z-index: 2;
   pointer-events: none;
@@ -991,7 +1110,7 @@ body.video-complete .video-header-logo.at-top {
   justify-content: flex-start;
   align-items: center;
   padding: 0;
-  background-color: #FFF3E9; /* What We Do section background */
+  background-color: transparent; /* Site background shows through */
   color: #000000;
   box-sizing: border-box;
   margin: 0;
@@ -1054,8 +1173,7 @@ body.video-complete .video-header-logo.at-top {
   overflow: visible; /* Allow content to overflow for scrolling backgrounds */
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none; /* Firefox - hide scrollbar */
-  /* What We Do background */
-  background-color: #FFF3E9;
+  background-color: transparent; /* Site background shows through */
   /* Smooth transitions for crossfade effect */
   transition: opacity 0.8s cubic-bezier(0.43, 0.195, 0.02, 1),
               transform 0.8s cubic-bezier(0.43, 0.195, 0.02, 1);
@@ -1090,60 +1208,9 @@ body.video-complete .wwd-step {
   display: flex !important;
 }
 
-/* Fixed Page Titles Container - Progress bar with dots */
-.wwd-titles-fixed {
-  position: fixed;
-  left: var(--container-padding);
-  top: 50vh;
-  transform: translateY(-50%);
-  z-index: 1000;
-  pointer-events: none;
-}
-
-/* Layout driven by fixed-height children: 40px + 220px + 40px + gaps = consistent total */
-.titles-progress {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-}
-
-/* Fixed height so lowest dot above / highest dot below stay at consistent positions */
-.titles-above,
-.titles-below {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  flex: 0 0 40px;
-}
-
-.titles-above {
-  justify-content: flex-end; /* Dots stick to bottom, closest to title */
-}
-
-.titles-below {
-  justify-content: flex-start; /* Dots stick to top, closest to title */
-}
-
-.titles-current {
-  flex: 0 0 220px;
-  display: flex;
-  justify-content: center;
-  align-items: center; /* Center shorter titles vertically within the fixed area */
-}
-
-.title-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #AAAAAA; /* Match inactive pillar categories */
-  flex-shrink: 0;
-}
+/* Progress bar removed - now using continuous scroll with active nav state */
 
 /* Hide all fixed WWD containers until video transition is complete */
-body:not(.video-complete) .wwd-titles-fixed,
 body:not(.video-complete) .wwd-vision-content-fixed,
 body:not(.video-complete) .wwd-how-content-fixed {
   display: none !important;
@@ -1151,10 +1218,8 @@ body:not(.video-complete) .wwd-how-content-fixed {
 }
 
 /* CRITICAL: All fixed text overlays AND their children must NEVER block wheel events
-   This ensures scrolling always works on the underlying .wwd section
+   This ensures scrolling always works on the underlying sections
    The * selector overrides the original pointer-events: auto on children */
-.wwd-titles-fixed,
-.wwd-titles-fixed *,
 .wwd-mission-text-fixed,
 .wwd-mission-text-fixed *,
 .wwd-vision-content-fixed,
@@ -1256,7 +1321,7 @@ body:not(.video-complete) .wwd-how-content-fixed {
 .wwd-step-1 {
   padding-top: 0;
   padding-bottom: 0;
-  min-height: 250vh; /* Reduced for tighter transitions */
+  min-height: 150vh;
   height: auto;
   display: flex;
   flex-direction: column;
@@ -1268,7 +1333,7 @@ body:not(.video-complete) .wwd-how-content-fixed {
 /* Fixed text container - stays centered while backgrounds scroll */
 .wwd-mission-text-fixed {
   position: sticky;
-  top: 50vh;
+  top: calc(50vh + 36px);
   transform: translateY(-50%);
   z-index: 5;
   pointer-events: none; /* Allow scrolling through */
@@ -1301,10 +1366,10 @@ body:not(.video-complete) .wwd-how-content-fixed {
   left: 0;
   width: 100%;
   height: 100%;
-  min-height: 250vh; /* Match parent min-height to contain all images */
+  min-height: 150vh;
   z-index: 1;
   pointer-events: none;
-  overflow: visible; /* ADDED: Don't clip images that extend beyond */
+  overflow: visible;
 }
 
 /* Step 2: Vision page - sticky text with scrolling background */
@@ -1340,7 +1405,7 @@ body:not(.video-complete) .wwd-how-content-fixed {
   align-items: center;
   justify-content: center;
   text-align: center;
-  gap: 40px;
+  gap: 100px;
   width: 100%;
   padding: 0 20px;
   box-sizing: border-box;
@@ -1353,7 +1418,7 @@ body:not(.video-complete) .wwd-how-content-fixed {
 
 .wwd-vision-content-fixed .wwd-title-wrapper-bottom {
   text-align: center;
-  overflow: hidden;
+  overflow: visible;
   padding: 20px 0;
 }
 
@@ -1384,7 +1449,7 @@ body:not(.video-complete) .wwd-how-content-fixed {
   top: 50vh; /* Start at vertical center */
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 800px;
+  width: 100vw;
   height: auto;
   z-index: 1; /* Behind text content (which has z-index: 10) */
   pointer-events: none;
@@ -1393,8 +1458,7 @@ body:not(.video-complete) .wwd-how-content-fixed {
 .wwd-vision-bg-image {
   width: 100%;
   height: auto;
-  object-fit: contain;
-  will-change: transform;
+  object-fit: cover;
   transform: scale(1);
 }
 
@@ -1408,7 +1472,7 @@ body:not(.video-complete) .wwd-how-content-fixed {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 60px; /* Space between headline and word animation */
+  gap: 100px; /* Space between headline and word animation */
   padding: 0 var(--container-padding);
   box-sizing: border-box;
   flex-shrink: 0;
@@ -1450,9 +1514,9 @@ body:not(.video-complete) .wwd-how-content-fixed {
 /* Multi-element pages: headline 100px below nav (nav = 72px, so top = 172px) */
 .wwd-how-content-fixed {
   position: fixed;
-  top: 172px; /* 72px nav + 100px gap */
+  top: calc(50vh + 36px);
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   z-index: 500;
   width: 90%;
   max-width: 1200px;
@@ -1474,7 +1538,6 @@ body:not(.video-complete) .wwd-how-content-fixed {
 
 .wwd-how-content-fixed .wwd-initiatives-content-wrapper {
   width: 100%;
-  max-width: 1000px; /* Constrain table width for better centering */
 }
 
 .wwd-how-content-fixed * {
@@ -1497,7 +1560,7 @@ body:not(.video-complete) .wwd-how-content-fixed {
   justify-content: flex-start !important;
   padding: calc(var(--nav-height) + var(--content-padding-top)) 20px var(--content-padding-bottom) 20px !important;
   flex-direction: column !important;
-  min-height: 120vh !important; /* Room for entrance/exit transition */
+  min-height: 150vh !important; /* Room for entrance/exit transition */
 }
 
 /* Hub fixed title - outside the step so transform doesn't affect it */
@@ -1642,33 +1705,12 @@ body:not(.video-complete) .wwd-how-content-fixed {
 
 /* Content wrapper for table + arrows */
 .wwd-initiatives-content-wrapper {
-  position: relative; /* Positioning context for arrows */
+  position: relative;
   width: 100%;
+  padding: 0 20px;
+  box-sizing: border-box;
 }
 
-/* Initiative arrows - lines */
-.initiative-arrow-line {
-  position: absolute;
-  pointer-events: none;
-  opacity: 0; /* Hidden by default - shown when pillar is active */
-  transition: opacity 0.5s ease;
-}
-
-.initiative-arrow-line.active {
-  opacity: 1;
-}
-
-/* Initiative arrows - arrowheads (separate elements to avoid distortion) */
-.initiative-arrowhead {
-  position: absolute;
-  pointer-events: none;
-  opacity: 0; /* Hidden by default - shown when pillar is active */
-  transition: opacity 0.5s ease;
-}
-
-.initiative-arrowhead.active {
-  opacity: 1;
-}
 
 
 /* Responsive padding for slide 3 */
@@ -1706,118 +1748,52 @@ body:not(.video-complete) .wwd-how-content-fixed {
   z-index: 10;
 }
 
-.wwd-initiatives-two-col {
-  position: relative;
+/* Four pillar cards layout */
+.wwd-pillar-cards {
   display: grid;
-  grid-template-columns: 0.8fr 1.2fr; /* Give more space to description */
-  gap: 80px; /* Increased gap between columns */
-  align-items: start;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  width: 100%;
+  max-width: 2000px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
-
-.wwd-initiatives-left {
+.wwd-pillar-card {
+  border-radius: 10px;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  align-items: flex-start;
+  gap: 6px;
   text-align: left;
+  background: transparent;
+  transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
-.wwd-initiative-item {
-  display: flex;
-  align-items: baseline;
-  gap: 8px; /* Reduced gap between number and category */
-  font-family: "fractul-variable", sans-serif;
-  transition: color 0.3s ease;
-  color: #AAAAAA; /* Greyed out by default */
-  cursor: pointer;
-  text-align: left;
+/* Responsive card layout */
+@media (min-width: 1025px) and (max-width: 1400px) {
+  .wwd-initiatives-content-wrapper {
+    padding: 0 30px;
+  }
 }
 
-.wwd-initiative-item.active {
-  color: #000; /* Black when active */
+@media (max-width: 900px) {
+  .wwd-pillar-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
 }
 
-.wwd-initiative-num {
-  font-size: clamp(1.125rem, 1.8vw, 1.8rem); /* Proportional to name (60%) */
-  font-weight: 400;
-  min-width: auto; /* Remove fixed width to close gap */
-  color: inherit; /* Inherit from parent .wwd-initiative-item */
-}
-
-.wwd-initiative-name {
-  /* Typography via .body-copy-regular class */
-  line-height: 1.1;
-  color: inherit; /* Inherit from parent .wwd-initiative-item (overrides .body-copy-regular) */
-}
-
-.wwd-initiatives-right {
-  position: relative;
-  min-height: 200px; /* Prevent collapse when descriptions are absolute */
-}
-
-.wwd-initiative-desc {
-  /* Typography via .body-large-regular class */
-  text-align: left;
-  opacity: 0; /* Hidden by default - only active one shows */
-  position: absolute; /* Absolute so they stack in same position */
-  top: 0;
-  left: 0;
-  transition: opacity 0.4s ease;
-  max-width: 500px;
-}
-
-.wwd-initiative-desc.active {
-  opacity: 1;
-}
-
-/* Mobile initiatives layout - hidden by default */
-.wwd-initiatives-mobile {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  /* Hide desktop layout and arrows on mobile */
-  .wwd-initiatives-desktop {
-    display: none !important;
+@media (max-width: 600px) {
+  .wwd-pillar-cards {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
   
-  .wwd-arrows-container {
-    display: none !important;
+  .wwd-pillar-card {
+    padding: 12px;
   }
-  
-  /* Show and style mobile layout */
-  .wwd-initiatives-mobile {
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-  }
-  
-  .wwd-initiative-group {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  
-  .wwd-initiatives-mobile .wwd-initiative-item {
-    color: #000;
-  }
-  
-  .wwd-initiatives-mobile .wwd-initiative-desc {
-    position: static;
-    opacity: 1;
-    font-size: clamp(1rem, 2.5vw, 1.25rem);
-    line-height: 1.5;
-    color: #333;
-  }
-  
-  .wwd-initiatives-mobile .wwd-initiative-num {
-    font-size: clamp(0.875rem, 1.5vw, 1rem);
-  }
-  
-  .wwd-initiatives-mobile .wwd-initiative-name {
-    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
-  }
+}
   
   /* Headline layout overrides for mobile - typography via .headline-regular class */
   .wwd-text-pursuit,
@@ -1894,7 +1870,7 @@ body:not(.video-complete) .wwd-how-content-fixed {
   
   /* Fix subsection 2 on mobile */
   .wwd-step-2-layout {
-    gap: 40px; /* Space between headline and rotating words */
+    gap: 60px; /* Space between headline and rotating words */
     position: relative;
     height: auto;
     min-height: auto; /* Remove 100% - was causing extra space */
@@ -2009,7 +1985,7 @@ body:not(.video-complete) .wwd-how-content-fixed {
   font-variation-settings: "wght" 600;
   font-size: clamp(3rem, 4.8vw, 4.8rem); /* 120% of base: 48px - 77px */
   font-weight: 600;
-  font-style: italic;
+  font-style: normal;
   line-height: 1.1;
   letter-spacing: -0.03em;
   color: #000000;
@@ -2051,16 +2027,16 @@ body:not(.video-complete) .wwd-how-content-fixed {
   position: relative;
 }
 
-/* Container for rotating words - clip scattered letters */
+/* Container for rotating words - allow letters to scatter across viewport */
 .wwd-title-wrapper-bottom {
-  overflow: hidden; /* Clip scattered letters that fly outside */
+  overflow: visible;
   position: relative;
-  padding: 50px 0; /* Add padding so visible letters don't get clipped */
+  padding: 50px 0;
 }
 
-/* Ensure the step-2-layout clips overflowing animation */
+/* Allow letters to scatter across viewport */
 .wwd-step-2 .wwd-step-2-layout {
-  overflow: hidden;
+  overflow: visible;
 }
 
 .rotating-word-letter {
@@ -2482,7 +2458,8 @@ body:not(.video-complete) .wwd-how-content-fixed {
 /* --------------------------------------------------------------------------
    WWD Step 5 & 6: Council and Partners (within What We Do)
    -------------------------------------------------------------------------- */
-.wwd-step-5,
+/* Step 5 (Decade) height is set by JS to fit all images + 150px; don't cap it here */
+.wwd-step-5:not(.impact-decade),
 .wwd-step-6 {
   align-items: flex-start !important;
   justify-content: flex-start !important;
@@ -2490,6 +2467,14 @@ body:not(.video-complete) .wwd-how-content-fixed {
   padding: calc(var(--nav-height) + var(--content-padding-top)) 20px var(--content-padding-bottom) 20px !important;
   flex-direction: column !important;
   min-height: 120vh !important; /* Room for entrance/exit transition */
+}
+
+.wwd-step-5.impact-step.impact-decade {
+  /* No min-height here – JS sets minHeight = lowest image bottom + 150px */
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  padding: calc(var(--nav-height) + var(--content-padding-top)) 20px var(--content-padding-bottom) 20px !important;
+  flex-direction: column !important;
 }
 
 .wwd-council-wrapper,
@@ -2558,15 +2543,15 @@ body:not(.video-complete) .wwd-how-content-fixed {
    -------------------------------------------------------------------------- */
 .builder-stories {
   padding: 0;
-  background-color: #F5FAFB; /* Our Impact section background */
+  background-color: transparent; /* Site background shows through */
   box-sizing: border-box;
   /* height, overflow, position handled by .section-page */
 }
 
 /* Impact step 1: Decade of Work - scroll spacer only; copy is in fixed container.
-   Taller than viewport so scroll-driven entrance/exit animation has range (like Vision). */
+   Fallback min-height until JS sets height to all images + 150px. */
 .impact-step.impact-decade {
-  min-height: 240vh;
+  min-height: 150vh;
   box-sizing: border-box;
   position: relative;
 }
@@ -2644,6 +2629,18 @@ body:not(.video-complete) .wwd-how-content-fixed {
   box-sizing: border-box;
 }
 
+/* Start hidden so entrance animation runs cleanly (headline then body) */
+.impact-decade-content-fixed .impact-decade-headline,
+.impact-decade-content-fixed .impact-decade-body {
+  opacity: 0;
+}
+
+.impact-decade-content-fixed.decade-entrance-done .impact-decade-headline,
+.impact-decade-content-fixed.decade-entrance-done .impact-decade-body {
+  opacity: 1;
+  transform: none;
+}
+
 .impact-decade-content-fixed .impact-decade-headline {
   color: #000000;
   text-align: center;
@@ -2672,6 +2669,98 @@ body:not(.video-complete) .wwd-how-content-fixed {
 
 .builder-stories::after {
   display: none; /* Hide accent line */
+}
+
+/* WWD steps 5–9: Impact content moved into What We Do – site background shows through */
+.wwd .wwd-step-5,
+.wwd .wwd-step-6,
+.wwd .wwd-step-7,
+.wwd .wwd-step-8,
+.wwd .wwd-step-9,
+.wwd-step-5,
+.wwd-step-6,
+.wwd-step-7,
+.wwd-step-8,
+.wwd-step-9 {
+  background-color: transparent;
+  box-sizing: border-box;
+}
+
+.wwd .wwd-step-5.impact-step.impact-decade,
+.wwd-step-5.impact-step.impact-decade {
+  /* Fallback until JS sets min-height = lowest image bottom + 150px */
+  min-height: 150vh;
+  position: relative;
+}
+
+.wwd .wwd-step-5 .impact-decade-bg,
+.wwd-step-5 .impact-decade-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.wwd .wwd-step-6 .press-quote,
+.wwd-step-6 .press-quote {
+  min-height: 150vh;
+  width: 100%;
+  padding: var(--content-padding-top) 0 var(--content-padding-bottom);
+  background: transparent; /* Site background shows through */
+  position: relative;
+}
+
+.wwd .wwd-step-7 .real-people,
+.wwd .wwd-step-8 .real-people,
+.wwd-step-7 .real-people,
+.wwd-step-8 .real-people {
+  min-height: 100vh;
+  padding: var(--content-padding-top) var(--container-padding) var(--content-padding-bottom);
+  background-color: transparent; /* Site background shows through */
+}
+
+.wwd .wwd-step-9 .builder-stories-step,
+.wwd-step-9 .builder-stories-step {
+  padding-top: 250px;
+  padding-bottom: 250px;
+  min-height: auto;
+}
+
+/* Override section-hidden for elements inside steps 5-9 */
+/* These steps handle their own visibility via stagger animations */
+.wwd-step-5 .section-hidden,
+.wwd-step-6 .section-hidden,
+.wwd-step-7 .section-hidden,
+.wwd-step-8 .section-hidden,
+.wwd-step-9 .section-hidden,
+.wwd-step-5 .press-quote,
+.wwd-step-6 .press-quote,
+.wwd-step-7 .real-people,
+.wwd-step-8 .real-people,
+.wwd-step-9 .builder-stories-step {
+  opacity: 1 !important;
+}
+
+/* Ensure NYT background image (Step 6) is fully visible */
+.wwd .wwd-step-6,
+.wwd-step-6 {
+  min-height: 150vh !important;
+}
+
+.wwd .wwd-step-6 .press-quote-bg,
+.wwd .wwd-step-6 .nyt-bg-image,
+.wwd-step-6 .press-quote-bg,
+.wwd-step-6 .nyt-bg-image {
+  opacity: 1 !important;
+}
+
+/* Ensure builder photos container (Step 5) is fully visible */
+.wwd .wwd-step-5 #impact-decade-bg,
+.wwd .wwd-step-5 .impact-decade-bg,
+.wwd-step-5 #impact-decade-bg,
+.wwd-step-5 .impact-decade-bg {
+  opacity: 1 !important;
 }
 
 /* Meet Our Builders step - padding and height grows with revealed content */
@@ -2782,13 +2871,13 @@ body:not(.video-complete) .wwd-how-content-fixed {
   aspect-ratio: 16 / 10;
   overflow: hidden;
   margin-bottom: 0.5rem;
-  box-shadow: 0 0 0 0 #000000;
+  box-shadow: 0 0 0 0 #AEE0E5;
   transition: box-shadow 0.3s ease;
 }
 
 /* Use card hover for reliable hit area (covers thumb + button + name) */
 .builder-video-card:hover .builder-video-thumb {
-  box-shadow: 0 0 0 10px #000000;
+  box-shadow: 0 0 0 10px #AEE0E5;
 }
 
 .builder-video-thumb img {
@@ -2827,7 +2916,7 @@ body:not(.video-complete) .wwd-how-content-fixed {
 }
 
 .builder-play-btn-circle {
-  fill: #F5FAFB;
+  fill: var(--bg-our-impact);
   transition: fill var(--transition-base);
 }
 
@@ -2841,7 +2930,7 @@ body:not(.video-complete) .wwd-how-content-fixed {
 }
 
 .builder-video-card:hover .builder-play-btn-triangle {
-  fill: #F5FAFB;
+  fill: var(--bg-our-impact);
 }
 
 /* Builder video overlay */
@@ -2922,7 +3011,7 @@ body:not(.video-complete) .wwd-how-content-fixed {
 }
 
 .builder-overlay-close-circle {
-  fill: #F5FAFB;
+  fill: var(--bg-our-impact);
   transition: fill var(--transition-base);
 }
 
@@ -2937,7 +3026,7 @@ body:not(.video-complete) .wwd-how-content-fixed {
 }
 
 .builder-overlay-close:hover .builder-overlay-close-x {
-  stroke: #F5FAFB;
+  stroke: var(--bg-our-impact);
 }
 
 /* More button – same styling as footer "Get Involved" */
@@ -3087,7 +3176,7 @@ body:not(.video-complete) .wwd-how-content-fixed {
   min-height: 150vh;
   height: auto;
   padding: var(--content-padding-top) 0 var(--content-padding-bottom);
-  background: #F5FAFB; /* Our Impact section background */
+  background: transparent; /* Site background shows through */
   overflow: visible;
   box-sizing: border-box;
   display: flex;
@@ -3097,7 +3186,7 @@ body:not(.video-complete) .wwd-how-content-fixed {
 }
 
 .press-quote.alt {
-  background: #FFF3E9;
+  background: transparent; /* Site background shows through */
 }
 
 /* NYT Background image container */
@@ -3187,7 +3276,7 @@ body:not(.video-complete) .wwd-how-content-fixed {
   min-height: 100vh;
   height: auto;
   padding: var(--content-padding-top) var(--container-padding) var(--content-padding-bottom);
-  background-color: #F5FAFB; /* Our Impact section background */
+  background-color: transparent; /* Site background shows through */
   overflow: visible;
   box-sizing: border-box;
   display: flex;
@@ -3200,9 +3289,7 @@ body:not(.video-complete) .wwd-how-content-fixed {
   max-width: 1200px;
   margin: 0 auto;
   text-align: center;
-  /* Initial state for entrance animation */
-  opacity: 0;
-  transform: translateY(20px);
+  /* Opacity controlled by stagger system on child elements, not parent */
 }
 
 .real-people-headline {
@@ -3232,7 +3319,7 @@ body:not(.video-complete) .wwd-how-content-fixed {
 .impact-step.impact-footer .footer {
   padding-top: 150px;
   padding-bottom: 30px;
-  background: #F5FAFB; /* Match Our Impact section color */
+  background: transparent; /* Site background shows through */
 }
 
 .impact-footer-fullwidth {
@@ -3326,13 +3413,65 @@ body:not(.video-complete) .wwd-how-content-fixed {
 }
 
 /* --------------------------------------------------------------------------
-   Urgency Section
+   Urgency Section (standalone – legacy; also used when Urgency is inside WWD step 4)
    -------------------------------------------------------------------------- */
-.urgency {
-  padding: var(--space-4xl) 0;
-  background: var(--color-black);
+.urgency,
+.wwd .wwd-step-urgency {
+  padding: 0;
+  background: transparent; /* Site background shows through */
   box-sizing: border-box;
-  /* height, overflow, position handled by .section-page */
+  /* height, overflow, position handled by .section-page (or .wwd-step) */
+}
+
+/* Urgency content inside What We Do (step 4) – keep same look and background */
+.wwd .wwd-step-urgency {
+  min-height: 100vh;
+  padding: var(--content-padding-top) 0 var(--content-padding-bottom);
+}
+
+/* Urgency steps – each step is a full "page" within the section */
+.urgency-step {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent; /* Site background shows through */
+  box-sizing: border-box;
+}
+
+.urgency-step-1 {
+  padding: var(--content-padding-top) 0 var(--content-padding-bottom);
+}
+
+.urgency-step-2 {
+  padding: var(--content-padding-top) var(--container-padding) var(--content-padding-bottom);
+}
+
+.urgency-step-2 .urgency-quote {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+/* Step 3: Footer (separate page – same pattern as impact-footer) */
+.urgency-step.urgency-footer {
+  min-height: auto;
+  height: auto;
+  display: block;
+  padding: 0;
+}
+
+.urgency-step.urgency-footer .footer {
+  padding-top: 150px;
+  padding-bottom: 30px;
+  background: transparent; /* Site background shows through */
+}
+
+.urgency-footer-fullwidth {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  position: relative;
+  left: 0;
 }
 
 .urgency-grid {
@@ -3343,33 +3482,66 @@ body:not(.video-complete) .wwd-how-content-fixed {
 }
 
 .urgency-card {
-  padding: var(--space-xl);
-  background: var(--color-dark-elevated);
-  border: 1px solid var(--color-dark-border);
-  border-radius: var(--radius-md);
+  padding: var(--space-xl) 1rem;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  text-align: left;
 }
 
 .urgency-source {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: var(--color-gray);
   margin-bottom: var(--space-md);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  /* Typography via .body-small-regular class */
 }
 
 .urgency-stat {
-  font-size: 1.125rem;
   line-height: 1.6;
-  color: var(--color-light);
+  /* Typography via .body-medium-regular class */
 }
 
 .urgency-stat strong {
-  color: var(--color-white);
+  color: #000000;
 }
 
-/* Gap Visual */
-.gap-visual {
+/* Urgency section header and quote - dark text on light background */
+.urgency-headline {
+  color: #000000;
+  text-align: center;
+  margin: 0 0 var(--space-md) 0;
+}
+
+.urgency-body {
+  color: #333;
+  text-align: center;
+  max-width: 975px;
+  margin: 0 auto var(--space-3xl) auto;
+}
+
+.urgency .urgency-quote,
+.wwd .wwd-step-urgency .urgency-quote {
+  border-top-color: rgba(0, 0, 0, 0.15);
+}
+.urgency .urgency-quote .quote-text,
+.wwd .wwd-step-urgency .urgency-quote .quote-text {
+  color: #000000;
+}
+.urgency .urgency-quote .quote-source,
+.wwd .wwd-step-urgency .urgency-quote .quote-source {
+  color: #555;
+}
+
+.urgency .footer,
+.wwd .wwd-step-urgency .footer {
+  background: transparent; /* Site background shows through */
+}
+.wwd .wwd-step-urgency .footer.urgency-footer-fullwidth {
+  padding-top: 150px;
+  padding-bottom: 30px;
+}
+
+/* Gap Visual - Urgency section (light background) */
+.urgency .gap-visual,
+.wwd .wwd-step-urgency .gap-visual {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   gap: var(--space-xl);
@@ -3382,12 +3554,65 @@ body:not(.video-complete) .wwd-how-content-fixed {
   text-align: center;
 }
 
+.urgency .gap-number,
+.wwd .wwd-step-urgency .gap-number {
+  display: block;
+  line-height: 1.1;
+  margin-bottom: var(--space-md);
+  color: #000000;
+  /* 64% and 4% use .body-xlarge-semibold – override in rule after .gap-number */
+}
+
+.urgency .label-gap {
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: 1rem;
+  color: #333;
+  max-width: 250px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+.urgency .gap-divider,
+.wwd .wwd-step-urgency .gap-divider {
+  text-align: center;
+  /* Typography via .body-medium-semibold class on child span */
+}
+
+.urgency .gap-label,
+.wwd .wwd-step-urgency .gap-label {
+  /* Typography via .body-medium-regular class */
+  color: #333;
+}
+
+/* Gap visual outside urgency (e.g. dark sections) - keep original */
+.gap-visual {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: var(--space-xl);
+  align-items: center;
+  margin-bottom: var(--space-3xl);
+  padding: var(--space-2xl) 0;
+}
+
 .gap-number {
   display: block;
   font-size: clamp(4rem, 10vw, 8rem);
   font-weight: 900;
   line-height: 1;
   margin-bottom: var(--space-md);
+}
+
+/* Urgency section: 64% and 4% – semibold (600); selector must match without .wwd parent */
+.urgency .urgency-gap-percent,
+.wwd .wwd-step-urgency .urgency-gap-percent,
+.wwd-step-urgency .urgency-gap-percent {
+  font-family: "fractul-variable", sans-serif;
+  font-variation-settings: "wght" 600;
+  font-size: clamp(4rem, 8vw, 6rem) !important; /* 64px - 96px */
+  font-weight: 600 !important;
+  line-height: 1.2;
+  color: #000000;
 }
 
 .label-gap {
@@ -3406,7 +3631,47 @@ body:not(.video-complete) .wwd-how-content-fixed {
   text-align: center;
 }
 
-/* Investment Stats */
+/* Investment Stats - Urgency section (light background) */
+.urgency .investment-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-lg);
+}
+
+.urgency .investment-card {
+  padding: var(--space-xl);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.urgency .investment-card.highlight {
+  background: var(--color-accent-dim);
+  border-color: var(--color-accent);
+}
+
+.urgency .investment-number {
+  display: block;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  margin-bottom: var(--space-sm);
+  color: #000000;
+}
+
+.urgency .investment-card.highlight .investment-number {
+  color: var(--color-accent);
+}
+
+.urgency .label-investment {
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #555;
+  line-height: 1.5;
+}
+
+/* Investment stats outside urgency - keep original */
 .investment-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -3760,7 +4025,7 @@ body:not(.video-complete) .wwd-how-content-fixed {
    -------------------------------------------------------------------------- */
 .footer {
   height: auto; /* Content-based height */
-  background: #FFF3E9;
+  background: transparent; /* Site background shows through */
   border-top: 1px solid rgba(0, 0, 0, 0.1);
   padding: var(--space-3xl) 0 30px; /* Exactly 30px below copyright */
   overflow: visible;
@@ -4088,35 +4353,15 @@ body.video-complete .footer {
   transform: translateY(0);
 }
 
-.wwd-initiative-item.stagger-item,
-.wwd-initiative-desc.stagger-item {
+/* Pillar cards - stagger from left to right */
+.wwd-pillar-card.stagger-item {
   opacity: 0;
-  transform: translateY(15px);
+  transform: translateX(-20px);
 }
 
-.wwd-initiative-item.stagger-item.stagger-revealed {
+.wwd-pillar-card.stagger-item.stagger-revealed {
   opacity: 1;
-  transform: translateY(0);
-}
-
-/* Keep descriptions hidden by default, only show when revealed AND active */
-.wwd-initiative-desc.stagger-item {
-  opacity: 0 !important;
-}
-
-.wwd-initiative-desc.stagger-item.stagger-revealed.active {
-  opacity: 1 !important;
-}
-
-/* Arrows - hidden by default, only show when revealed */
-.initiative-arrow-line.stagger-item,
-.initiative-arrowhead.stagger-item {
-  opacity: 0 !important;
-}
-
-.initiative-arrow-line.stagger-item.stagger-revealed.active,
-.initiative-arrowhead.stagger-item.stagger-revealed.active {
-  opacity: 1 !important;
+  transform: translateX(0);
 }
 
 /* Hub page elements - stagger animation */
@@ -4189,6 +4434,59 @@ body.video-complete .footer {
 }
 
 .partner-card.stagger-item.stagger-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Urgency page elements - stagger animation */
+.urgency-headline.stagger-item,
+.urgency-body.stagger-item,
+.urgency-grid.stagger-item,
+.gap-visual.stagger-item {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s cubic-bezier(0.43, 0.195, 0.02, 1),
+              transform 0.5s cubic-bezier(0.43, 0.195, 0.02, 1);
+}
+
+.urgency-headline.stagger-item.stagger-revealed,
+.urgency-body.stagger-item.stagger-revealed,
+.urgency-grid.stagger-item.stagger-revealed,
+.gap-visual.stagger-item.stagger-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Demography page elements - stagger animation */
+.real-people-headline.stagger-item,
+.real-people-body.stagger-item,
+.demographics-grid.stagger-item {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s cubic-bezier(0.43, 0.195, 0.02, 1),
+              transform 0.5s cubic-bezier(0.43, 0.195, 0.02, 1);
+}
+
+.real-people-headline.stagger-item.stagger-revealed,
+.real-people-body.stagger-item.stagger-revealed,
+.demographics-grid.stagger-item.stagger-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Transformation Stories page elements - stagger animation */
+.builder-stories-headline.stagger-item,
+.builder-stories-description.stagger-item,
+.builder-video-gallery.stagger-item {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s cubic-bezier(0.43, 0.195, 0.02, 1),
+              transform 0.5s cubic-bezier(0.43, 0.195, 0.02, 1);
+}
+
+.builder-stories-headline.stagger-item.stagger-revealed,
+.builder-stories-description.stagger-item.stagger-revealed,
+.builder-video-gallery.stagger-item.stagger-revealed {
   opacity: 1;
   transform: translateY(0);
 }
