@@ -1564,16 +1564,12 @@ const MISSION_BG_CONFIG = [
     src: 'assets/images/AIJI_Artwork_Mission_01.png',
     orientation: 'vertical', // Fully vertical
     size: 'large', // Largest image
-    position: { top: '20vh' },
     opacity: 1.0 // Full opacity for watercolor effect
   }
 ];
 
-// Create background artwork elements with Microsoft AI-style layout
+// Create background artwork elements - append directly to body for true fixed positioning
 function createBackgroundArtwork() {
-  const container = document.querySelector('.wwd-mission-bg-scroll');
-  if (!container) return;
-  
   MISSION_BG_CONFIG.forEach((config, index) => {
     const img = document.createElement('img');
     img.src = config.src;
@@ -1581,15 +1577,12 @@ function createBackgroundArtwork() {
     img.dataset.opacity = config.opacity;
     img.alt = 'Mission background artwork';
     
-    // Position
-    Object.entries(config.position).forEach(([key, value]) => {
-      img.style[key] = value;
-    });
-    
-    // Initial state - invisible
+    // Initial state - invisible at normal size
     img.style.opacity = '0';
+    img.style.transform = 'translate(-50%, -50%) scale(1)';
     
-    container.appendChild(img);
+    // Append directly to body for true fixed positioning
+    document.body.appendChild(img);
   });
   
 }
@@ -1597,38 +1590,63 @@ function createBackgroundArtwork() {
 // Microsoft AI-style fade in/out for Mission background images
 function initMissionBackgroundFade() {
   const images = document.querySelectorAll('.mission-bg-art');
+  const missionTextFixed = document.querySelector('.wwd-mission-text-fixed');
+  const missionStep = document.querySelector('.wwd-step-1');
   
   if (!images.length) return;
   
   function updateImageVisibility() {
     const viewportHeight = window.innerHeight;
     
+    // Get Mission page bounds for scroll-based calculations
+    if (!missionStep) return;
+    const missionRect = missionStep.getBoundingClientRect();
+    const missionHeight = missionStep.offsetHeight;
+    
+    // Check if Mission page is in view
+    const missionInView = missionRect.top < viewportHeight && missionRect.bottom > 0;
+    
     images.forEach(img => {
-      const imgRect = img.getBoundingClientRect();
-      
-      // Calculate visibility based on viewport position
-      const isInViewport = imgRect.top < viewportHeight && imgRect.bottom > 0;
-      
-      if (!isInViewport) {
+      // Hide if Mission page is not in view
+      if (!missionInView) {
         img.style.opacity = '0';
+        img.style.transform = 'translate(-50%, -50%) scale(1)';
         return;
       }
       
-      // Fade in/out based on distance from viewport center
-      const imgCenter = (imgRect.top + imgRect.bottom) / 2;
-      const viewportCenter = viewportHeight / 2;
-      const distanceFromCenter = Math.abs(imgCenter - viewportCenter);
-      const fadeThreshold = viewportHeight * 0.6; // Increased from 0.4 to make images reach 100% opacity sooner
+      // Calculate scroll progress through Mission page
+      // 0 = Mission page top is at viewport top (beginning)
+      // 1 = Mission page is 80% scrolled (fade out before next page)
+      const scrollableDistance = missionHeight - viewportHeight;
+      const scrolled = -missionRect.top;
       
-      // Calculate opacity: 1 at center, 0 at threshold distance
-      const opacityMultiplier = Math.max(0, 1 - (distanceFromCenter / fadeThreshold));
-      const targetOpacity = parseFloat(img.dataset.opacity) || 0.7;
+      // Use 80% of scroll distance so image fades out before Vision page
+      const fadeOutPoint = scrollableDistance * 0.8;
+      const scrollProgress = Math.max(0, Math.min(1, scrolled / fadeOutPoint));
       
-      // Reach full opacity faster with a power curve
-      const adjustedMultiplier = Math.pow(opacityMultiplier, 0.7); // Power < 1 makes it reach 1.0 faster
+      // Scale grows as user scrolls down (1.0 → 1.5)
+      const scale = 1.0 + (scrollProgress * 0.5);
       
-      img.style.opacity = adjustedMultiplier * targetOpacity;
+      // Opacity fades out as user scrolls down (1.0 → 0)
+      const targetOpacity = parseFloat(img.dataset.opacity) || 1.0;
+      const opacity = (1.0 - scrollProgress) * targetOpacity;
+      
+      img.style.opacity = opacity;
+      img.style.transform = `translate(-50%, -50%) scale(${scale})`;
     });
+    
+    // Fade mission text and logos based on mission step visibility
+    if (missionTextFixed && missionStep) {
+      const stepRect = missionStep.getBoundingClientRect();
+      const triggerPoint = viewportHeight * 0.6; // Trigger at 60% of viewport (earlier than center)
+      
+      // Fade in when entering viewport, fade out when leaving
+      if (stepRect.top < triggerPoint && stepRect.bottom > triggerPoint) {
+        missionTextFixed.classList.add('visible');
+      } else {
+        missionTextFixed.classList.remove('visible');
+      }
+    }
   }
   
   // Listen to window scroll (body now scrolls)
@@ -2312,12 +2330,14 @@ function updateNYTEntrance() {
 
   if (!isNytActive) {
     nytContent.style.opacity = '0';
+    nytContent.style.pointerEvents = 'none';
     return;
   }
 
   // Past exit: require bottom to be clearly above center (avoids flicker when rect.bottom ~ viewportCenter)
   if (rect.bottom <= viewportCenter - buffer) {
     nytContent.style.opacity = '0';
+    nytContent.style.pointerEvents = 'none';
     return;
   }
 
@@ -2332,10 +2352,12 @@ function updateNYTEntrance() {
     const exitProgress = Math.min(1, Math.max(0, distanceIntoExitZone / exitZoneHeight));
     const opacity = Math.max(0, 1 - exitProgress);
     nytContent.style.opacity = opacity;
+    nytContent.style.pointerEvents = opacity > 0.5 ? 'auto' : 'none';
     return;
   }
   if (rect.bottom <= exitZoneEnd) {
     nytContent.style.opacity = '0';
+    nytContent.style.pointerEvents = 'none';
     return;
   }
 
@@ -2343,10 +2365,13 @@ function updateNYTEntrance() {
   if (visibleFromTop > 0 && visibleFromTop < entranceThreshold) {
     const progress = visibleFromTop / entranceThreshold;
     nytContent.style.opacity = progress;
+    nytContent.style.pointerEvents = progress > 0.5 ? 'auto' : 'none';
   } else if (visibleFromTop >= entranceThreshold) {
     nytContent.style.opacity = '1';
+    nytContent.style.pointerEvents = 'auto';
   } else {
     nytContent.style.opacity = '0';
+    nytContent.style.pointerEvents = 'none';
   }
 }
 
@@ -2882,57 +2907,63 @@ function initAdvancedPageTransitions() {
     const rect = visionPage.getBoundingClientRect();
     const viewportHeight = window.innerHeight;
     const viewportCenter = viewportHeight / 2;
+    const visionHeight = visionPage.offsetHeight;
     
-    // Check if Vision page covers the center of viewport
-    const isVisionActive = rect.top < viewportCenter && rect.bottom > viewportCenter;
+    // Animation settings
+    const animationDuration = 150; // 150px for both entrance and exit animations
+    const entranceStartPoint = 0.4; // Start entrance at 40% of page height
+    const exitStartPoint = 0.8; // Start exit at 80% of page height
     
-    // Calculate how much of Vision page is visible from top
-    const visibleFromTop = viewportHeight - rect.top;
-    const entranceThreshold = viewportHeight * 0.25; // 25vh to fully reveal
+    // Calculate scroll progress through the Vision page (0 = just entered, 1 = about to exit)
+    const scrolled = viewportHeight - rect.top; // How much we've scrolled into Vision
     
-    // Exit threshold - start fading out before leaving viewport
-    const exitThreshold = viewportHeight * 0.6; // Start exit when 60vh from bottom
+    // Check if Vision is in view at all
+    const isInView = rect.top < viewportHeight && rect.bottom > 0;
     
-    if (!isVisionActive) {
-      // Vision is not the active page - hide it
+    if (!isInView) {
       visionContent.style.opacity = '0';
       visionContent.style.pointerEvents = 'none';
-      
-      if (rect.top >= viewportCenter) {
-        // Before entering
-        visionContent.style.transform = 'translate(-50%, calc(-50% + 30px))';
-      } else {
-        // After exiting
-        visionContent.style.transform = 'translate(-50%, calc(-50% - 30px))';
-      }
+      visionContent.style.transform = 'translate(-50%, calc(-50% + 30px))';
       return;
     }
     
-    // Check if we're near the exit (bottom of Vision approaching viewport)
-    if (rect.bottom < viewportHeight + exitThreshold && rect.bottom > viewportCenter) {
-      // Calculate exit progress - fade out as we approach How page
-      const distanceToExit = rect.bottom - viewportCenter;
-      const exitProgress = Math.min(1, distanceToExit / exitThreshold);
+    // Calculate trigger points based on page height
+    const entranceStartScrolled = visionHeight * entranceStartPoint;
+    const exitStartScrolled = visionHeight * exitStartPoint;
+    
+    // Before entrance phase
+    if (scrolled < entranceStartScrolled) {
+      visionContent.style.opacity = '0';
+      visionContent.style.transform = 'translate(-50%, calc(-50% + 30px))';
+      visionContent.style.pointerEvents = 'none';
+      return;
+    }
+    
+    // Entrance phase: starts at 20%, completes in 150px
+    if (scrolled >= entranceStartScrolled && scrolled < entranceStartScrolled + animationDuration) {
+      const distanceIntoEntrance = scrolled - entranceStartScrolled;
+      const progress = distanceIntoEntrance / animationDuration;
+      visionContent.style.opacity = progress;
+      visionContent.style.transform = `translate(-50%, calc(-50% + ${(1 - progress) * 30}px))`;
+      visionContent.style.pointerEvents = progress > 0.5 ? 'auto' : 'none';
+      return;
+    }
+    
+    // Exit phase: starts at 60%, completes in 150px
+    if (scrolled >= exitStartScrolled) {
+      const distanceIntoExit = scrolled - exitStartScrolled;
+      const exitProgress = 1 - Math.min(1, distanceIntoExit / animationDuration);
       
       visionContent.style.opacity = exitProgress;
       visionContent.style.transform = `translate(-50%, calc(-50% - ${(1 - exitProgress) * 30}px))`;
       visionContent.style.pointerEvents = exitProgress > 0.5 ? 'auto' : 'none';
+      return;
     }
-    // Check entrance
-    else if (visibleFromTop > 0 && visibleFromTop < entranceThreshold) {
-      // Calculate entrance progress (0 to 1)
-      const progress = visibleFromTop / entranceThreshold;
-      
-      // Content fades in and moves up
-      visionContent.style.opacity = progress;
-      visionContent.style.transform = `translate(-50%, calc(-50% + ${(1 - progress) * 30}px))`;
-      visionContent.style.pointerEvents = progress > 0.5 ? 'auto' : 'none';
-    } else if (visibleFromTop >= entranceThreshold) {
-      // Fully visible
-      visionContent.style.opacity = '1';
-      visionContent.style.transform = 'translate(-50%, -50%)';
-      visionContent.style.pointerEvents = 'auto';
-    }
+    
+    // Stable phase: fully visible between entrance complete and exit start
+    visionContent.style.opacity = '1';
+    visionContent.style.transform = 'translate(-50%, -50%)';
+    visionContent.style.pointerEvents = 'auto';
   }
   
   // Listen to window scroll (body now scrolls directly)
@@ -3245,6 +3276,7 @@ initSectionSwitching();
 function initStaggerAnimations() {
   // Track which pages have been animated
   const animatedPages = {
+    mission: false,  // Step 1: Mission - headline and logos
     step3: false,  // The How - pillars
     step4: false,  // The Hub - gallery
     step5: false,  // Advisory Council - cards
@@ -3257,6 +3289,16 @@ function initStaggerAnimations() {
   
   // Add stagger-item class to elements
   function setupStaggerItems() {
+    // Step 1: Mission page elements (headline, logos, and background)
+    const missionHeadline = document.querySelector('.wwd-step-1 .wwd-text-pursuit');
+    if (missionHeadline) missionHeadline.classList.add('stagger-item', 'stagger-mission-headline');
+    
+    const missionLogos = document.querySelectorAll('.wwd-step-1 .wwd-mission-logo');
+    missionLogos.forEach(logo => logo.classList.add('stagger-item', 'stagger-mission-logo'));
+    
+    const missionBgImages = document.querySelectorAll('.wwd-step-1 .mission-bg-art');
+    missionBgImages.forEach(img => img.classList.add('stagger-item', 'stagger-mission-bg'));
+    
     // Step 3: How page elements (headline and pillar cards)
     const howHeadline = document.querySelector('.wwd-how-content-fixed .wwd-initiatives-headline');
     if (howHeadline) howHeadline.classList.add('stagger-item', 'stagger-how-headline');
@@ -3336,6 +3378,37 @@ function initStaggerAnimations() {
     
     const transGallery = document.querySelector('.wwd-step-9 .builder-video-gallery');
     if (transGallery) transGallery.classList.add('stagger-item', 'stagger-trans-gallery');
+  }
+  
+  // Trigger sequential animation for Mission page
+  // Sequence: 1. Headline → 2. Logos (left to right) → 3. Background image
+  function triggerMissionSequence() {
+    let delay = 0;
+    const baseDelay = 150;
+    
+    // 1. Headline
+    const headline = document.querySelector('.stagger-mission-headline');
+    if (headline) {
+      setTimeout(() => headline.classList.add('stagger-revealed'), delay);
+      delay += 300;
+    }
+    
+    // 2. Logos (staggered left to right)
+    const logos = document.querySelectorAll('.stagger-mission-logo');
+    logos.forEach((logo, i) => {
+      setTimeout(() => logo.classList.add('stagger-revealed'), delay + i * baseDelay);
+    });
+    
+    // Calculate delay after all logos complete
+    if (logos.length > 0) {
+      delay += (logos.length - 1) * baseDelay + baseDelay;
+    }
+    
+    // 3. Background image (scale up and fade in)
+    const bgImages = document.querySelectorAll('.stagger-mission-bg');
+    bgImages.forEach(img => {
+      setTimeout(() => img.classList.add('stagger-revealed'), delay);
+    });
   }
   
   // Trigger sequential animation for How page
@@ -3559,6 +3632,17 @@ function initStaggerAnimations() {
   function checkAndTriggerStagger() {
     const viewportHeight = window.innerHeight;
     const viewportCenter = viewportHeight / 2;
+    
+    // Step 1: Mission - trigger when page is in view
+    const missionPage = document.querySelector('.wwd-step-1');
+    if (missionPage && !animatedPages.mission) {
+      const rect = missionPage.getBoundingClientRect();
+      // Trigger when Mission page top crosses viewport center
+      if (rect.top < viewportCenter && rect.bottom > viewportCenter) {
+        animatedPages.mission = true;
+        triggerMissionSequence();
+      }
+    }
     
     // Step 3: The How - trigger EARLIER (when top enters bottom half of viewport)
     const howPage = document.querySelector('.wwd-step-3');

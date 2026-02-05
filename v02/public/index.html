@@ -143,6 +143,13 @@
           <div class="wwd-text-pursuit headline-regular">
             Pursuit AI Jobs Institute is America's first AI workforce hub, preparing all of us for the needs of an AI-first economy.
           </div>
+          
+          <!-- Partner Logos Container -->
+          <div class="wwd-mission-logos">
+            <img src="assets/logos/AIJI_Logo_EmpireState.svg" alt="Empire State Development" class="wwd-mission-logo">
+            <img src="assets/logos/AIJI_Logo_NYCEDC.svg" alt="NYC EDC" class="wwd-mission-logo">
+            <img src="assets/logos/AIJI_Logo_PartnershipNYC.svg" alt="Partnership for NYC" class="wwd-mission-logo">
+          </div>
         </div>
         
         <!-- Scrolling background container - images scroll behind text -->
@@ -522,50 +529,78 @@
        FOOTER
        ======================================== -->
   <footer class="footer site-footer">
-    <div class="container">
-      <div class="footer-main">
-        <div class="footer-brand">
-          <img src="assets/images/AIJI_Logo_Acronym_Background.svg" alt="AIJI Logo" class="footer-logo">
-          <p class="footer-tagline footer-large-regular">Let's build an AI-first future.<br>For all of us.</p>
-          <form class="footer-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
-            <div class="form-group footer-form-group">
-              <input 
-                type="email" 
-                name="email" 
-                placeholder="Enter your email" 
-                required
-                class="footer-input footer-medium-regular"
-              >
-              <button type="submit" class="footer-button footer-medium-regular">
-                Get Involved
-              </button>
-            </div>
-            <input type="hidden" name="_subject" value="New AIJI Newsletter Signup (Footer)">
-          </form>
-          <div class="footer-links-section">
-            <a href="https://pursuit.org" target="_blank" rel="noopener" class="footer-pursuit-link footer-medium-regular">PURSUIT.ORG</a>
-            <div class="footer-social-icons">
-              <a href="https://twitter.com/pursuit" target="_blank" rel="noopener" aria-label="X (Twitter)">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="#000000">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                </svg>
-              </a>
-              <a href="https://instagram.com/joinpursuit" target="_blank" rel="noopener" aria-label="Instagram">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="#000000">
-                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                </svg>
-              </a>
-            </div>
+    <div class="footer-container-full">
+      <!-- Top: Email signup section -->
+      <div class="footer-top">
+        <h2 class="footer-cta-headline footer-large-regular">Let's Build the Future of Work.<br>Together.</h2>
+        <form class="footer-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+          <div class="footer-form-group">
+            <input 
+              type="email" 
+              name="email" 
+              placeholder="Email Address" 
+              required
+              class="footer-input footer-medium-regular"
+            >
+            <button type="submit" class="footer-button footer-medium-regular">
+              Get Involved
+            </button>
           </div>
+          <input type="hidden" name="_subject" value="New AIJI Newsletter Signup (Footer)">
+        </form>
+      </div>
+      
+      <!-- Middle: Navigation columns (6-column grid) -->
+      <div class="footer-nav-grid">
+        <!-- Column 1: Logo -->
+        <div class="footer-nav-col footer-logo-col">
+          <img src="assets/images/AIJI_Logo_Acronym_Background.svg" alt="AIJI Logo" class="footer-logo">
         </div>
         
-        <div class="footer-nav-links">
-          <a href="#" class="footer-small-semibold">Privacy Policy</a>
-          <a href="#" class="footer-small-semibold">Terms of Use</a>
-          <a href="#" class="footer-small-semibold">Contact</a>
+        <!-- Column 2: Our Work -->
+        <div class="footer-nav-col">
+          <a href="#our-vision" class="footer-small-semibold footer-section-title">Our Work</a>
+          <a href="#our-vision" class="footer-small-regular">Mission</a>
+          <a href="#our-vision" class="footer-small-regular">Vision</a>
+          <a href="#our-vision" class="footer-small-regular">Four Pillars</a>
+          <a href="#our-vision" class="footer-small-regular">One Hub</a>
+        </div>
+        
+        <!-- Column 3: The Urgency + Pursuit -->
+        <div class="footer-nav-col">
+          <a href="#the-urgency" class="footer-small-semibold">The Urgency</a>
+          <a href="#our-work" class="footer-small-semibold footer-section-title footer-section-gap">Pursuit</a>
+          <a href="#our-work" class="footer-small-regular">A Decade Of Work</a>
+          <a href="#our-work" class="footer-small-regular">Real People</a>
+          <a href="#our-work" class="footer-small-regular">Economic Impact</a>
+          <a href="#our-work" class="footer-small-regular">Transformation Stories</a>
+        </div>
+        
+        <!-- Column 4: Leadership & Partners -->
+        <div class="footer-nav-col">
+          <a href="#leadership-partners" class="footer-small-semibold footer-section-title">Leadership & Partners</a>
+          <a href="#leadership-partners" class="footer-small-regular">Advisory Council</a>
+          <a href="#leadership-partners" class="footer-small-regular">Our Partners</a>
+        </div>
+        
+        <!-- Column 5: Pursuit.org + Social -->
+        <div class="footer-nav-col">
+          <a href="https://pursuit.org" target="_blank" rel="noopener" class="footer-small-semibold">Pursuit.org</a>
+          <a href="https://instagram.com/joinpursuit" target="_blank" rel="noopener" class="footer-small-regular">Instagram</a>
+          <a href="https://twitter.com/pursuit" target="_blank" rel="noopener" class="footer-small-regular">X</a>
+          <a href="https://linkedin.com/company/pursuit" target="_blank" rel="noopener" class="footer-small-regular">LinkedIn</a>
         </div>
       </div>
-      <p class="footer-copyright footer-small-regular">© 2024 AI Jobs Institute. All rights reserved.</p>
+      
+      <!-- Bottom: Copyright row -->
+      <div class="footer-bottom">
+        <p class="footer-small-regular">Copyright ©2025  Pursuit AI Jobs Institute</p>
+        <div class="footer-bottom-links">
+          <a href="#" class="footer-small-regular">Privacy Policy</a>
+          <a href="#" class="footer-small-regular">Term of Use</a>
+          <a href="#" class="footer-small-regular">Contact</a>
+        </div>
+      </div>
     </div>
   </footer>
 

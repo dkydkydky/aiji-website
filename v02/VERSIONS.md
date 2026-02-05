@@ -12,8 +12,71 @@ This file tracks all changes made to the AIJI website with version numbers for e
 
 ## Version History
 
-### v437 - 2026-02-04
+### v438 - 2026-02-05
 **Status: ✅ Current**
+
+**Footer Redesign: Animated Gradients, Responsive Layout & Interactive Enhancements:**
+
+Completely redesigned the footer with animated gradient backgrounds, optimized column layouts, and improved responsive behavior across all breakpoints.
+
+**Changes Made:**
+
+1. **Animated Gradient Background**
+   - Added three-color animated gradient background using `radial-gradient` with `background-position` animation
+   - Colors: Warm Pink (#FFB8B6, 0.7 opacity), Light Green (#BAEAB0, 0.7 opacity), Light Blue (#AEE0E5, 0.9 opacity)
+   - Animation: 12-second ease-in-out infinite loop with smooth color movement
+   - Background size: 400% × 400% for enhanced animation visibility
+   - Base background: Warm Cream (#FFF3E9)
+
+2. **Desktop Layout Optimization**
+   - Changed grid from equal `1fr` columns to mixed: `1fr repeat(4, 180px)`
+   - Logo column: Flexible width (1fr) to fill remaining space
+   - Content columns (Our Work, Urgency+Pursuit, Leadership & Partners, Pursuit.org): Fixed 180px width each
+   - Column gap: Reduced from 40px to 20px for tighter, more compact layout
+   - Prevents columns from spreading across full viewport width
+
+3. **Tablet Responsive Layout (≤1024px)**
+   - 3-column grid: `1fr 180px 180px`
+   - Column 1: Logo (flexible, spans 2 rows vertically)
+   - Column 2: Our Work (row 1) + Urgency+Pursuit (row 2)
+   - Column 3: Leadership & Partners (row 1) + Pursuit.org (row 2)
+   - Gap: 30px between columns
+   - Signup section stacks below headline with 30px spacing
+   - Form left-aligned to headline
+
+4. **Mobile Responsive Layout (≤768px)**
+   - Single column layout (all elements stacked vertically)
+   - Order: Logo → Our Work → Urgency+Pursuit → Leadership & Partners → Pursuit.org
+   - Gap: 20px between sections
+   - Signup section below headline with 30px spacing
+
+5. **Interactive Hover Effects**
+   - Added animated black circle (8px diameter) to left of section/page links on hover
+   - Circle grows from center with smooth opacity transition (0 → 1)
+   - Gap between circle and text: 14px (via padding-left)
+   - Removed link opacity reduction on hover to keep circles fully visible
+
+6. **Spacing & Typography Refinements**
+   - Removed top border line from footer
+   - Email input placeholder: Changed from gray (#888888) to black (#000000)
+   - Navigation grid bottom margin: 70px (increased from 60px)
+   - Copyright section: 15px from bottom of viewport (reduced from 25px)
+   - Section title gap (Urgency → Pursuit): 24px margin-top
+
+7. **Animation Performance**
+   - Removed unused `@property` declarations for custom CSS properties
+   - Cleaned up CSS variables from `:root`
+   - Fixed animation conflict where `delayedShow` animation was overriding gradient animation
+   - Changed footer visibility transition from animation to simple opacity/visibility transition
+
+**Files Modified:**
+- `public/styles.css` - Footer gradient animation, responsive grid layouts, hover effects, spacing adjustments
+- `public/index.html` - No changes (structure remained the same)
+
+---
+
+### v437 - 2026-02-04
+**Status: ✅ Superseded**
 
 **Visibility Fixes, Navigation Updates & Typography Refinements:**
 

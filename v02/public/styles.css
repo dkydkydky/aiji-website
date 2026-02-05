@@ -74,6 +74,11 @@
 }
 
 /* --------------------------------------------------------------------------
+   Footer Gradient Animation Properties
+   -------------------------------------------------------------------------- */
+/* Footer gradient animation properties removed - using background-position animation instead */
+
+/* --------------------------------------------------------------------------
    Reset & Base
    -------------------------------------------------------------------------- */
 *, *::before, *::after {
@@ -364,6 +369,10 @@ body:not(.video-complete) .section-page.active {
   position: relative;
   width: 100%;
   /* Sections are in normal document flow, no fixed height */
+}
+
+#our-work {
+  background-color: #E4EFEF;
 }
 
 .section-steps {
@@ -1321,13 +1330,14 @@ body:not(.video-complete) .wwd-how-content-fixed {
 .wwd-step-1 {
   padding-top: 0;
   padding-bottom: 0;
-  min-height: 150vh;
+  min-height: 125vh;
   height: auto;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   position: relative;
+  z-index: 5;
 }
 
 /* Fixed text container - stays centered while backgrounds scroll */
@@ -1335,10 +1345,11 @@ body:not(.video-complete) .wwd-how-content-fixed {
   position: sticky;
   top: calc(50vh + 36px);
   transform: translateY(-50%);
-  z-index: 5;
+  z-index: 10;
   pointer-events: none; /* Allow scrolling through */
   width: 100%;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
@@ -1352,11 +1363,6 @@ body:not(.video-complete) .wwd-how-content-fixed {
 /* Visible state for Mission text */
 .wwd-mission-text-fixed.visible {
   opacity: 1;
-}
-
-/* Ensure text content is visible and interactive */
-.wwd-mission-text-fixed * {
-  pointer-events: auto;
 }
 
 /* Scrolling background container */
@@ -1374,7 +1380,7 @@ body:not(.video-complete) .wwd-how-content-fixed {
 
 /* Step 2: Vision page - sticky text with scrolling background */
 .wwd-step-2 {
-  min-height: 100vh; /* Reduced for tighter Vision→How transition */
+  min-height: 150vh; /* Increased for cleaner Vision→Pillars transition */
   height: auto;
   position: relative;
   overflow: hidden; /* Contain background */
@@ -1383,7 +1389,7 @@ body:not(.video-complete) .wwd-how-content-fixed {
 /* Fixed Vision Content Container - OUTSIDE scrolling content */
 .wwd-vision-content-fixed {
   position: fixed; /* Fixed to viewport - doesn't scroll */
-  top: 50vh;
+  top: calc(var(--nav-height) + (100vh - var(--nav-height)) / 2);
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 500; /* High z-index to ensure visibility above backgrounds */
@@ -1396,6 +1402,8 @@ body:not(.video-complete) .wwd-how-content-fixed {
   will-change: transform, opacity;
   text-align: center;
   pointer-events: none;
+  transition: opacity 0.6s cubic-bezier(0.43, 0.195, 0.02, 1),
+              transform 0.6s cubic-bezier(0.43, 0.195, 0.02, 1);
 }
 
 /* Layout inside the fixed Vision container */
@@ -1540,10 +1548,6 @@ body:not(.video-complete) .wwd-how-content-fixed {
   width: 100%;
 }
 
-.wwd-how-content-fixed * {
-  pointer-events: auto;
-}
-
 /* WWD Page 3: Initiatives - now just scroll space (content is in fixed container) */
 .wwd-step-3 {
   min-height: 160vh; /* Reduced for tighter transitions */
@@ -1645,7 +1649,7 @@ body:not(.video-complete) .wwd-how-content-fixed {
 .wwd-hub-gallery {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0; /* No gap between images */
+  gap: 40px; /* Padding between columns and rows */
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
@@ -1679,6 +1683,24 @@ body:not(.video-complete) .wwd-how-content-fixed {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* Individual image sizes - varied from 70% to 100% */
+.wwd-hub-image:nth-child(1) {
+  width: 100%;
+}
+
+.wwd-hub-image:nth-child(2) {
+  width: 85%;
+}
+
+.wwd-hub-image:nth-child(3) {
+  width: 70%;
+  justify-self: end; /* Align to right side of grid cell */
+}
+
+.wwd-hub-image:nth-child(4) {
+  width: 90%;
 }
 
 /* Mobile: Single column for Hub gallery */
@@ -2192,6 +2214,65 @@ body:not(.video-complete) .wwd-how-content-fixed {
   box-sizing: border-box;
 }
 
+/* Mission page logos container */
+.wwd-mission-logos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  margin-top: 100px;
+  position: relative;
+  z-index: 10;
+}
+
+.wwd-mission-logo {
+  height: 60px;
+  width: auto;
+  object-fit: contain;
+  transition: opacity 0.5s cubic-bezier(0.43, 0.195, 0.02, 1),
+              transform 0.5s cubic-bezier(0.43, 0.195, 0.02, 1);
+}
+
+/* Scale down NYCEDC and Partnership NYC logos to 80% */
+.wwd-mission-logo[alt="NYC EDC"],
+.wwd-mission-logo[alt="Partnership for NYC"] {
+  height: 48px; /* 80% of 60px */
+}
+
+/* Responsive logo sizing */
+@media (max-width: 900px) {
+  .wwd-mission-logos {
+    gap: 30px;
+    margin-top: 80px;
+  }
+  
+  .wwd-mission-logo {
+    height: 50px;
+  }
+  
+  .wwd-mission-logo[alt="NYC EDC"],
+  .wwd-mission-logo[alt="Partnership for NYC"] {
+    height: 40px; /* 80% of 50px */
+  }
+}
+
+@media (max-width: 600px) {
+  .wwd-mission-logos {
+    gap: 20px;
+    margin-top: 60px;
+    flex-wrap: wrap;
+  }
+  
+  .wwd-mission-logo {
+    height: 40px;
+  }
+  
+  .wwd-mission-logo[alt="NYC EDC"],
+  .wwd-mission-logo[alt="Partnership for NYC"] {
+    height: 32px; /* 80% of 40px */
+  }
+}
+
 /* Responsive padding for Mission text - match Vision */
 @media (min-width: 601px) and (max-width: 1400px) {
   .wwd-text-pursuit {
@@ -2221,18 +2302,22 @@ body:not(.video-complete) .wwd-how-content-fixed {
 
 /* Mission page background artwork */
 .mission-bg-art {
-  position: absolute;
+  position: fixed;
   pointer-events: none;
-  will-change: opacity;
-  transition: opacity 0.8s cubic-bezier(0.43, 0.195, 0.02, 1);
+  will-change: opacity, transform;
+  transition: opacity 0.6s ease-out,
+              transform 0.6s ease-out;
   left: 50%;
-  transform: translateX(-50%);
+  top: calc(var(--nav-height) + (100vh - var(--nav-height)) / 2);
+  transform: translate(-50%, -50%);
+  transform-origin: center center;
+  z-index: 2;
 }
 
 /* Vertical orientation - fully vertical, no rotation */
 .mission-bg-art.vertical {
-  height: var(--img-height);
-  width: auto;
+  width: 70vw;
+  height: auto;
 }
 
 /* Horizontal orientation - fully horizontal, no rotation */
@@ -2803,9 +2888,24 @@ body:not(.video-complete) .wwd-how-content-fixed {
   width: 100%;
   max-width: 100%;
   margin-top: 100px;
-  animation: fadeInUp 0.6s ease forwards;
+  animation: fadeInUpWithPointer 0.6s ease forwards;
   animation-delay: 0.2s;
   opacity: 0;
+  pointer-events: none; /* Don't block interactions when invisible */
+}
+
+/* Keyframe that includes pointer-events restoration */
+@keyframes fadeInUpWithPointer {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+    pointer-events: none;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
 }
 
 /* Gallery: 2 columns, 2 rows visible initially; no box behind videos */
@@ -2875,9 +2975,9 @@ body:not(.video-complete) .wwd-how-content-fixed {
   transition: box-shadow 0.3s ease;
 }
 
-/* Use card hover for reliable hit area (covers thumb + button + name) */
-.builder-video-card:hover .builder-video-thumb {
-  box-shadow: 0 0 0 10px #AEE0E5;
+/* Hover on thumbnail only (not the name below) */
+.builder-video-thumb:hover {
+  box-shadow: 0 0 0 15px #AEE0E5;
 }
 
 .builder-video-thumb img {
@@ -2925,11 +3025,11 @@ body:not(.video-complete) .wwd-how-content-fixed {
   transition: fill var(--transition-base);
 }
 
-.builder-video-card:hover .builder-play-btn-circle {
+.builder-video-thumb:hover .builder-play-btn-circle {
   fill: #000000;
 }
 
-.builder-video-card:hover .builder-play-btn-triangle {
+.builder-video-thumb:hover .builder-play-btn-triangle {
   fill: var(--bg-our-impact);
 }
 
@@ -3222,10 +3322,6 @@ body:not(.video-complete) .wwd-how-content-fixed {
   box-sizing: border-box;
   opacity: 0;
   transition: opacity 0.6s cubic-bezier(0.43, 0.195, 0.02, 1);
-}
-
-.nyt-content-fixed * {
-  pointer-events: auto;
 }
 
 .nyt-content-fixed .quote-text {
@@ -4025,144 +4121,84 @@ body:not(.video-complete) .wwd-how-content-fixed {
    -------------------------------------------------------------------------- */
 .footer {
   height: auto; /* Content-based height */
-  background: transparent; /* Site background shows through */
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-  padding: var(--space-3xl) 0 30px; /* Exactly 30px below copyright */
+  background: 
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(255, 184, 182, 0.7) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(186, 234, 176, 0.7) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 20% 80%,
+      rgba(174, 224, 229, 0.9) 0%,
+      transparent 60%
+    ),
+    #FFF3E9;
+  padding: 0; /* No padding - spacing handled by child elements */
   overflow: visible;
   box-sizing: border-box;
+  background-size: 400% 400%;
+  animation: footerGradientMove 12s ease-in-out infinite;
 }
 
 /* Hide footer during video transition */
 body:not(.video-complete) .footer {
-  display: none !important;
+  opacity: 0;
+  visibility: hidden;
 }
 
 body.video-complete .footer {
-  display: block;
-  /* Add a delay to ensure video header has fully faded before showing footer */
-  animation: delayedShow 0.7s;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.7s ease, visibility 0.7s ease;
 }
 
-@keyframes delayedShow {
-  0%, 99% {
-    opacity: 0;
-    visibility: hidden;
-  }
-  100% {
-    opacity: 1;
-    visibility: visible;
-  }
-}
-
-/* Full-width footer for WWD section */
-.wwd-footer-fullwidth {
+/* Full-width footer container */
+.footer-container-full {
   width: 100vw;
   margin-left: calc(-50vw + 50%);
   position: relative;
   left: 0;
+  padding: 0 var(--container-padding);
+  box-sizing: border-box;
 }
 
-.footer-main {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: var(--space-2xl);
-  align-items: start;
-  margin-bottom: var(--space-md);
-}
-
-.footer-brand {
+/* Top section: CTA headline + email form */
+.footer-top {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-}
-
-.footer-logo {
-  height: 60px; /* Scaled down 50% from 120px */
-  width: auto;
-  margin-bottom: var(--space-sm);
-  align-self: flex-start; /* Align left */
-}
-
-.footer-tagline {
-  /* Typography via .footer-large-semibold class */
-  line-height: 1.1; /* Reduced line spacing by ~50% */
-  margin-top: -10px; /* Moved down 20px from -30px */
-  margin-bottom: var(--space-sm);
-  text-align: left;
-}
-
-.footer-form {
-  margin-top: -35px; /* Added 5px gap from phrase */
-  margin-bottom: 30px; /* Gap reduced by 50px from 80px */
-}
-
-.footer-links-section {
-  display: flex;
-  flex-direction: column;
-  gap: 15px; /* Space between pursuit.org and social icons */
-}
-
-.footer-pursuit-link {
-  /* Typography via .footer-large-semibold class */
-  text-decoration: none;
-  text-align: left;
-}
-
-.footer-pursuit-link:hover {
-  opacity: 0.7;
-}
-
-.footer-social {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px; /* Reduced gap */
-}
-
-.footer-follow-label {
-  /* Typography via .footer-large-semibold class */
-}
-
-.footer-social-icons {
-  display: flex;
-  gap: 10px;
-  margin-top: -10px; /* Brought down 10px */
-  margin-bottom: 30px; /* Separate from copyright */
-}
-
-.footer-social-icons a {
-  display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  color: #000000;
-  transition: opacity 0.3s ease;
+  gap: 40px;
+  margin-bottom: 150px;
+  padding-top: 30px;
 }
 
-.footer-social-icons a:hover {
-  opacity: 0.7;
-}
-
-.footer-signup {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.footer-signup-title {
-  /* Typography via .footer-large-semibold class */
-  margin-bottom: var(--space-md);
+.footer-cta-headline {
+  /* Typography via .footer-large-regular class */
+  line-height: 1.2;
+  margin: 0;
+  flex-shrink: 0;
 }
 
 .footer-form {
-  width: 100%;
+  flex: 1;
+  max-width: 600px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .footer-form-group {
   display: flex;
-  align-items: flex-end; /* Align input underline with button bottom */
-  gap: 19px; /* Reduced by 5px from 24px */
+  align-items: flex-end;
+  gap: 19px;
   max-width: none;
   margin: 0;
+  width: 100%;
+  justify-content: flex-end;
 }
 
 .footer-input {
@@ -4182,7 +4218,7 @@ body.video-complete .footer {
 }
 
 .footer-input::placeholder {
-  color: #888888;
+  color: #000000;
   font-family: "fractul-variable", sans-serif;
   font-size: 20px;
   font-weight: 400;
@@ -4220,71 +4256,216 @@ body.video-complete .footer {
   color: #ffffff !important; /* White text */
 }
 
-.footer-nav-links {
+/* Navigation grid: 5 columns */
+.footer-nav-grid {
+  display: grid;
+  grid-template-columns: 1fr repeat(4, 180px);
+  gap: 20px;
+  margin-bottom: 70px;
+}
+
+.footer-nav-col {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: var(--space-xs);
+  gap: 0;
 }
 
-.footer-nav-links a {
+.footer-nav-col .footer-section-title {
+  margin: 0;
+  display: block;
+}
+
+.footer-section-title.footer-section-gap {
+  margin-top: 24px !important;
+}
+
+.footer-nav-col a {
+  position: relative;
   text-decoration: none;
+  color: #000000;
+  padding-left: 14px;
+  transition: opacity 0.3s ease;
 }
 
-.footer-nav-links a:hover {
+.footer-nav-col a::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translate(0, -50%) scale(0);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #000000;
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.footer-nav-col a:hover::before {
+  transform: translate(0, -50%) scale(1);
+  opacity: 1;
+}
+
+.footer-logo-col {
+  display: flex;
+  align-items: flex-start;
+}
+
+.footer-logo {
+  height: 60px;
+  width: auto;
+}
+
+/* Bottom section: Copyright + links */
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.footer-bottom p {
+  margin: 0;
+}
+
+.footer-bottom-links {
+  display: flex;
+  gap: 30px;
+}
+
+.footer-bottom-links a {
+  text-decoration: none;
+  color: #000000;
+  transition: opacity 0.3s ease;
+}
+
+.footer-bottom-links a:hover {
   opacity: 0.7;
 }
 
-.footer-copyright {
-  /* Typography via .footer-small-semibold class */
-  text-align: left;
+/* Tablet breakpoint */
+@media (max-width: 1024px) {
+  .footer-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 30px;
+  }
+  
+  .footer-form {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .footer-form-group {
+    justify-content: flex-start;
+  }
+  
+  .footer-nav-grid {
+    grid-template-columns: 1fr 180px 180px;
+    grid-template-rows: auto auto;
+    gap: 30px;
+  }
+  
+  /* Logo - column 1, spans both rows */
+  .footer-logo-col {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+  
+  /* Our Work - column 2, row 1 */
+  .footer-nav-col:nth-child(2) {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  
+  /* Urgency+Pursuit - column 2, row 2 */
+  .footer-nav-col:nth-child(3) {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  
+  /* Leadership & Partners - column 3, row 1 */
+  .footer-nav-col:nth-child(4) {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  
+  /* Pursuit.org - column 3, row 2 */
+  .footer-nav-col:nth-child(5) {
+    grid-column: 3;
+    grid-row: 2;
+  }
 }
 
+/* Mobile breakpoint */
 @media (max-width: 768px) {
-  .footer-main {
-    grid-template-columns: 1fr;
-    text-align: center;
-    gap: var(--space-xl);
+  .footer-container-full {
+    padding: 0 20px;
   }
   
-  .footer-brand {
-    align-items: center;
+  .footer-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 30px;
+    margin-bottom: 60px;
   }
   
-  .footer-logo {
-    margin: 0 auto var(--space-sm);
-  }
-  
-  .footer-links-section {
-    align-items: center;
-  }
-  
-  .footer-social-icons {
-    justify-content: center;
-  }
-  
-  .footer-signup {
-    align-items: center;
+  .footer-form {
+    width: 100%;
+    max-width: 100%;
   }
   
   .footer-form-group {
     flex-direction: column;
-    align-items: center;
-    gap: var(--space-md);
+    align-items: stretch;
+    gap: 20px;
   }
   
   .footer-input {
     max-width: 100%;
     width: 100%;
-    text-align: center;
   }
   
-  .footer-nav-links {
-    align-items: center;
+  .footer-nav-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
   
-  .footer-copyright {
-    text-align: center;
+  .footer-logo-col {
+    grid-column: 1; /* Reset to single column */
+  }
+  
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  
+  .footer-bottom-links {
+    flex-direction: column;
+    gap: 15px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Footer Gradient Animation
+   -------------------------------------------------------------------------- */
+@keyframes footerGradientMove {
+  0% {
+    background-position: 0% 50%, 100% 0%, 0% 100%;
+  }
+  
+  33% {
+    background-position: 100% 100%, 0% 100%, 50% 0%;
+  }
+  
+  66% {
+    background-position: 50% 0%, 100% 50%, 100% 100%;
+  }
+  
+  100% {
+    background-position: 0% 50%, 100% 0%, 0% 100%;
   }
 }
 
@@ -4364,6 +4545,39 @@ body.video-complete .footer {
   transform: translateX(0);
 }
 
+/* Mission page elements - stagger animation */
+.wwd-text-pursuit.stagger-item {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.wwd-text-pursuit.stagger-item.stagger-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Mission logos - stagger from left to right */
+.wwd-mission-logo.stagger-item {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+.wwd-mission-logo.stagger-item.stagger-revealed {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Mission background image - fade in only (no scale on load) */
+.mission-bg-art.stagger-item {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.mission-bg-art.stagger-item.stagger-revealed {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
 /* Hub page elements - stagger animation */
 .wwd-hub-headline.stagger-item,
 .wwd-hub-body.stagger-item {
@@ -4388,6 +4602,23 @@ body.video-complete .footer {
 .wwd-hub-image.stagger-item.stagger-revealed {
   opacity: 1;
   transform: scale(1) translateY(0);
+}
+
+/* Right column images - offset down by 75px */
+.wwd-hub-image:nth-child(2).stagger-item {
+  transform: scale(0.95) translateY(95px); /* 20px + 75px offset */
+}
+
+.wwd-hub-image:nth-child(2).stagger-item.stagger-revealed {
+  transform: scale(1) translateY(75px); /* Keep 75px offset when revealed */
+}
+
+.wwd-hub-image:nth-child(4).stagger-item {
+  transform: scale(0.95) translateY(95px); /* 20px + 75px offset */
+}
+
+.wwd-hub-image:nth-child(4).stagger-item.stagger-revealed {
+  transform: scale(1) translateY(75px); /* Keep 75px offset when revealed */
 }
 
 /* Council page elements - stagger animation */
