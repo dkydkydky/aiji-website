@@ -3174,8 +3174,15 @@ function initSectionSwitching() {
       if (targetSection) {
         e.preventDefault();
         
-        // Smooth scroll to section
-        targetSection.scrollIntoView({ behavior: 'smooth' });
+        // Get nav height for offset (fixed nav is 72px)
+        const navHeight = nav ? nav.offsetHeight : 72;
+        const targetPosition = targetSection.offsetTop - navHeight - 20; // 20px extra spacing
+        
+        // Smooth scroll to section with offset
+        window.scrollTo({
+          top: targetPosition,
+          behavior: 'smooth'
+        });
         
         // Update active nav state immediately
         navLinks.forEach(navLink => {
