@@ -49,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initActiveNavTracking();
   initBuilderMoreButton();
   initBuilderVideoOverlay();
+  initBuilderArticleOverlay();
   initLogoClick();
   initResponsiveResize();
   
@@ -1437,6 +1438,126 @@ function initBuilderVideoOverlay() {
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay || e.target.classList.contains('builder-video-overlay__backdrop')) {
       closeOverlay();
+    }
+  });
+}
+
+/**
+ * Builder Article Overlay - Open scrollable article reader from article cards
+ */
+function initBuilderArticleOverlay() {
+  const overlay = document.getElementById('builder-article-overlay');
+  const scrollContainer = document.getElementById('builder-article-scroll');
+  const closeBtn = document.getElementById('builder-article-close');
+  const gallery = document.getElementById('builder-video-gallery');
+
+  if (!overlay || !scrollContainer || !closeBtn || !gallery) return;
+
+  let lastFocusedElement = null;
+  let currentArticleCard = null;
+  const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
+  // Get all article cards in gallery order
+  function getArticleCards() {
+    return Array.from(gallery.querySelectorAll('.builder-article-card'));
+  }
+
+  function openArticleOverlay(articleCard, triggerElement) {
+    const template = articleCard.querySelector('template.builder-article-content');
+    if (!template) return;
+
+    lastFocusedElement = triggerElement;
+    currentArticleCard = articleCard;
+
+    // Clone template content and inject into scroll container
+    scrollContainer.innerHTML = '';
+    const content = template.content.cloneNode(true);
+    scrollContainer.appendChild(content);
+
+    // Wire up Previous / Next buttons inside the overlay
+    scrollContainer.querySelectorAll('[data-action="prev-article"]').forEach(btn => {
+      btn.addEventListener('click', () => navigateArticle(-1));
+    });
+    scrollContainer.querySelectorAll('[data-action="next-article"]').forEach(btn => {
+      btn.addEventListener('click', () => navigateArticle(1));
+    });
+
+    // Show overlay
+    overlay.hidden = false;
+    document.body.style.overflow = 'hidden';
+
+    // Reset scroll position to top (after overlay is visible so layout is computed)
+    scrollContainer.scrollTop = 0;
+    requestAnimationFrame(() => { scrollContainer.scrollTop = 0; });
+
+    closeBtn.focus();
+
+    // Focus trap
+    const focusable = overlay.querySelectorAll(focusableSelector);
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    function trapFocus(e) {
+      if (e.key !== 'Tab') return;
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+
+    overlay._trapFocus = trapFocus;
+    overlay.addEventListener('keydown', trapFocus);
+  }
+
+  function navigateArticle(direction) {
+    const cards = getArticleCards();
+    if (cards.length <= 1) return;
+    const currentIndex = cards.indexOf(currentArticleCard);
+    const nextIndex = (currentIndex + direction + cards.length) % cards.length;
+    openArticleOverlay(cards[nextIndex], lastFocusedElement);
+  }
+
+  function closeArticleOverlay() {
+    overlay.hidden = true;
+    document.body.style.overflow = '';
+    scrollContainer.innerHTML = '';
+
+    if (overlay._trapFocus) {
+      overlay.removeEventListener('keydown', overlay._trapFocus);
+      overlay._trapFocus = null;
+    }
+
+    if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+      lastFocusedElement.focus();
+    }
+  }
+
+  // Click on article card in gallery
+  gallery.addEventListener('click', (e) => {
+    const card = e.target.closest('.builder-article-card');
+    if (!card) return;
+    e.preventDefault();
+    openArticleOverlay(card, e.target);
+  });
+
+  closeBtn.addEventListener('click', () => closeArticleOverlay());
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && overlay && !overlay.hidden) {
+      closeArticleOverlay();
+    }
+  });
+
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay || e.target.classList.contains('builder-article-overlay__backdrop')) {
+      closeArticleOverlay();
     }
   });
 }
