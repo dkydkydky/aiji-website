@@ -11,7 +11,7 @@ npm install
 # Run locally
 npm start
 
-# Open http://localhost:3000
+# Open http://localhost:3003
 ```
 
 ## 📁 Project Structure
