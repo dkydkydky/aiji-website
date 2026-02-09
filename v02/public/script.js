@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initBuilderMoreButton();
   initBuilderVideoOverlay();
   initBuilderArticleOverlay();
+  initGetInvolvedOverlay();
   initLogoClick();
   initResponsiveResize();
   
@@ -73,6 +74,27 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Initialize stagger animations for multi-element pages
   initStaggerAnimations();
+
+  // Fallback: Document-level event delegation for "Get Involved" buttons
+  // Ensures clicks are caught even if direct handlers fail due to stacking issues
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-action="get-involved"]');
+    if (btn) {
+      e.preventDefault();
+      const overlay = document.getElementById('get-involved-overlay');
+      if (overlay && overlay.hidden) {
+        // Trigger the overlay open
+        const formSection = document.getElementById('get-involved-form-section');
+        const thanksSection = document.getElementById('get-involved-thanks');
+        if (formSection) formSection.hidden = false;
+        if (thanksSection) thanksSection.hidden = true;
+        overlay.hidden = false;
+        document.body.style.overflow = 'hidden';
+        const firstInput = overlay.querySelector('input');
+        if (firstInput) setTimeout(() => firstInput.focus(), 100);
+      }
+    }
+  });
 });
 
 /**
@@ -1156,15 +1178,7 @@ function initFormHandling() {
       } catch (error) {
         button.innerHTML = originalContent;
         button.disabled = false;
-        
-        const errorMsg = document.createElement('p');
-        errorMsg.textContent = 'Something went wrong. Please try again.';
-        errorMsg.style.color = '#ff4444';
-        errorMsg.style.fontSize = '0.875rem';
-        errorMsg.style.marginTop = '0.5rem';
-        form.appendChild(errorMsg);
-        
-        setTimeout(() => errorMsg.remove(), 3000);
+        console.error('Form submission error:', error);
       }
     });
   });
@@ -3962,4 +3976,237 @@ function initStaggerAnimations() {
     resetStaggerIfNeeded();
   }, { passive: true });
   
+}
+
+/**
+ * Get Involved Overlay - Form for contact and interests
+ */
+function initGetInvolvedOverlay() {
+  const overlay = document.getElementById('get-involved-overlay');
+  const form = document.getElementById('get-involved-form');
+  const formSection = document.getElementById('get-involved-form-section');
+  const thanksSection = document.getElementById('get-involved-thanks');
+  const closeBtn = document.getElementById('get-involved-close');
+
+  if (!overlay || !form || !formSection || !thanksSection || !closeBtn) return;
+
+  let lastFocusedElement = null;
+  const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
+  // Attach event listeners to all "Get Involved" buttons
+  document.querySelectorAll('[data-action="get-involved"]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openGetInvolvedOverlay(btn);
+    });
+  });
+
+  function openGetInvolvedOverlay(triggerElement) {
+    lastFocusedElement = triggerElement;
+    
+    // Reset form and show form section
+    resetForm();
+    formSection.hidden = false;
+    thanksSection.hidden = true;
+    
+    // Show overlay
+    overlay.hidden = false;
+    document.body.style.overflow = 'hidden';
+
+    // Focus first input field
+    const firstInput = form.querySelector('input');
+    if (firstInput) {
+      setTimeout(() => firstInput.focus(), 100);
+    }
+
+    // Set up keyboard focus trap
+    const focusable = overlay.querySelectorAll(focusableSelector);
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    function trapFocus(e) {
+      if (e.key !== 'Tab') return;
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+
+    overlay._trapFocus = trapFocus;
+    overlay.addEventListener('keydown', trapFocus);
+  }
+
+  function closeGetInvolvedOverlay() {
+    overlay.hidden = true;
+    document.body.style.overflow = '';
+
+    if (overlay._trapFocus) {
+      overlay.removeEventListener('keydown', overlay._trapFocus);
+      overlay._trapFocus = null;
+    }
+
+    if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+      lastFocusedElement.focus();
+    }
+  }
+
+  function resetForm() {
+    form.reset();
+    document.querySelectorAll('.field-error-arrow').forEach(arrow => arrow.remove());
+    const submitBtn = form.querySelector('.get-involved-submit');
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit';
+    }
+  }
+
+  function showFieldError(input) {
+    // Remove any existing arrow for this field
+    const existingArrow = input.parentElement.querySelector('.field-error-arrow');
+    if (existingArrow) existingArrow.remove();
+
+    // Create arrow element
+    const arrow = document.createElement('span');
+    arrow.className = 'field-error-arrow';
+    
+    // Insert arrow after the input
+    input.parentElement.appendChild(arrow);
+  }
+
+  // Remove error arrows when user starts typing
+  form.querySelectorAll('input[required]').forEach(input => {
+    input.addEventListener('input', () => {
+      const arrow = input.parentElement.querySelector('.field-error-arrow');
+      if (arrow && input.value.trim() !== '') {
+        arrow.remove();
+      }
+    });
+  });
+
+  async function handleFormSubmit(e) {
+    e.preventDefault();
+    
+    // Remove any previous arrows
+    document.querySelectorAll('.field-error-arrow').forEach(arrow => arrow.remove());
+
+    // Get form data
+    const formData = new FormData(form);
+    const email = formData.get('email');
+    const firstName = formData.get('firstName');
+    const lastName = formData.get('lastName');
+    const companyName = formData.get('companyName') || '';
+    const role = formData.get('role') || '';
+    const phone = formData.get('phone') || '';
+    
+    // Get selected interests
+    const interests = [];
+    form.querySelectorAll('input[name="interests"]:checked').forEach(cb => {
+      interests.push(cb.value);
+    });
+
+    // Validate required fields and show arrows
+    let hasErrors = false;
+    const requiredFields = [
+      { value: email, input: form.querySelector('#gi-email') },
+      { value: firstName, input: form.querySelector('#gi-first-name') },
+      { value: lastName, input: form.querySelector('#gi-last-name') }
+    ];
+
+    requiredFields.forEach(field => {
+      if (!field.value || field.value.trim() === '') {
+        hasErrors = true;
+        showFieldError(field.input);
+      }
+    });
+
+    if (hasErrors) {
+      return;
+    }
+
+    // Prepare data for submission
+    const data = {
+      email,
+      firstName,
+      lastName,
+      companyName,
+      role,
+      phone,
+      interests
+    };
+
+    // Show loading state
+    const submitBtn = form.querySelector('.get-involved-submit');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+    }
+
+    try {
+      // TODO: Replace with your Google Apps Script deployment URL
+      const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+      
+      // If URL is not set, show success for testing
+      if (GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+        console.log('Form data (not submitted - no URL configured):', data);
+        // Simulate delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Show thank you message
+        formSection.hidden = true;
+        thanksSection.hidden = false;
+        return;
+      }
+
+      const response = await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors', // Google Apps Script requires no-cors
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      });
+
+      // With no-cors, we can't read the response, so assume success
+      console.log('Form submitted successfully:', data);
+      
+      // Show thank you message
+      formSection.hidden = true;
+      thanksSection.hidden = false;
+
+    } catch (error) {
+      console.error('Form submission error:', error);
+      
+      // Re-enable submit button
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit';
+      }
+    }
+  }
+
+  // Form submission handler
+  form.addEventListener('submit', handleFormSubmit);
+
+  // Close button handler
+  closeBtn.addEventListener('click', () => closeGetInvolvedOverlay());
+
+  // Escape key handler
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && overlay && !overlay.hidden) {
+      closeGetInvolvedOverlay();
+    }
+  });
+
+  // Backdrop click handler
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay || e.target.classList.contains('get-involved-overlay__backdrop')) {
+      closeGetInvolvedOverlay();
+    }
+  });
 }

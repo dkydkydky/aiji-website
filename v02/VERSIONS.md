@@ -12,8 +12,287 @@ This file tracks all changes made to the AIJI website with version numbers for e
 
 ## Version History
 
-### v438 - 2026-02-05
+### v443 - 2026-02-08
 **Status: ✅ Current**
+
+**Get Involved Form, Footer & Nav Button Fixes:**
+
+Resolved unclickable footer button, unified button styling across nav/footer, and updated form overlay content.
+
+**Changes Made:**
+
+1. **Footer "Get Involved" Button Fix**
+   - Changed `<button>` to `<a>` tag to resolve click-blocking issue from old form coupling
+   - Raised footer z-index to 2000 with `isolation: isolate` to ensure it's above all fixed content overlays
+   - Added document-level event delegation as fallback click handler
+   - Button now uses global `.pill-btn` class for consistent styling
+
+2. **Nav "Get Involved" Button**
+   - Switched from `nav-cta-pill` to global `.pill-btn` class
+   - Applied `nav-semibold` for 15px/600 weight text matching nav section titles
+   - Fixed swipe-up animation by overriding inherited `.nav-links a` transition
+   - Added CSS overrides to prevent nav link styles (opacity, font-size, hover) from interfering
+
+3. **Button Height Consistency**
+   - Added `line-height: 1` to both `.pill-btn` and `.nav-cta-pill` for matched heights
+   - Nav button no longer inherits `line-height: 1.4` from nav links
+
+4. **Form Overlay Headline**
+   - Updated to: "Let's work together to build the future of work for everyone."
+
+**Files Modified:**
+- `public/index.html` - Footer button changed to `<a>`, nav buttons use `pill-btn` class, form headline updated
+- `public/styles.css` - Footer z-index raised, `.nav-links a.pill-btn` overrides, `line-height: 1` on pill buttons, selector updates for `.pill-btn` exclusion
+- `public/script.js` - Added document-level event delegation for `data-action="get-involved"` clicks
+
+---
+
+### v442 - 2026-02-08
+**Status: Previous**
+
+**Get Involved Overlay - Transparent Background & Footer-Style Inputs:**
+
+Removed background from form content area and updated input fields to match footer input styling with underline animation.
+
+**Changes Made:**
+
+1. **Transparent Content Background**
+   - Changed content container background from `var(--bg-our-impact)` to `transparent`
+   - Form content now floats directly on the blue/opacity backdrop
+   - Clean, minimal overlay appearance
+
+2. **Footer-Style Input Fields**
+   - Removed borders, border-radius, and white background
+   - Added bottom border only: 1px solid black (normal), 3px solid black (focus)
+   - Transparent background
+   - Updated padding to `5px 0 8px 0` (matches footer)
+   - Font: fractul-variable, 20px, weight 400
+   - Smooth border transition on focus (0.3s ease)
+
+3. **Label Styling**
+   - Updated to fractul-variable font, 20px, weight 400
+   - Consistent with input field typography
+   - Added 4px bottom margin for spacing
+
+4. **Placeholder Styling**
+   - Black color with 0.5 opacity
+   - fractul-variable font, 20px, weight 400
+   - Matches footer input placeholder style
+
+5. **Error Message**
+   - Removed background and border styling
+   - Simple red text (#d32f2f)
+   - fractul-variable font, 18px, weight 400
+   - Minimal padding (12px 0)
+
+**Files Modified:**
+- `public/styles.css`: Updated content background, input styling, label styling, placeholder styling, and error message styling
+
+**Visual Result:**
+- Form floats on translucent blue backdrop without background container
+- Input fields have clean underline style that thickens on focus
+- Consistent typography across all form elements
+- Minimal, elegant form design matching footer aesthetic
+
+---
+
+### v441 - 2026-02-08
+
+**Get Involved Overlay - Updated to Match Video/Article Overlay Style:**
+
+Updated the Get Involved overlay styling to match the existing video and article overlays with blue/opacity backdrop and off-white background, removing the card-style appearance.
+
+**Changes Made:**
+
+1. **Backdrop Styling**
+   - Changed from `rgba(0, 0, 0, 0.85)` to `rgba(245, 250, 251, 0.8)` (blue/opacity)
+   - Increased blur from 8px to 20px to match video/article overlays
+   - Added `-webkit-backdrop-filter` for Safari support
+
+2. **Content Container**
+   - Changed background from `var(--bg-default)` (#FFF3E9) to `var(--bg-our-impact)` (#F5FAFB) - off-white
+   - Removed `border-radius` and `box-shadow` for clean, no-card appearance
+   - Updated positioning to use `inset: 0` for consistency
+   - Changed max-height calculation to `calc(100vh - 2 * var(--space-xl))`
+
+3. **Close Button**
+   - Changed from `absolute` to `fixed` positioning
+   - Updated position from 20px to 24px to match other overlays
+   - Maintains existing hover states (circle fill and X stroke colors)
+
+4. **Responsive Updates**
+   - Updated padding to use CSS variables (`var(--space-xl)`, `var(--space-md)`, `var(--space-sm)`)
+   - Adjusted max-height calculations for responsive breakpoints
+   - Removed border-radius overrides on mobile
+
+**Files Modified:**
+- `public/styles.css`: Updated overlay base, backdrop, content container, and responsive styles
+
+**Visual Result:**
+- Consistent overlay appearance across all overlays (video, article, get involved)
+- Blue-tinted translucent backdrop with heavy blur
+- Off-white content background without card styling
+- Clean, modern aesthetic matching the transformation stories section
+
+---
+
+### v440 - 2026-02-08
+
+**Get Involved Form Overlay with Google Sheets Integration:**
+
+Added a comprehensive "Get Involved" form overlay that opens when users click any "Get Involved" button. Features a split-screen layout with headline on the left and form fields on the right, submits data to Google Sheets, and displays a thank you message with social media links.
+
+**Changes Made:**
+
+1. **HTML Structure (`public/index.html`)**
+   - New `.get-involved-overlay` with backdrop and content container
+   - Split-screen layout: left side headline, right side form
+   - Form fields: Email (required), First Name (required), Last Name (required), Company Name (optional), Role (optional), Phone (optional)
+   - Interests checkboxes: Receive news and updates, Become a funder, Become a partner
+   - Thank you section with social media links (Instagram, LinkedIn, X)
+   - Updated "Get Involved" buttons in navigation (desktop & mobile) and footer to trigger overlay with `data-action="get-involved"`
+
+2. **CSS Styling (`public/styles.css`)**
+   - Overlay base: Fixed position, full viewport, z-index 10000
+   - Backdrop: `rgba(0, 0, 0, 0.85)` with 8px blur
+   - Content container: `var(--bg-default)` background, 1200px max-width, 16px border-radius, 60px padding
+   - Split layout: 50/50 grid on desktop, stacked on mobile
+   - Form inputs: 12px padding, 1px border, focus state with accent color glow
+   - Checkboxes: 20px size, black accent color
+   - Submit button: Extends `.pill-btn` class, 200px max-width
+   - Error message: Red background with border
+   - Thank you section: Centered text, social links with hover effects
+   - Responsive: Tablet (≤768px) stacks layout, Mobile (≤480px) full-width inputs
+
+3. **JavaScript Functionality (`public/script.js`)**
+   - `initGetInvolvedOverlay()`: Main initialization, attaches click handlers to all `[data-action="get-involved"]` buttons
+   - `openGetInvolvedOverlay()`: Shows overlay, locks body scroll, focuses first input, sets up focus trap
+   - `closeGetInvolvedOverlay()`: Hides overlay, restores scroll, returns focus to trigger element
+   - `handleFormSubmit()`: Validates required fields, collects form data including checkbox selections, submits to Google Sheets via POST
+   - `resetForm()`: Clears all inputs and checkboxes, hides error messages
+   - Accessibility: Focus trap, Escape key to close, backdrop click to close, keyboard navigation
+   - Loading state: Disables submit button during submission, shows "Submitting..." text
+
+4. **Google Sheets Integration**
+   - Created `GOOGLE_SHEETS_SETUP.md` with complete setup instructions
+   - Apps Script code for receiving form submissions
+   - Column headers: Timestamp, Email, First Name, Last Name, Company Name, Role, Phone, Receive News, Become Funder, Become Partner
+   - Deployment instructions: Execute as Me, Who has access: Anyone
+   - Testing instructions and troubleshooting guide
+   - Optional email notification feature
+
+5. **Form Data Structure**
+   - Email: User's email address (required, validated)
+   - First Name: User's first name (required)
+   - Last Name: User's last name (required)
+   - Company Name: Optional text field
+   - Role: Optional text field
+   - Phone: Optional tel field
+   - Interests: Array of selected values ('news', 'funder', 'partner')
+
+**Files Modified:**
+- `public/index.html`: Added overlay markup, updated navigation buttons
+- `public/styles.css`: Added 250+ lines of overlay and form styles
+- `public/script.js`: Added 200+ lines for overlay functionality
+
+**Files Created:**
+- `GOOGLE_SHEETS_SETUP.md`: Complete setup guide with Apps Script code
+
+**Typography:**
+- Left headline: `.headline-regular` (40-64px)
+- Form labels: `.body-medium-regular` with 500 weight
+- Form inputs: `.body-medium-regular`
+- Submit button: `.pill-btn` class
+- Thank you message: `.headline-regular` and `.body-large-regular`
+- Social links: `.body-medium-regular`
+
+**User Flow:**
+1. User clicks "Get Involved" button (nav, mobile menu, or footer)
+2. Overlay opens with form displayed
+3. User fills required fields (email, first name, last name) and optional fields
+4. User selects interests via checkboxes
+5. User submits form
+6. Form validates and shows loading state
+7. Data submits to Google Sheets
+8. Thank you message displays with social media links
+9. User can close overlay or click social links
+
+**Next Steps for User:**
+1. Follow `GOOGLE_SHEETS_SETUP.md` to create Google Sheet and Apps Script
+2. Deploy Apps Script as web app
+3. Copy deployment URL
+4. Update `GOOGLE_SCRIPT_URL` in `public/script.js` (line ~4068)
+5. Test form submission
+
+---
+
+### v439 - 2026-02-08
+
+**Article Overlay for Transformation Stories, Nav Styling & UI Updates:**
+
+Added article-type story cards alongside existing videos in the Transformation Stories gallery, with a scrollable overlay for reading full blog content. Updated navigation styling with animated gradient button and typography refinements.
+
+**Changes Made:**
+
+1. **Article Story Overlay**
+   - New `.builder-article-card` component with square (1:1) thumbnail and article icon
+   - Replaced Endy Diaz video card with Erica Stevens article card
+   - Scrollable article overlay (`builder-article-overlay`) with full blog content: title, date, hero image, pull quotes, body text, inline images with captions
+   - Article content injected from `<template>` elements for clean DOM management
+   - Close overlay via X button, Escape key, or backdrop click
+   - Scroll position resets to top on re-open
+
+2. **Article Overlay Typography & Layout**
+   - Article column width: 1000px, centered in viewport
+   - Title: `headline-regular` class, subtitle left-aligned
+   - Body text & date: `body-medium-regular` style
+   - Pull quotes: `body-large-regular`, regular weight (not italic), 150px left indent
+   - Captions: `body-small-regular`, black text
+   - Hero image: 120% width, `transform-origin: top left`, aligned with quotes (150px margin-left)
+   - Overlay backdrop: `rgba(245, 250, 251, 0.8)` with 20px blur
+
+3. **Previous / Next Navigation**
+   - Replaced single "Back to Gallery" button with Previous (left) and Next (right) buttons
+   - Uses reusable `.pill-btn` class (pill shape, black border, gradient hover fill)
+   - 200px gap above buttons, 30px below
+   - JS cycles through all `.builder-article-card` elements in the gallery
+
+4. **Reusable `.pill-btn` Class**
+   - Extracted from `.builder-more-btn`: pill shape (999px radius), black border, transparent-to-black gradient fill on hover
+   - fractul-variable font, 20px, weight 400
+   - Applied to More button, Previous/Next buttons
+
+5. **Nav "Get Involved" Button Restyling**
+   - Default state: animated gradient background (`buttonGradientMove` keyframes) with `#4242EA` base, pink/green/teal/cream moving radial gradients
+   - White text, no border, semibold (600) weight
+   - Hover state: smooth swipe-up black fill via `::after` pseudo-element, white text
+   - Removed all black background overrides from `.nav-cta.active` for pill buttons
+
+6. **Navigation Updates**
+   - Renamed "Pursuit" section to "Impact" in desktop nav, mobile nav, and footer
+   - Changed nav link font weight from 600 (semibold) to 500 via `nav-regular` class
+   - "Get Involved" uses `nav-semibold` (600) for emphasis
+
+7. **Mission Page Logos**
+   - Reduced all logos to 80% of previous size across all breakpoints
+   - Desktop: 60px → 48px (NYC EDC/Partnership: 48px → 38px)
+   - Tablet: 50px → 40px (NYC EDC/Partnership: 40px → 32px)
+   - Mobile: 40px → 32px (NYC EDC/Partnership: 32px → 26px)
+
+8. **Article Thumbnail Hover**
+   - Removed opacity fade on article card hover (stays at full opacity)
+   - Box shadow and icon color inversion still apply on hover
+   - Article icon (three lines) vertically centered in circle, circle background at 100% opacity
+
+**Files Modified:**
+- `public/index.html` - Article card HTML, article overlay container, template content, nav text updates, button class changes
+- `public/styles.css` - Article overlay styles, `.pill-btn` class, nav pill gradient animation, `buttonGradientMove` keyframes, logo sizing, thumbnail hover
+- `public/script.js` - `initBuilderArticleOverlay()` function, Previous/Next navigation, scroll reset on re-open
+
+---
+
+### v438 - 2026-02-05
+**Status: ✅ Superseded**
 
 **Footer Redesign: Animated Gradients, Responsive Layout & Interactive Enhancements:**
 
@@ -6796,6 +7075,6 @@ When the logo became `position: fixed`, it was removed from document flow, causi
 
 ## Quick Reference
 
-**Current Version:** v390  
-**Last Updated:** 2026-01-29  
-**Next Version:** v391 (for next change)
+**Current Version:** v443  
+**Last Updated:** 2026-02-08  
+**Next Version:** v444 (for next change)

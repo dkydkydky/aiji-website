@@ -46,7 +46,7 @@
         <a href="#the-urgency" class="nav-regular">The Urgency</a>
         <a href="#our-work" class="nav-regular">Impact</a>
         <a href="#leadership-partners" class="nav-regular">Leadership & Partners</a>
-        <a href="#our-vision" class="nav-cta nav-cta-pill nav-semibold">Get Involved</a>
+        <a href="#" class="pill-btn nav-semibold" data-action="get-involved" style="text-decoration:none;">Get Involved</a>
       </div>
       <button class="nav-mobile-toggle" aria-label="Toggle menu">
         <span></span>
@@ -62,7 +62,7 @@
     <a href="#the-urgency" class="nav-regular">The Urgency</a>
     <a href="#our-work" class="nav-regular">Impact</a>
     <a href="#leadership-partners" class="nav-regular">Leadership & Partners</a>
-    <a href="#our-vision" class="nav-cta nav-cta-pill nav-semibold">Get Involved</a>
+    <a href="#" class="pill-btn nav-semibold" data-action="get-involved" style="text-decoration:none;">Get Involved</a>
   </div>
 
   <!-- Fixed Vision Content - OUTSIDE scrolling content -->
@@ -589,24 +589,12 @@
        ======================================== -->
   <footer class="footer site-footer">
     <div class="footer-container-full">
-      <!-- Top: Email signup section -->
+      <!-- Top: CTA section -->
       <div class="footer-top">
-        <h2 class="footer-cta-headline footer-large-regular">Let's Build the Future of Work.<br>Together.</h2>
-        <form class="footer-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
-          <div class="footer-form-group">
-            <input 
-              type="email" 
-              name="email" 
-              placeholder="Email Address" 
-              required
-              class="footer-input footer-medium-regular"
-            >
-            <button type="submit" class="footer-button footer-medium-regular">
-              Get Involved
-            </button>
-          </div>
-          <input type="hidden" name="_subject" value="New AIJI Newsletter Signup (Footer)">
-        </form>
+        <h2 class="footer-cta-headline headline-regular">Let's Build the Future of Work for Everyone.</h2>
+        <a href="#" class="pill-btn" data-action="get-involved" role="button" style="text-decoration:none;">
+          Get Involved
+        </a>
       </div>
       
       <!-- Middle: Navigation columns (6-column grid) -->
@@ -681,6 +669,104 @@
       <button type="button" class="builder-overlay-close" id="builder-article-close" aria-label="Close"><svg class="builder-overlay-close-svg" viewBox="0 0 64 64" aria-hidden="true"><circle class="builder-overlay-close-circle" cx="32" cy="32" r="32"/><path class="builder-overlay-close-x" fill="none" d="M20 20l24 24M44 20L20 44" stroke-width="3" stroke-linecap="round"/></svg></button>
       <div class="builder-article-overlay__scroll" id="builder-article-scroll">
         <!-- Article content injected here by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Get Involved overlay: form for contact and interests -->
+  <div class="get-involved-overlay" id="get-involved-overlay" role="dialog" aria-modal="true" aria-label="Get Involved Form" hidden>
+    <div class="get-involved-overlay__backdrop"></div>
+    <div class="get-involved-overlay__content">
+      <button type="button" class="builder-overlay-close" id="get-involved-close" aria-label="Close"><svg class="builder-overlay-close-svg" viewBox="0 0 64 64" aria-hidden="true"><circle class="builder-overlay-close-circle" cx="32" cy="32" r="32"/><path class="builder-overlay-close-x" fill="none" d="M20 20l24 24M44 20L20 44" stroke-width="3" stroke-linecap="round"/></svg></button>
+      
+      <!-- Form Section -->
+      <div class="get-involved-form-section" id="get-involved-form-section">
+        <div class="get-involved-split">
+          <!-- Left: Headline -->
+          <div class="get-involved-left">
+            <h2 class="headline-regular">Let's work together to build the future of work for everyone.</h2>
+          </div>
+          
+          <!-- Right: Form -->
+          <div class="get-involved-right">
+            <form class="get-involved-form" id="get-involved-form" novalidate>
+              <div class="get-involved-form-group">
+                <label for="gi-email" class="get-involved-label body-medium-regular">Email <sup class="required">(Required)</sup></label>
+                <input type="email" id="gi-email" name="email" class="get-involved-input body-medium-regular" required>
+              </div>
+              
+              <div class="get-involved-form-row">
+                <div class="get-involved-form-group">
+                  <label for="gi-first-name" class="get-involved-label body-medium-regular">First Name <sup class="required">(Required)</sup></label>
+                  <input type="text" id="gi-first-name" name="firstName" class="get-involved-input body-medium-regular" required>
+                </div>
+                
+                <div class="get-involved-form-group">
+                  <label for="gi-last-name" class="get-involved-label body-medium-regular">Last Name <sup class="required">(Required)</sup></label>
+                  <input type="text" id="gi-last-name" name="lastName" class="get-involved-input body-medium-regular" required>
+                </div>
+              </div>
+              
+              <div class="get-involved-form-group">
+                <label for="gi-company" class="get-involved-label body-medium-regular">Company Name</label>
+                <input type="text" id="gi-company" name="companyName" class="get-involved-input body-medium-regular">
+              </div>
+              
+              <div class="get-involved-form-group">
+                <label for="gi-role" class="get-involved-label body-medium-regular">Role</label>
+                <input type="text" id="gi-role" name="role" class="get-involved-input body-medium-regular">
+              </div>
+              
+              <div class="get-involved-form-group">
+                <label for="gi-phone" class="get-involved-label body-medium-regular">Phone</label>
+                <input type="tel" id="gi-phone" name="phone" class="get-involved-input body-medium-regular">
+              </div>
+              
+              <div class="get-involved-form-group">
+                <label class="get-involved-label body-medium-regular">Interests:</label>
+                <div class="get-involved-checkbox-group">
+                  <div class="get-involved-checkbox-item">
+                    <input type="checkbox" id="gi-news" name="interests" value="news">
+                    <label for="gi-news" class="body-medium-regular">Receive news and updates</label>
+                  </div>
+                  <div class="get-involved-checkbox-item">
+                    <input type="checkbox" id="gi-funder" name="interests" value="funder">
+                    <label for="gi-funder" class="body-medium-regular">Become a funder</label>
+                  </div>
+                  <div class="get-involved-checkbox-item">
+                    <input type="checkbox" id="gi-partner" name="interests" value="partner">
+                    <label for="gi-partner" class="body-medium-regular">Become a partner</label>
+                  </div>
+                </div>
+              </div>
+              
+              <button type="submit" class="pill-btn get-involved-submit body-medium-regular">Submit</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Thank You Section (hidden initially) -->
+      <div class="get-involved-thanks" id="get-involved-thanks" hidden>
+        <h2 class="headline-regular">We'll get back to you<br>as soon as we can.</h2>
+        <p class="body-medium-regular">In the meantime, follow us on:</p>
+        <div class="get-involved-thanks-social">
+          <a href="https://instagram.com/joinpursuit" target="_blank" rel="noopener" class="get-involved-social-link" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
+          </a>
+          <a href="https://linkedin.com/company/pursuit" target="_blank" rel="noopener" class="get-involved-social-link" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+            </svg>
+          </a>
+          <a href="https://twitter.com/pursuit" target="_blank" rel="noopener" class="get-involved-social-link" aria-label="X (Twitter)">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+          </a>
+        </div>
       </div>
     </div>
   </div>
