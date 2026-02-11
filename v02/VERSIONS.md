@@ -12,8 +12,61 @@ This file tracks all changes made to the AIJI website with version numbers for e
 
 ## Version History
 
-### v443 - 2026-02-08
+### v444 - 2026-02-09
 **Status: ✅ Current**
+
+**Dead Code Cleanup (CSS-only):**
+
+Removed ~494 lines of unused CSS from earlier iterations. No JavaScript changes. All currently used functionality preserved and verified.
+
+**Changes Made:**
+
+1. **Section Page Architecture (removed)**
+   - Removed `.section-page` and all related rules (body.video-complete, .section-page > .container, .section-page.builder-stories, .section-page.urgency)
+   - Old scrolling system; not used in current architecture
+
+2. **WWD Parent Wrapper Selectors (simplified)**
+   - Removed all `.wwd .wwd-step-*` and `.wwd .wwd-step-urgency` selectors
+   - No `.wwd` parent element exists in HTML; kept standalone `.wwd-step-*` and `.urgency` selectors
+
+3. **Unused Typography**
+   - Removed `.footer-large-semibold`, `.footer-large-regular`, `.footer-medium-semibold`, `.footer-medium-regular`
+   - Removed all label classes: `.label-meta-wwd`, `.label-partner-section`, `.label-salary`, `.label-stat`, `.label-demo`, `.label-section-title`, `.label-gap`, `.label-investment`
+   - Removed `.section-title-left`
+   - Removed `.wwd-label` (hidden, unused)
+
+4. **Old Logo System**
+   - Removed `.logo-short`, `.logo-short-svg`, `.logo-pursuit`, `.logo-divider`, `.logo-aiji`
+   - Removed `.nav.logo-short-active` and related nav/logo rules
+   - Removed `.nav-logo`
+   - Current site uses `.logo-full-svg` and `.footer-logo` only
+
+5. **Unused Form Classes**
+   - Removed `.form-group`, `.form-input` (and ::placeholder, :focus), `.form-button` (and :hover, svg variants)
+   - Removed `.form-success`
+   - Removed form-group media query at 768px
+   - Forms use `.get-involved-*` classes only
+
+6. **Unused Layout / Stats**
+   - Removed `.stats-grid`, `.stat-card`, `.stat-number` and media queries
+   - Removed `.investment-stats`, `.investment-card`, `.investment-number`, `.investment-card.highlight` (standalone blocks; urgency-scoped kept)
+   - Removed `.initiatives-grid`, `.initiative-card`, `.initiative-number`, `.initiative-title`, `.initiative-description` and media query
+   - Removed `.salary-journey-section` (kept `.salary-journey`)
+
+7. **Unused Animation**
+   - Removed `@keyframes buttonGradientMove` (never applied to any element)
+
+**Files Modified:**
+- `public/styles.css` — 494 lines removed, 12 insertions (cleanup comments/structure)
+
+**Notes:**
+- Rollback tag available: `pre-cleanup-v2` (state before this cleanup)
+- JS untouched; previous attempt removed no-op functions that were still called and caused site breakage; those functions were not removed in this pass
+
+---
+
+### v443 - 2026-02-08
+**Status: Previous**
 
 **Get Involved Form, Footer & Nav Button Fixes:**
 

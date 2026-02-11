@@ -307,6 +307,11 @@ body.video-complete .section-content {
   display: block;
 }
 
+/* Hide sections while landing page is visible (before landing-complete) */
+body.video-complete:not(.landing-complete) .section-content {
+  display: none !important;
+}
+
 /* Site footer */
 .site-footer {
   position: relative;
@@ -320,6 +325,11 @@ body:not(.video-complete) .site-footer {
 
 body.video-complete .site-footer {
   display: block;
+}
+
+/* Hide footer while landing page is visible */
+body.video-complete:not(.landing-complete) .site-footer {
+  display: none !important;
 }
 
 
@@ -426,6 +436,13 @@ strong {
 body.video-complete .nav {
   opacity: 1;
   visibility: visible;
+}
+
+/* Hide nav while landing page is visible */
+body.video-complete:not(.landing-complete) .nav {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 body.video-complete .nav .nav-links a {
@@ -799,7 +816,7 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 .video-header-logo.at-top {
   position: fixed !important;
   top: -2px !important;
-  left: 15px !important;
+  left: 25px !important;
   transform: scale(1) !important;
   transform-origin: top left;
   z-index: 1001 !important;
@@ -880,6 +897,221 @@ body.video-complete .video-header-logo.at-top {
   opacity: 1;
   visibility: visible;
   display: block;
+}
+
+/* --------------------------------------------------------------------------
+   Landing Page Section
+   -------------------------------------------------------------------------- */
+
+.landing {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  min-height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  z-index: 150;
+  display: block;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+  background: 
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(255, 184, 182, 0.7) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(186, 234, 176, 0.7) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 20% 80%,
+      rgba(174, 224, 229, 0.9) 0%,
+      transparent 60%
+    ),
+    #FFF3E9;
+  background-size: 400% 400%;
+  animation: landingGradientMove 12s ease-in-out infinite;
+}
+
+/* Show landing page after video completes */
+body.video-complete .landing {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Hide landing page after it completes */
+body.landing-complete .landing {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.landing-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-default);
+  opacity: 0;
+  z-index: 2;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.landing-bg {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.landing-bg .video-placeholder {
+  position: absolute;
+  background: rgba(200, 200, 200, 0.6);
+  border-radius: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.landing-bg .video-placeholder.visible {
+  opacity: 1;
+}
+
+.video-placeholder-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.video-placeholder-label {
+  position: relative;
+  z-index: 10;
+  font-family: "fractul-variable", sans-serif;
+  font-size: 48px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 1);
+  pointer-events: none;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.landing-content-wrapper {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  transform: none;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 15px;
+  pointer-events: none;
+}
+
+.landing-content-wrapper.stacked {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 5px;
+  left: 15px;
+  right: 15px;
+  width: calc(100% - 30px);
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+.landing-logo {
+  position: relative;
+  transform: scale(1.8);
+  transform-origin: left top;
+  margin: 0 0 0 0;
+  pointer-events: auto;
+  z-index: 1001;
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.landing-content-wrapper.stacked .landing-logo {
+  margin-left: -2px;
+  margin-right: 15px;
+}
+
+.landing-logo img {
+  height: auto;
+  width: auto;
+  display: block;
+  min-width: 200px;
+  min-height: 50px;
+  opacity: 1;
+  visibility: visible;
+}
+
+.landing-text {
+  position: relative;
+  font-family: "fractul-variable", sans-serif;
+  font-variation-settings: "wght" 600;
+  font-size: 5rem;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--color-black);
+  margin: 0 0 0 -10px;
+  white-space: nowrap;
+  pointer-events: auto;
+  transition: font-size 0.3s ease, opacity 0.3s ease;
+  z-index: 1;
+}
+
+.landing-content-wrapper.stacked .landing-text {
+  order: -1;
+  margin-bottom: 5px;
+  margin-left: -10px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding-left: 19px;
+  padding-right: 19px;
+  overflow: visible;
+  white-space: nowrap;
+  word-wrap: break-word;
+  z-index: 1000;
+}
+
+/* Landing gradient animation */
+@keyframes landingGradientMove {
+  0% {
+    background-position: 0% 50%, 100% 0%, 0% 100%;
+  }
+  
+  33% {
+    background-position: 100% 100%, 0% 100%, 50% 0%;
+  }
+  
+  66% {
+    background-position: 50% 0%, 100% 50%, 100% 100%;
+  }
+  
+  100% {
+    background-position: 0% 50%, 100% 0%, 0% 100%;
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -1072,11 +1304,24 @@ body.video-complete .wwd-step {
   display: flex !important;
 }
 
+/* Hide wwd-steps while landing page is visible */
+body.video-complete:not(.landing-complete) .wwd-step {
+  display: none !important;
+}
+
 /* Progress bar removed - now using continuous scroll with active nav state */
 
 /* Hide all fixed WWD containers until video transition is complete */
 body:not(.video-complete) .wwd-vision-content-fixed,
 body:not(.video-complete) .wwd-how-content-fixed {
+  display: none !important;
+  pointer-events: none;
+}
+
+/* Hide all fixed WWD containers while landing page is visible */
+body.video-complete:not(.landing-complete) .wwd-vision-content-fixed,
+body.video-complete:not(.landing-complete) .wwd-how-content-fixed,
+body.video-complete:not(.landing-complete) .wwd-mission-text-fixed {
   display: none !important;
   pointer-events: none;
 }
