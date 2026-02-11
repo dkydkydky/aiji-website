@@ -12,8 +12,47 @@ This file tracks all changes made to the AIJI website with version numbers for e
 
 ## Version History
 
-### v445 - 2026-02-10
+### v446 - 2026-02-11
 **Status: ✅ Current**
+
+**Landing Page Animation Refinements & Navigation Updates:**
+
+Improved landing page load sequence with centered tagline/logo animations, simultaneous video stacking, and enhanced mission page elements.
+
+**Changes Made:**
+
+1. **Landing Page Animation Sequence**
+   - Tagline now loads at vertical center of viewport (same left position, centered vertically)
+   - Tagline and logo are independent elements, each targeting viewport center separately
+   - After tagline completes, it moves up 30px while fading out
+   - Logo fades in and moves up 30px to lock at viewport center
+   - Video frames now start stacking simultaneously with logo entrance (not after)
+   - Landing logo scaled to 1.75x (from 1.584x)
+
+2. **Video Frames**
+   - Commented out frame numbers on landing page videos
+   - Adjusted video frame #2 position (moved up 250px total: 200px + 50px)
+
+3. **Mission Page**
+   - Added QBPO logo to partner stack (70% of standard size across all breakpoints)
+   - Reduced mission background initial size to 90% (scale 0.9 instead of 1.0)
+   - Fixed background entrance animation: smooth scale 0.85→0.9 with fade-in
+   - Resolved "scale up and down" issue by letting CSS stagger animation complete before JS scroll animation takes over
+
+4. **Navigation**
+   - Fixed nav link stagger animation (removed conflicting `body.video-complete .nav .nav-links a` rule)
+   - Logo click now reloads page to show full landing animation sequence
+
+**Files Modified:**
+- `public/index.html` (added QBPO logo)
+- `public/styles.css` (landing animations, logo sizing, QBPO logo sizing, mission background, nav fixes)
+- `public/script.js` (landing animation timing, mission background entrance, logo click handler)
+- `public/assets/logos/AIJI_Logo_QBPO.svg` (new file)
+
+---
+
+### v445 - 2026-02-10
+**Status: Previous**
 
 **Landing Page Animation, Parallax & UI Refinements:**
 
@@ -7153,6 +7192,85 @@ When the logo became `position: fixed`, it was removed from document flow, causi
 
 ---
 
+### v446 - 2026-02-11
+**Status: Current**
+
+**Refined mission background image animation and timing:**
+- Implemented `requestAnimationFrame` loop for buttery-smooth 60fps scaling animation
+- Reduced fade distance from 1000px to 300px (image disappears quickly after text)
+- Reduced scale distance from 1000px to 600px (faster, more responsive scaling)
+- Separated scale and fade animations for independent control
+- Added 100px buffer to animation start for immediate visual feedback
+- Changed text/logo fade trigger from 60% to 40% viewport height (fades out earlier)
+- Added IntersectionObserver to start/stop RAF loop only when mission page is visible
+
+**Animation timing:**
+- Scale: 0.9 → 1.4 over 600px of scrolling
+- Fade: 1.0 → 0 over 300px of scrolling (completes before scale finishes)
+- Text/logos fade out when mission section bottom crosses 40% viewport mark
+- RAF loop ensures smooth 60fps updates regardless of scroll event frequency
+
+**Technical improvements:**
+- `requestAnimationFrame` provides frame-perfect animation smoothness
+- IntersectionObserver optimizes performance by stopping animation when off-screen
+- Absolute scroll distance tracking ensures linear, predictable scaling
+- Early animation start (100px buffer) provides immediate visual response
+
+**Files Modified:**
+- `public/script.js` - Added RAF loop, adjusted animation distances and text fade trigger
+- `public/styles.css` - No changes (kept mission page at 125vh)
+- `VERSIONS.md` - Version bump and documentation
+
+---
+
+### v445 - 2026-02-11
+**Status: Previous**
+
+**Fixed inconsistent scaling speed for mission background image:**
+- Changed scroll calculation from relative (`missionRect.top`) to absolute (`window.scrollY`)
+- Scaling now progresses linearly over a fixed 1000px of scrolling
+- Eliminated variable scaling speed caused by section positioning in viewport
+- Image scales consistently from 0.9 → 1.4 regardless of scroll speed or position
+
+**Technical details:**
+- Added `animationStartScroll` Map to track scroll position when animation activates
+- Calculate `scrolledDistance = currentScrollY - startScroll` for linear progress
+- `fadeOutDistance = 1000px` provides consistent animation range
+- This decouples scaling from mission section height and viewport position
+
+**Why this fixes the issue:**
+- Previous method used `-missionRect.top`, which changes non-linearly as you scroll
+- New method uses absolute scroll distance from animation start point
+- Result: Every 100px of scrolling = same amount of scale increase, always
+
+**Files Modified:**
+- `public/script.js` - Updated scroll progress calculation in `initMissionBackgroundFade()`
+- `VERSIONS.md` - Version bump and documentation
+
+---
+
+### v444 - 2026-02-11
+**Status: Previous**
+
+**Fixed mission background image scroll animation:**
+- Reduced entrance lock from 2000ms to 800ms (CSS animation duration + buffer)
+- Scroll-based scaling now activates immediately after entrance animation completes
+- Fixed scroll distance calculation to use full mission section height (1194px) instead of scrollableDistance (239px)
+- Image now scales and fades throughout the entire mission section instead of disappearing too early
+- Added forced update at 850ms to ensure animation activates even without scroll events
+- Improved debug logging to track scroll progress accurately
+
+**Technical details:**
+- `fadeOutPoint` now uses `missionHeight * 0.85` (1015px) instead of `scrollableDistance * 0.8` (191px)
+- This ensures the background image remains visible and scales smoothly throughout the mission page
+- Image fades out at 85% through the mission section, providing better visual continuity
+
+**Files Modified:**
+- `public/script.js` - Updated `initMissionBackgroundFade()` timing and scroll calculations
+- `VERSIONS.md` - Version bump and documentation
+
+---
+
 ## How to Use This Log
 
 1. **Before making changes**: Note the current version number (currently v2.0.0)
@@ -7169,6 +7287,6 @@ When the logo became `position: fixed`, it was removed from document flow, causi
 
 ## Quick Reference
 
-**Current Version:** v443  
-**Last Updated:** 2026-02-08  
-**Next Version:** v444 (for next change)
+**Current Version:** v446  
+**Last Updated:** 2026-02-11  
+**Next Version:** v447 (for next change)

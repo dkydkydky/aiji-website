@@ -814,6 +814,8 @@ function initLandingAnimation() {
   const words = document.querySelectorAll('.landing-word');
   const tagline = document.querySelector('.landing-text');
   const logo = document.querySelector('.landing-logo');
+  const subtext = document.querySelector('.landing-subtext');
+  const subtextWords = document.querySelectorAll('.landing-subtext-word');
   const placeholders = document.querySelectorAll('.landing-bg .video-placeholder');
   const scrollArrow = document.getElementById('landing-swipe-btn');
   
@@ -839,10 +841,24 @@ function initLandingAnimation() {
   const afterTextExit = textExitStart + TEXT_EXIT_DURATION;
   
   // Phase 3: Logo fades in + slides up 30px to lock at center
+  // Subtext words animate in 500ms after logo starts
   const logoStart = afterTextExit + LOGO_DELAY;
   setTimeout(() => {
     if (logo) logo.classList.add('anim-visible');
   }, logoStart);
+  
+  // Subtext words fade in word-by-word starting 500ms after logo
+  // Line animates from top to bottom at the same time
+  const subtextStart = logoStart + 500;
+  setTimeout(() => {
+    if (subtext) subtext.classList.add('anim-line');
+  }, subtextStart);
+  
+  subtextWords.forEach((word, i) => {
+    setTimeout(() => {
+      word.classList.add('anim-visible');
+    }, subtextStart + (i * WORD_DELAY));
+  });
   
   const afterLogo = logoStart + LOGO_DURATION;
   
@@ -2473,6 +2489,8 @@ function initMissionBackgroundFade() {
   
   // Track when stagger animation completes for each image
   const staggerCompleteTime = new Map();
+  // Track the scroll position when animation starts for linear scaling
+  const animationStartScroll = new Map();
   
   function updateImageVisibility() {
     const viewportHeight = window.innerHeight;
@@ -2481,6 +2499,7 @@ function initMissionBackgroundFade() {
     if (!missionStep) return;
     const missionRect = missionStep.getBoundingClientRect();
     const missionHeight = missionStep.offsetHeight;
+    const currentScrollY = window.scrollY;
     
     // Check if Mission page is in view
     const missionInView = missionRect.top < viewportHeight && missionRect.bottom > 0;
@@ -2491,6 +2510,12 @@ function initMissionBackgroundFade() {
       // Track when stagger-revealed was first added
       if (hasStaggerRevealed && !staggerCompleteTime.has(img)) {
         staggerCompleteTime.set(img, Date.now());
+        
+        // Schedule a forced update after CSS animation completes
+        // This ensures scroll animation activates immediately when ready
+        setTimeout(() => {
+          updateImageVisibility();
+        }, 850); // Slightly after the 800ms lock
       }
       
       // If mission page is not in view
@@ -2510,28 +2535,58 @@ function initMissionBackgroundFade() {
         return;
       }
       
-      // Wait 800ms after stagger-revealed before applying scroll animation
-      // This allows the CSS transition (0.6s) to complete fully
+      // Wait for CSS stagger animation to complete (600ms transition + small buffer)
+      // Then immediately enable scroll-based scaling
       const timeSinceStaggerComplete = Date.now() - (staggerCompleteTime.get(img) || 0);
+      const targetOpacity = parseFloat(img.dataset.opacity) || 1.0;
+      
       if (timeSinceStaggerComplete < 800) {
+        // During CSS entrance animation: force scale to 0.9, full opacity
+        // This prevents scroll position from affecting the entrance animation
+        img.style.opacity = targetOpacity;
+        img.style.transform = 'translate(-50%, -50%) scale(0.9)';
         return;
       }
       
-      // Stagger animation has completed - now apply scroll-based animation
-      // Calculate scroll progress through Mission page
-      const scrollableDistance = missionHeight - viewportHeight;
-      const scrolled = Math.max(0, -missionRect.top);
+      // Record the scroll position when animation first becomes active
+      // Subtract a buffer so animation starts with some initial progress
+      if (!animationStartScroll.has(img)) {
+        // Start the animation range from slightly before current position
+        // This ensures the image is already scaling when it first appears
+        animationStartScroll.set(img, currentScrollY - 100);
+      }
       
-      // Use 80% of scroll distance so image fades out before Vision page
-      const fadeOutPoint = scrollableDistance * 0.8;
-      const scrollProgress = Math.max(0, Math.min(1, scrolled / fadeOutPoint));
+      // CSS animation complete - now apply scroll-based animation
+      // Calculate scroll progress based on absolute scroll distance from start
+      // This ensures linear, consistent scaling speed
+      const startScroll = animationStartScroll.get(img);
+      const scrolledDistance = Math.max(0, currentScrollY - startScroll);
+      
+      // Scale quickly over 600px, fade completely by 300px
+      // Image disappears quickly to make room for vision section
+      const scaleDistance = 600; // Pixels of scrolling for scale animation
+      const fadeDistance = 300; // Pixels of scrolling for fade animation
+      
+      const scaleProgress = Math.max(0, Math.min(1, scrolledDistance / scaleDistance));
+      const fadeProgress = Math.max(0, Math.min(1, scrolledDistance / fadeDistance));
       
       // Scale grows as user scrolls down (0.9 → 1.4)
-      const scale = 0.9 + (scrollProgress * 0.5);
+      const scale = 0.9 + (scaleProgress * 0.5);
       
       // Opacity fades out as user scrolls down (1.0 → 0)
-      const targetOpacity = parseFloat(img.dataset.opacity) || 1.0;
-      const opacity = (1.0 - scrollProgress) * targetOpacity;
+      const opacity = (1.0 - fadeProgress) * targetOpacity;
+      
+      // Debug logging (temporary)
+      console.log('Scroll animation:', {
+        timeSince: timeSinceStaggerComplete,
+        currentScrollY,
+        startScroll,
+        scrolledDistance,
+        scaleProgress: scaleProgress.toFixed(3),
+        fadeProgress: fadeProgress.toFixed(3),
+        scale: scale.toFixed(3),
+        opacity: opacity.toFixed(3)
+      });
       
       img.style.opacity = opacity;
       img.style.transform = `translate(-50%, -50%) scale(${scale})`;
@@ -2540,7 +2595,7 @@ function initMissionBackgroundFade() {
     // Fade mission text and logos based on mission step visibility
     if (missionTextFixed && missionStep) {
       const stepRect = missionStep.getBoundingClientRect();
-      const triggerPoint = viewportHeight * 0.6; // Trigger at 60% of viewport (earlier than center)
+      const triggerPoint = viewportHeight * 0.4; // Trigger at 40% of viewport (text fades out earlier)
       
       // Fade in when entering viewport, fade out when leaving
       if (stepRect.top < triggerPoint && stepRect.bottom > triggerPoint) {
@@ -2551,7 +2606,46 @@ function initMissionBackgroundFade() {
     }
   }
   
-  // Listen to window scroll (body now scrolls)
+  // Use requestAnimationFrame for smooth, continuous updates
+  let rafId = null;
+  let isAnimating = false;
+  
+  function startAnimation() {
+    if (isAnimating) return;
+    isAnimating = true;
+    
+    function animate() {
+      updateImageVisibility();
+      rafId = requestAnimationFrame(animate);
+    }
+    
+    animate();
+  }
+  
+  function stopAnimation() {
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+    isAnimating = false;
+  }
+  
+  // Start animation when mission page is in view
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        startAnimation();
+      } else {
+        stopAnimation();
+      }
+    });
+  }, { threshold: 0 });
+  
+  if (missionStep) {
+    observer.observe(missionStep);
+  }
+  
+  // Also listen to scroll for immediate updates
   window.addEventListener('scroll', updateImageVisibility, { passive: true });
   
   // Initial check
