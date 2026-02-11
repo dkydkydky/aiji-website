@@ -25,6 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initLandingPageLayout();
   initLandingPageTransitions();
   
+  // Start the landing page intro animation sequence
+  initLandingAnimation();
+  
   // Add resize listener for live responsive video layout
   let landingResizeTimeout;
   window.addEventListener('resize', () => {
@@ -793,6 +796,116 @@ function initVideoHeaderLayout() {
 }
 
 /**
+ * Landing Page Intro Animation
+ * Sequential: 1) tagline word-by-word, 2) logo fade, 3) video frames radiate from center
+ */
+function initLandingAnimation() {
+  const WORD_DELAY = 250;       // ms between each word
+  const WORD_DURATION = 400;    // ms for each word's fade
+  const LOGO_DELAY = 200;       // ms pause after last word before logo
+  const LOGO_DURATION = 600;    // ms for logo fade
+  const FRAMES_DELAY = 200;     // ms pause after logo before frames start
+  const FRAME_STAGGER = 100;    // ms between each frame's animation start
+  
+  const ARROW_DELAY = 300;      // ms after radiate finishes before arrow appears
+  
+  const words = document.querySelectorAll('.landing-word');
+  const logo = document.querySelector('.landing-logo');
+  const placeholders = document.querySelectorAll('.landing-bg .video-placeholder');
+  const scrollArrow = document.getElementById('landing-swipe-btn');
+  
+  // Phase 1: Tagline word-by-word fade in
+  let currentDelay = 300; // initial delay before sequence starts
+  
+  words.forEach((word, i) => {
+    setTimeout(() => {
+      word.classList.add('anim-visible');
+    }, currentDelay + (i * WORD_DELAY));
+  });
+  
+  // Calculate when the last word finishes appearing
+  const lastWordStart = currentDelay + ((words.length - 1) * WORD_DELAY);
+  const afterWords = lastWordStart + WORD_DURATION;
+  
+  // Phase 2: Logo fade in
+  const logoStart = afterWords + LOGO_DELAY;
+  setTimeout(() => {
+    if (logo) logo.classList.add('anim-visible');
+  }, logoStart);
+  
+  const afterLogo = logoStart + LOGO_DURATION;
+  
+  // Phase 3: Video frames appear one by one at center, then radiate out
+  const framesStart = afterLogo + FRAMES_DELAY;
+  const FRAME_APPEAR_STAGGER = 60; // ms between each video appearing at center
+  const RADIATE_PAUSE = 300;        // ms pause after last video appears before radiating
+  
+  if (placeholders.length === 0) return;
+  
+  // Calculate viewport center
+  const viewportCenterX = window.innerWidth / 2;
+  const viewportCenterY = window.innerHeight / 2;
+  
+  // Position all frames at center (hidden initially via opacity: 0 in CSS)
+  placeholders.forEach((el) => {
+    const left = parseFloat(el.style.left) || 0;
+    const top = parseFloat(el.style.top) || 0;
+    const width = parseFloat(el.style.width) || 0;
+    const height = parseFloat(el.style.height) || 0;
+    
+    const frameCenterX = left + width / 2;
+    const frameCenterY = top + height / 2;
+    const translateX = viewportCenterX - frameCenterX;
+    const translateY = viewportCenterY - frameCenterY;
+    
+    el.style.transform = `translate(${translateX}px, ${translateY}px)`;
+  });
+  
+  // Convert to array for ordering
+  const placeholderArray = Array.from(placeholders);
+  
+  // Appear one by one at center (stacking on top of each other)
+  placeholderArray.forEach((el, i) => {
+    setTimeout(() => {
+      el.classList.add('anim-at-center');
+    }, framesStart + (i * FRAME_APPEAR_STAGGER));
+  });
+  
+  // After all have appeared, radiate them all out to final positions
+  const allAppearedTime = framesStart + (placeholderArray.length * FRAME_APPEAR_STAGGER);
+  const RADIATE_TRANSITION_DURATION = 800; // matches CSS transition: 0.8s
+  setTimeout(() => {
+    placeholderArray.forEach((el) => {
+      el.classList.remove('anim-at-center');
+      el.classList.add('anim-radiate');
+    });
+    // Enable parallax after radiate transition finishes
+    setTimeout(() => {
+      landingParallaxReady = true;
+      placeholderArray.forEach((el) => {
+        el.style.transform = 'translate(0, 0)'; // clear old center-stack transform
+        el.classList.remove('anim-radiate');
+        el.classList.add('parallax-ready');
+      });
+      // Phase 4: Scroll arrow fades in as the last element
+      setTimeout(() => {
+        if (scrollArrow) scrollArrow.classList.add('anim-visible');
+      }, ARROW_DELAY);
+    }, RADIATE_TRANSITION_DURATION);
+  }, allAppearedTime + RADIATE_PAUSE);
+  
+  // Scroll arrow click: scroll to the next section
+  if (scrollArrow) {
+    scrollArrow.addEventListener('click', () => {
+      const landing = document.querySelector('.landing');
+      if (landing && landing.nextElementSibling) {
+        landing.nextElementSibling.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  }
+}
+
+/**
  * Landing Page - Video Placeholder Positioning
  * Adapts the Decade of Work organic layout algorithm for landing page rectangles
  */
@@ -823,22 +936,23 @@ const LANDING_VIDEOS_BASE_PATH = 'assets/videos/';
 // Video array: [01, 02, 03, 04, 05, 06, 07, Cherice, Jay, Lee, Ruth]
 //              [0,  1,  2,  3,  4,  5,  6,  7,       8,   9,   10]
 const LANDING_CUSTOM_ADJUSTMENTS = {
-  1: { scaleMultiplier: 0.8, offsetX: 0, offsetY: 0 },
-  2: { scaleMultiplier: 1.0, offsetX: 0, offsetY: 0, videoIndex: 1 }, // Video 02 (from frame 4)
-  3: { scaleMultiplier: 1.046, offsetX: 0, offsetY: 100, videoIndex: 9 }, // Swap with 2 (video Lee, 115% of 0.91 = 1.046), down 50px
-  4: { scaleMultiplier: 1.1, offsetX: 50, offsetY: 0 },
+  1: { scaleMultiplier: 0.8, offsetX: 400, offsetY: 250 }, // Visible frame 1 - moved 400px right, 250px down (300-50)
+  2: { scaleMultiplier: 1.44, offsetX: -400, offsetY: 310, videoIndex: 1 }, // Visible frame 2 - Video 02, moved 400px left, 310px down (360-50)
+  3: { scaleMultiplier: 1.2552, offsetX: 0, offsetY: 110, videoIndex: 9 }, // Visible frame 3 - video Lee, down 110px, scaled to 125.52% (1.046×1.2)
+  4: { scaleMultiplier: 1.1, offsetX: 50, offsetY: -5 }, // Visible frame 4 - moved up 10px (5-10=-5)
   5: { scaleMultiplier: 2.0, offsetX: -150, offsetY: -225, videoIndex: 1, transformOrigin: 'bottom right' }, // Video 02, 80% of 2.5 = 2.0 scale
-  6: { scaleMultiplier: 1.44, offsetX: 175, offsetY: 50, videoIndex: 7 }, // 144% scale (1.2*1.2), video Cherice, left 50px
-  7: { scaleMultiplier: 1.1, offsetX: 50, offsetY: 0, videoIndex: 99 }, // Gray (no video)
-  8: { scaleMultiplier: 1.0, offsetX: 100, offsetY: 75, videoIndex: 6 }, // video 07, up 25px more
-  9: { scaleMultiplier: 1.2, offsetX: 50, offsetY: 0 }, // Jay, scaled up 20%
-  10: { scaleMultiplier: 1.0, offsetX: 150, offsetY: 25, videoIndex: 2 }, // Video 03 (swapped with 5), up 25px
-  11: { scaleMultiplier: 1.2, offsetX: 300, offsetY: 0 },
+  6: { scaleMultiplier: 1.656, offsetX: 175, offsetY: 100, videoIndex: 7, transformOrigin: 'top right' }, // Visible frame 5 - video Cherice, moved right 175px (225-50), down 100px, scaled 165.6% (1.44×1.15)
+  7: { scaleMultiplier: 1.1, offsetX: 50, offsetY: 0, videoIndex: 99 }, // Gray (no video) - skipped
+  8: { scaleMultiplier: 1.4, offsetX: 100, offsetY: 25, videoIndex: 6 }, // Visible frame 6 - video 07, right 100px, 25px down (75-50), scaled to 140%
+  9: { scaleMultiplier: 1.44, offsetX: -25, offsetY: 0 }, // Visible frame 7 - Jay, moved left 75px (50-75=-25), scaled to 144% (1.2×1.2)
+  10: { scaleMultiplier: 1.0, offsetX: 100, offsetY: 15, videoIndex: 2 }, // Visible frame 8 - Video 03, moved right 100px (150-50), up 35px (25-10=15)
+  11: { scaleMultiplier: 1.44, offsetX: 300, offsetY: 0 }, // Visible frame 9 - scaled to 144% (1.2×1.2)
   12: { scaleMultiplier: 1.0, offsetX: 0, offsetY: 0, videoIndex: 5 }  // video 06 (swapped with 7)
 };
 
 let landingPlaceholdersInitialized = false;
 let landingPlaceholderElements = [];
+let landingParallaxReady = false;
 
 function initLandingPlaceholders() {
   const container = document.getElementById('landing-bg');
@@ -918,8 +1032,8 @@ function initLandingPlaceholders() {
       // Calculate slot width for position tracking
       const slotWidthForRect = maxRectWidth;
       
-      // Skip frames #1, #5, #7 and #12 (not used) but still advance position
-      if (rectNumber === 1 || rectNumber === 5 || rectNumber === 7 || rectNumber === 12) {
+      // Skip frames #5, #7 and #12 (not used) but still advance position
+      if (rectNumber === 5 || rectNumber === 7 || rectNumber === 12) {
         currentLeft += slotWidthForRect + MIN_HORIZONTAL_GAP;
         continue;
       }
@@ -927,9 +1041,9 @@ function initLandingPlaceholders() {
       // Get custom adjustments for this rectangle
       const adjustments = LANDING_CUSTOM_ADJUSTMENTS[rectNumber] || { scaleMultiplier: 1.0, offsetX: 0, offsetY: 0 };
       
-      // Apply responsive scaling: 1.2x on large screens (>1440px), 1x on smaller screens
-      const responsiveScale = viewportWidth > 1440 ? 1.2 : 1.0;
-      const finalScaleMultiplier = adjustments.scaleMultiplier * responsiveScale;
+      // viewportScaleFactor already handles proportional scaling across all viewport sizes
+      // No additional responsive multiplier needed — it caused overlap on larger screens
+      const finalScaleMultiplier = adjustments.scaleMultiplier;
       
       // Use fixed base dimensions with custom scale multiplier
       let height = rectData.height * finalScaleMultiplier; // Apply custom scale with responsive adjustment
@@ -964,17 +1078,17 @@ function initLandingPlaceholders() {
         rect.appendChild(video);
       }
       
-      // Add number label to rectangle
-      const label = document.createElement('div');
-      label.className = 'video-placeholder-label';
-      label.textContent = rectNumber;
-      rect.appendChild(label);
+      // // Add number label to rectangle
+      // const label = document.createElement('div');
+      // label.className = 'video-placeholder-label';
+      // label.textContent = rectNumber;
+      // rect.appendChild(label);
       
-      // Horizontal position: fixed within slot (no random offset)
+      // Horizontal position: X offsets scale by scaleFactorX to match column widths
       const baseLeft = currentLeft;
-      const left = baseLeft + (adjustments.offsetX * viewportScaleFactor); // Apply scaled custom X offset
+      const left = baseLeft + (adjustments.offsetX * scaleFactorX);
       
-      // Vertical position: fixed within row band (no random jitter)
+      // Vertical position: Y offsets scale by scaleFactorY to match row heights
       let baseTop;
       const isFirstRow = row === 0;
       const isLastRow = row === LANDING_SLOT_ROWS - 1;
@@ -991,7 +1105,7 @@ function initLandingPlaceholders() {
         baseTop = verticalCenter;
       }
       
-      const top = baseTop + (adjustments.offsetY * viewportScaleFactor); // Apply scaled custom Y offset
+      const top = baseTop + (adjustments.offsetY * scaleFactorY);
       
       rect.style.left = left + 'px';
       rect.style.top = top + 'px';
@@ -1013,20 +1127,16 @@ function initLandingPlaceholders() {
     }
   }
   
-  // Fade in rectangles after a short delay and renumber them 1-10
-  setTimeout(() => {
-    const placeholders = container.querySelectorAll('.video-placeholder');
-    let visibleIndex = 1;
-    placeholders.forEach((el) => {
-      el.classList.add('visible');
-      // Renumber all visible frames sequentially
-      const label = el.querySelector('.video-placeholder-label');
-      if (label) {
-        label.textContent = visibleIndex;
-      }
-      visibleIndex++;
-    });
-  }, 300);
+  // // Renumber visible frames sequentially (animation is handled by initLandingAnimation)
+  // const allPlaceholders = container.querySelectorAll('.video-placeholder');
+  // let visibleIndex = 1;
+  // allPlaceholders.forEach((el) => {
+  //   const label = el.querySelector('.video-placeholder-label');
+  //   if (label) {
+  //     label.textContent = visibleIndex;
+  //   }
+  //   visibleIndex++;
+  // });
   
   landingPlaceholdersInitialized = true;
 }
@@ -1088,8 +1198,8 @@ function updateLandingLayout() {
       const rectNumber = rectData.index + 1;
       const slotWidthForRect = maxRectWidth;
       
-      // Skip frames not used but still advance position
-      if (rectNumber === 1 || rectNumber === 5 || rectNumber === 7 || rectNumber === 12) {
+      // Skip frames not used but still advance position (must match initLandingPlaceholders)
+      if (rectNumber === 5 || rectNumber === 7 || rectNumber === 12) {
         currentLeft += slotWidthForRect + MIN_HORIZONTAL_GAP;
         continue;
       }
@@ -1097,9 +1207,9 @@ function updateLandingLayout() {
       // Get custom adjustments
       const adjustments = LANDING_CUSTOM_ADJUSTMENTS[rectNumber] || { scaleMultiplier: 1.0, offsetX: 0, offsetY: 0 };
       
-      // Apply responsive scaling
-      const responsiveScale = viewportWidth > 1440 ? 1.3 : 1.0;
-      const finalScaleMultiplier = adjustments.scaleMultiplier * responsiveScale;
+      // viewportScaleFactor already handles proportional scaling across all viewport sizes
+      // No additional responsive multiplier needed — it caused overlap on larger screens
+      const finalScaleMultiplier = adjustments.scaleMultiplier;
       
       let height = rectData.height * finalScaleMultiplier;
       let width = rectData.width * finalScaleMultiplier;
@@ -1109,8 +1219,10 @@ function updateLandingLayout() {
       }
       
       // Calculate positions
+      // X offsets scale by scaleFactorX to match column widths
+      // Y offsets scale by scaleFactorY to match row heights
       const baseLeft = currentLeft;
-      const left = baseLeft + (adjustments.offsetX * viewportScaleFactor);
+      const left = baseLeft + (adjustments.offsetX * scaleFactorX);
       
       let baseTop;
       const isFirstRow = row === 0;
@@ -1124,7 +1236,7 @@ function updateLandingLayout() {
         baseTop = rowTopBand + (rowSlotHeight - height) / 2;
       }
       
-      const top = baseTop + (adjustments.offsetY * viewportScaleFactor);
+      const top = baseTop + (adjustments.offsetY * scaleFactorY);
       
       // Update existing element styles (no DOM rebuild)
       if (elementIdx < landingPlaceholderElements.length) {
@@ -1252,6 +1364,12 @@ function initLandingPageTransitions() {
     
     const landingLogo = document.querySelector('.landing-logo');
     const landingBg = document.querySelector('.landing-bg');
+    const landingSwipeBtn = document.getElementById('landing-swipe-btn');
+    
+    // Disable CSS transition on swipe button so JS-driven fade isn't delayed
+    if (landingSwipeBtn) {
+      landingSwipeBtn.style.transition = 'none';
+    }
     
     // Fade out landing page content AND background rectangles
     const fadeStartTime = performance.now();
@@ -1267,6 +1385,9 @@ function initLandingPageTransitions() {
       }
       if (landingBg) {
         landingBg.style.opacity = 1 - easeProgress;
+      }
+      if (landingSwipeBtn) {
+        landingSwipeBtn.style.opacity = 1 - easeProgress;
       }
       
       if (progress < 1) {
@@ -1428,11 +1549,15 @@ function initLandingPageTransitions() {
     document.body.classList.remove('landing-complete');
     
     // Fade in landing content and background
+    const swipeBtn = document.getElementById('landing-swipe-btn');
     if (landingContentWrapper) {
       landingContentWrapper.style.opacity = '0';
     }
     if (landingBg) {
       landingBg.style.opacity = '0';
+    }
+    if (swipeBtn) {
+      swipeBtn.style.opacity = '0';
     }
     
     requestAnimationFrame(() => {
@@ -1445,10 +1570,15 @@ function initLandingPageTransitions() {
           landingBg.style.transition = 'opacity 0.6s ease';
           landingBg.style.opacity = '1';
         }
+        if (swipeBtn) {
+          swipeBtn.style.transition = 'opacity 0.6s ease';
+          swipeBtn.style.opacity = '1';
+        }
         
         setTimeout(() => {
           if (landingContentWrapper) landingContentWrapper.style.transition = '';
           if (landingBg) landingBg.style.transition = '';
+          if (swipeBtn) swipeBtn.style.transition = '';
           isLandingAnimating = false;
           hasDetectedLandingSwipe = false;
         }, 600);
@@ -1874,6 +2004,39 @@ document.addEventListener('mousemove', (e) => {
     }
   }
 });
+
+/**
+ * Parallax effect for landing page video placeholders
+ * Uniform shift based on cursor position, active only after intro animation completes
+ */
+(function initLandingParallax() {
+  const PARALLAX_INTENSITY = 18; // max px shift in each axis
+  let rafId = null;
+  
+  document.addEventListener('mousemove', (e) => {
+    if (!landingParallaxReady) return;
+    
+    const landingSection = document.querySelector('.landing');
+    if (!landingSection) return;
+    
+    const rect = landingSection.getBoundingClientRect();
+    const isInView = rect.top < window.innerHeight && rect.bottom > 0;
+    if (!isInView) return;
+    
+    // Throttle to one update per frame
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(() => {
+      const offsetX = (e.clientX / window.innerWidth - 0.5) * PARALLAX_INTENSITY;
+      const offsetY = (e.clientY / window.innerHeight - 0.5) * PARALLAX_INTENSITY;
+      
+      const placeholders = landingSection.querySelectorAll('.video-placeholder.parallax-ready');
+      placeholders.forEach((el) => {
+        el.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+      });
+      rafId = null;
+    });
+  });
+})();
 
 /**
  * Active Nav Tracking - Highlights nav items when in their section

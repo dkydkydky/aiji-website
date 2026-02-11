@@ -922,17 +922,12 @@ body.video-complete .video-header-logo.at-top {
   background: 
     radial-gradient(
       circle at 50% 50%,
-      rgba(255, 184, 182, 0.7) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      circle at 80% 20%,
-      rgba(186, 234, 176, 0.7) 0%,
+      rgba(255, 184, 182, 0.4) 0%,
       transparent 50%
     ),
     radial-gradient(
       circle at 20% 80%,
-      rgba(174, 224, 229, 0.9) 0%,
+      rgba(174, 224, 229, 0.2) 0%,
       transparent 60%
     ),
     #FFF3E9;
@@ -979,14 +974,61 @@ body.landing-complete .landing {
   background: rgba(200, 200, 200, 0.6);
   border-radius: 0;
   opacity: 0;
-  transition: opacity 0.3s ease-out;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
 }
 
-.landing-bg .video-placeholder.visible {
+.landing-bg .video-placeholder.anim-at-center {
+  /* Video appeared at center, stacked, no movement transition */
+  opacity: 1;
+  transition: none;
+}
+
+.landing-bg .video-placeholder.anim-radiate {
+  /* Slide from center to final position */
+  opacity: 1;
+  transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform: translate(0, 0) !important;
+}
+
+.landing-bg .video-placeholder.parallax-ready {
+  /* Smooth trailing movement for mouse parallax */
+  opacity: 1;
+  transition: transform 0.15s ease-out;
+}
+
+/* Landing "Swipe Up" pill button */
+.pill-btn.landing-swipe-btn {
+  position: absolute;
+  bottom: 32px;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  width: fit-content;
+  z-index: 10;
+  opacity: 0;
+  border: none;
+  outline: none;
+  background: rgba(255, 255, 255, 0.3);
+  background-image: none;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: opacity 0.5s ease;
+  cursor: default;
+  pointer-events: none;
+}
+
+.pill-btn.landing-swipe-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  background-image: none;
+  background-position: 0 0;
+  color: #000000;
+}
+
+.pill-btn.landing-swipe-btn.anim-visible {
   opacity: 1;
 }
 
@@ -1038,15 +1080,19 @@ body.landing-complete .landing {
 
 .landing-logo {
   position: relative;
-  transform: scale(1.8);
+  transform: scale(1.8) translateX(-5px);
   transform-origin: left top;
   margin: 0 0 0 0;
   pointer-events: auto;
   z-index: 1001;
-  opacity: 1 !important;
+  opacity: 0;
   visibility: visible !important;
   display: block !important;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition: opacity 0.6s ease;
+}
+
+.landing-logo.anim-visible {
+  opacity: 1;
 }
 
 .landing-content-wrapper.stacked .landing-logo {
@@ -1076,8 +1122,20 @@ body.landing-complete .landing {
   margin: 0 0 0 -10px;
   white-space: nowrap;
   pointer-events: auto;
-  transition: font-size 0.3s ease, opacity 0.3s ease;
+  transition: font-size 0.3s ease;
   z-index: 1;
+}
+
+.landing-word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.landing-word.anim-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .landing-content-wrapper.stacked .landing-text {
@@ -1098,19 +1156,19 @@ body.landing-complete .landing {
 /* Landing gradient animation */
 @keyframes landingGradientMove {
   0% {
-    background-position: 0% 50%, 100% 0%, 0% 100%;
+    background-position: 0% 50%, 0% 100%;
   }
   
   33% {
-    background-position: 100% 100%, 0% 100%, 50% 0%;
+    background-position: 100% 100%, 50% 0%;
   }
   
   66% {
-    background-position: 50% 0%, 100% 50%, 100% 100%;
+    background-position: 50% 0%, 100% 100%;
   }
   
   100% {
-    background-position: 0% 50%, 100% 0%, 0% 100%;
+    background-position: 0% 50%, 0% 100%;
   }
 }
 
