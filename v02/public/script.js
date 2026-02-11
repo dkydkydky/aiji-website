@@ -802,14 +802,17 @@ function initVideoHeaderLayout() {
 function initLandingAnimation() {
   const WORD_DELAY = 250;       // ms between each word
   const WORD_DURATION = 400;    // ms for each word's fade
-  const LOGO_DELAY = 200;       // ms pause after last word before logo
-  const LOGO_DURATION = 600;    // ms for logo fade
+  const TEXT_EXIT_DELAY = 200;  // ms pause after last word before tagline exits
+  const TEXT_EXIT_DURATION = 400; // ms for tagline fade-out + move-up
+  const LOGO_DELAY = 200;       // ms pause after tagline exits before logo enters
+  const LOGO_DURATION = 600;    // ms for logo fade + slide-up
   const FRAMES_DELAY = 200;     // ms pause after logo before frames start
   const FRAME_STAGGER = 100;    // ms between each frame's animation start
   
   const ARROW_DELAY = 300;      // ms after radiate finishes before arrow appears
   
   const words = document.querySelectorAll('.landing-word');
+  const tagline = document.querySelector('.landing-text');
   const logo = document.querySelector('.landing-logo');
   const placeholders = document.querySelectorAll('.landing-bg .video-placeholder');
   const scrollArrow = document.getElementById('landing-swipe-btn');
@@ -827,16 +830,25 @@ function initLandingAnimation() {
   const lastWordStart = currentDelay + ((words.length - 1) * WORD_DELAY);
   const afterWords = lastWordStart + WORD_DURATION;
   
-  // Phase 2: Logo fade in
-  const logoStart = afterWords + LOGO_DELAY;
+  // Phase 2: Tagline fades out + moves up 30px
+  const textExitStart = afterWords + TEXT_EXIT_DELAY;
+  setTimeout(() => {
+    if (tagline) tagline.classList.add('anim-fade-out');
+  }, textExitStart);
+  
+  const afterTextExit = textExitStart + TEXT_EXIT_DURATION;
+  
+  // Phase 3: Logo fades in + slides up 30px to lock at center
+  const logoStart = afterTextExit + LOGO_DELAY;
   setTimeout(() => {
     if (logo) logo.classList.add('anim-visible');
   }, logoStart);
   
   const afterLogo = logoStart + LOGO_DURATION;
   
-  // Phase 3: Video frames appear one by one at center, then radiate out
-  const framesStart = afterLogo + FRAMES_DELAY;
+  // Phase 4: Video frames appear one by one at center, then radiate out
+  // Start frames at the same time as logo (not after)
+  const framesStart = logoStart;
   const FRAME_APPEAR_STAGGER = 60; // ms between each video appearing at center
   const RADIATE_PAUSE = 300;        // ms pause after last video appears before radiating
   
@@ -937,7 +949,7 @@ const LANDING_VIDEOS_BASE_PATH = 'assets/videos/';
 //              [0,  1,  2,  3,  4,  5,  6,  7,       8,   9,   10]
 const LANDING_CUSTOM_ADJUSTMENTS = {
   1: { scaleMultiplier: 0.8, offsetX: 400, offsetY: 250 }, // Visible frame 1 - moved 400px right, 250px down (300-50)
-  2: { scaleMultiplier: 1.44, offsetX: -400, offsetY: 310, videoIndex: 1 }, // Visible frame 2 - Video 02, moved 400px left, 310px down (360-50)
+  2: { scaleMultiplier: 1.44, offsetX: -400, offsetY: 60, videoIndex: 1 }, // Visible frame 2 - Video 02, moved 400px left, 60px down (110-50)
   3: { scaleMultiplier: 1.2552, offsetX: 0, offsetY: 110, videoIndex: 9 }, // Visible frame 3 - video Lee, down 110px, scaled to 125.52% (1.046×1.2)
   4: { scaleMultiplier: 1.1, offsetX: 50, offsetY: -5 }, // Visible frame 4 - moved up 10px (5-10=-5)
   5: { scaleMultiplier: 2.0, offsetX: -150, offsetY: -225, videoIndex: 1, transformOrigin: 'bottom right' }, // Video 02, 80% of 2.5 = 2.0 scale
@@ -2361,83 +2373,30 @@ function initBuilderArticleOverlay() {
 }
 
 /**
- * Logo Click Handler - Return to video header when logo is clicked
+ * Logo Click Handler - Return to landing page when logo is clicked
  */
 function initLogoClick() {
+  // Add cursor pointer style to logo when it has at-top class
+  const style = document.createElement('style');
+  style.textContent = `
+    .video-header-logo.at-top,
+    .video-header-logo.at-top * {
+      cursor: pointer !important;
+    }
+  `;
+  document.head.appendChild(style);
+  
   document.addEventListener('click', (e) => {
-    const logo = e.target.closest('.video-header-logo');
-    if (!logo || !logo.classList.contains('at-top')) return;
+    // Check if click is on logo or its children
+    const logo = e.target.closest('.video-header-logo.at-top');
+    
+    if (!logo) return;
     
     e.preventDefault();
+    e.stopPropagation();
     
-    // Get references
-    const videoHeader = document.querySelector('.video-header');
-    const nav = document.querySelector('.nav');
-    const videoHeaderContent = document.querySelector('.video-header-content-wrapper');
-    const videoPlayer = videoHeader ? videoHeader.querySelector('.video-header-player') : null;
-    
-    // Step 1: Remove video-complete class FIRST to allow video header to be visible
-    document.body.classList.remove('video-complete');
-    
-    // Step 2: Force video header to be visible (CSS no longer has !important blocking it)
-    if (videoHeader) {
-      videoHeader.style.opacity = '1';
-      videoHeader.style.visibility = 'visible';
-      videoHeader.style.pointerEvents = 'auto';
-      videoHeader.style.display = 'block';
-    }
-    
-    // Reset video player opacity if needed
-    if (videoPlayer) {
-      videoPlayer.style.opacity = '1';
-    }
-    
-    // Reset content wrapper opacity
-    if (videoHeaderContent) {
-      videoHeaderContent.style.opacity = '1';
-    }
-    
-    // Step 3: Reset logo to white version and move back to video header
-    const logoImg = logo.querySelector('img');
-    if (logoImg && logoImg.src.includes('Black')) {
-      logoImg.src = logoImg.src.replace('Black', 'White');
-    }
-    logo.classList.remove('at-top');
-    
-    // Clear all inline styles to restore CSS defaults (scale 1.6)
-    logo.style.cssText = '';
-    
-    if (videoHeaderContent) {
-      videoHeaderContent.insertBefore(logo, videoHeaderContent.firstChild);
-      // Reset content wrapper transform
-      videoHeaderContent.style.transform = '';
-      videoHeaderContent.style.transition = '';
-    }
-    
-    // Step 4: Hide nav
-    if (nav) {
-      nav.style.opacity = '0';
-      nav.style.visibility = 'hidden';
-      nav.classList.remove('logo-at-top');
-    }
-    
-    // Step 4b: Hide fixed overlays from Our Impact and What We Do so they don't stick on screen
-    hideImpactFixedContent();
-    hideWwdFixedContent();
-    
-    // Step 4c: Clear Our Impact background so next section (e.g. What We Do) shows correct color
-  const bgOverlay = document.getElementById('section-bg-overlay');
-  if (bgOverlay) {
-    bgOverlay.classList.remove('our-impact-active');
-    bgOverlay.classList.remove('urgency-active');
-    syncBodyBackgroundToOverlay();
-  }
-    
-    // Step 5: Scroll to top
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    
-    // Set cursor pointer for logo
-    logo.style.cursor = 'pointer';
+    // Reload the page to restart the landing animation sequence
+    window.location.reload();
   });
 }
 
@@ -2496,9 +2455,7 @@ function createBackgroundArtwork() {
     img.dataset.opacity = config.opacity;
     img.alt = 'Mission background artwork';
     
-    // Initial state - invisible at normal size
-    img.style.opacity = '0';
-    img.style.transform = 'translate(-50%, -50%) scale(1)';
+    // Don't set inline styles - let CSS handle initial state via stagger-item class
     
     // Append directly to body for true fixed positioning
     document.body.appendChild(img);
@@ -2514,6 +2471,9 @@ function initMissionBackgroundFade() {
   
   if (!images.length) return;
   
+  // Track when stagger animation completes for each image
+  const staggerCompleteTime = new Map();
+  
   function updateImageVisibility() {
     const viewportHeight = window.innerHeight;
     
@@ -2525,26 +2485,49 @@ function initMissionBackgroundFade() {
     // Check if Mission page is in view
     const missionInView = missionRect.top < viewportHeight && missionRect.bottom > 0;
     
-    images.forEach(img => {
-      // Hide if Mission page is not in view
+    images.forEach((img, index) => {
+      const hasStaggerRevealed = img.classList.contains('stagger-revealed');
+      
+      // Track when stagger-revealed was first added
+      if (hasStaggerRevealed && !staggerCompleteTime.has(img)) {
+        staggerCompleteTime.set(img, Date.now());
+      }
+      
+      // If mission page is not in view
       if (!missionInView) {
-        img.style.opacity = '0';
-        img.style.transform = 'translate(-50%, -50%) scale(1)';
+        // If stagger has revealed, hide it when scrolling away
+        if (hasStaggerRevealed) {
+          img.style.opacity = '0';
+        }
+        // Otherwise, don't touch it - let CSS handle the initial hidden state
         return;
       }
       
+      // Mission page IS in view
+      // If stagger hasn't revealed yet, don't apply any inline styles
+      // Let the CSS stagger animation handle the entrance
+      if (!hasStaggerRevealed) {
+        return;
+      }
+      
+      // Wait 800ms after stagger-revealed before applying scroll animation
+      // This allows the CSS transition (0.6s) to complete fully
+      const timeSinceStaggerComplete = Date.now() - (staggerCompleteTime.get(img) || 0);
+      if (timeSinceStaggerComplete < 800) {
+        return;
+      }
+      
+      // Stagger animation has completed - now apply scroll-based animation
       // Calculate scroll progress through Mission page
-      // 0 = Mission page top is at viewport top (beginning)
-      // 1 = Mission page is 80% scrolled (fade out before next page)
       const scrollableDistance = missionHeight - viewportHeight;
-      const scrolled = -missionRect.top;
+      const scrolled = Math.max(0, -missionRect.top);
       
       // Use 80% of scroll distance so image fades out before Vision page
       const fadeOutPoint = scrollableDistance * 0.8;
       const scrollProgress = Math.max(0, Math.min(1, scrolled / fadeOutPoint));
       
-      // Scale grows as user scrolls down (1.0 → 1.5)
-      const scale = 1.0 + (scrollProgress * 0.5);
+      // Scale grows as user scrolls down (0.9 → 1.4)
+      const scale = 0.9 + (scrollProgress * 0.5);
       
       // Opacity fades out as user scrolls down (1.0 → 0)
       const targetOpacity = parseFloat(img.dataset.opacity) || 1.0;
@@ -4215,7 +4198,7 @@ function initStaggerAnimations() {
     const missionLogos = document.querySelectorAll('.wwd-step-1 .wwd-mission-logo');
     missionLogos.forEach(logo => logo.classList.add('stagger-item', 'stagger-mission-logo'));
     
-    const missionBgImages = document.querySelectorAll('.wwd-step-1 .mission-bg-art');
+    const missionBgImages = document.querySelectorAll('.mission-bg-art');
     missionBgImages.forEach(img => img.classList.add('stagger-item', 'stagger-mission-bg'));
     
     // Step 3: How page elements (headline and pillar cards)

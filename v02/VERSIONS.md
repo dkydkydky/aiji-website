@@ -12,8 +12,49 @@ This file tracks all changes made to the AIJI website with version numbers for e
 
 ## Version History
 
-### v444 - 2026-02-09
+### v445 - 2026-02-10
 **Status: ✅ Current**
+
+**Landing Page Animation, Parallax & UI Refinements:**
+
+Added a full intro animation sequence to the landing page, mouse-driven parallax on video placeholders, a "Swipe Up" indicator button, and various visual refinements.
+
+**Changes Made:**
+
+1. **Intro Animation Sequence**
+   - Tagline animates word-by-word with 250ms stagger (300ms initial delay)
+   - Logo fades in after tagline completes
+   - Video frames appear one-by-one at viewport center (60ms stagger), stacking on top of each other
+   - After all videos are visible at center, they radiate outward to their final grid positions (0.8s ease transition)
+
+2. **Mouse Parallax**
+   - All landing video placeholders shift subtly (±18px) in response to cursor movement
+   - Activates only after the intro animation completes
+   - Throttled via `requestAnimationFrame` with 0.15s CSS ease-out for smooth trailing
+
+3. **"Swipe Up" Pill Button**
+   - Frosted glass pill button at bottom center of viewport (`backdrop-filter: blur(20px)`, white bg at 0.3 opacity)
+   - Uses `.pill-btn` base class with overrides for no border/hover
+   - Fades in as the last element after video radiate animation
+   - Fades out in sync with other landing content during transition
+
+4. **Tagline & Logo Updates**
+   - Tagline changed to two lines: "Let's Build" / "the Future of Work."
+   - Landing logo scaled down to 80% (1.44 from 1.8)
+
+5. **Background Gradient**
+   - Removed pale green gradient layer
+   - Reduced pink opacity from 0.7 to 0.4
+   - Reduced baby blue opacity from 0.9 to 0.2
+
+6. **Other Adjustments**
+   - Commented out video placeholder number labels
+   - Moved video frame 8 (remapped) left by 50px
+
+---
+
+### v444 - 2026-02-09
+**Status: Previous**
 
 **Dead Code Cleanup (CSS-only):**
 

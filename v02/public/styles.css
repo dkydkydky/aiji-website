@@ -445,11 +445,6 @@ body.video-complete:not(.landing-complete) .nav {
   pointer-events: none !important;
 }
 
-body.video-complete .nav .nav-links a {
-  opacity: 1;
-  transform: translateX(0);
-}
-
 /* Hide nav when on video header */
 .nav.hidden-on-video {
   opacity: 0;
@@ -1055,14 +1050,11 @@ body.landing-complete .landing {
 
 .landing-content-wrapper {
   position: absolute;
-  top: 30px;
+  top: 0;
   left: 30px;
-  transform: none;
+  width: auto;
+  height: 100%;
   z-index: 3;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 15px;
   pointer-events: none;
 }
 
@@ -1079,8 +1071,10 @@ body.landing-complete .landing {
 }
 
 .landing-logo {
-  position: relative;
-  transform: scale(1.8) translateX(-5px);
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: scale(1.75) translateX(-5px) translateY(calc(-50% + 30px));
   transform-origin: left top;
   margin: 0 0 0 0;
   pointer-events: auto;
@@ -1088,11 +1082,12 @@ body.landing-complete .landing {
   opacity: 0;
   visibility: visible !important;
   display: block !important;
-  transition: opacity 0.6s ease;
+  transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
 .landing-logo.anim-visible {
   opacity: 1;
+  transform: scale(1.75) translateX(-5px) translateY(-50%);
 }
 
 .landing-content-wrapper.stacked .landing-logo {
@@ -1111,7 +1106,10 @@ body.landing-complete .landing {
 }
 
 .landing-text {
-  position: relative;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
   font-family: "fractul-variable", sans-serif;
   font-variation-settings: "wght" 600;
   font-size: 5rem;
@@ -1122,8 +1120,13 @@ body.landing-complete .landing {
   margin: 0 0 0 -10px;
   white-space: nowrap;
   pointer-events: auto;
-  transition: font-size 0.3s ease;
+  transition: opacity 0.4s ease, transform 0.4s ease, font-size 0.3s ease;
   z-index: 1;
+}
+
+.landing-text.anim-fade-out {
+  opacity: 0;
+  transform: translateY(calc(-50% - 30px));
 }
 
 .landing-word {
@@ -2399,6 +2402,11 @@ body.video-complete:not(.landing-complete) .wwd-mission-text-fixed {
   height: 38px; /* 80% of 48px */
 }
 
+/* Scale down QBPO logo */
+.wwd-mission-logo[alt="Queens Borough President's Office"] {
+  height: 34px; /* 70% of 48px */
+}
+
 /* Responsive logo sizing */
 @media (max-width: 900px) {
   .wwd-mission-logos {
@@ -2413,6 +2421,10 @@ body.video-complete:not(.landing-complete) .wwd-mission-text-fixed {
   .wwd-mission-logo[alt="NYC EDC"],
   .wwd-mission-logo[alt="Partnership for NYC"] {
     height: 32px;
+  }
+  
+  .wwd-mission-logo[alt="Queens Borough President's Office"] {
+    height: 28px; /* 70% of 40px */
   }
 }
 
@@ -2430,6 +2442,10 @@ body.video-complete:not(.landing-complete) .wwd-mission-text-fixed {
   .wwd-mission-logo[alt="NYC EDC"],
   .wwd-mission-logo[alt="Partnership for NYC"] {
     height: 26px;
+  }
+  
+  .wwd-mission-logo[alt="Queens Borough President's Office"] {
+    height: 22px; /* 70% of 32px */
   }
 }
 
@@ -4717,15 +4733,15 @@ body.video-complete .footer {
   transform: translateX(0);
 }
 
-/* Mission background image - fade in only (no scale on load) */
+/* Mission background image - fade in with subtle scale-up entrance */
 .mission-bg-art.stagger-item {
   opacity: 0;
-  transform: translate(-50%, -50%) scale(1);
+  transform: translate(-50%, -50%) scale(0.85);
 }
 
 .mission-bg-art.stagger-item.stagger-revealed {
   opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
+  transform: translate(-50%, -50%) scale(0.9);
 }
 
 /* Hub page elements - stagger animation */
@@ -5269,4 +5285,3 @@ body.video-complete .footer {
     height: 28px;
   }
 }
-
