@@ -12,37 +12,35 @@ document.addEventListener('DOMContentLoaded', () => {
   // Force scroll to top on page load to ensure clean state
   window.scrollTo(0, 0);
   
-  
   // AGGRESSIVE CLEANUP: Remove any stray logo elements and black images
   document.querySelectorAll('body > .video-header-logo').forEach(el => el.remove());
   document.querySelectorAll('.video-header-logo-placeholder').forEach(el => el.remove());
   
-  // Remove ALL black logo images anywhere on the page
-  document.querySelectorAll('img[src*="Black"]').forEach(img => {
-    if (img.closest('.video-header-logo')) {
-      img.remove();
-    }
+  // Skip video header - go straight to landing page
+  // Set video-complete so CSS shows the landing page
+  document.body.classList.add('video-complete');
+  
+  // Initialize landing page immediately
+  initLandingPlaceholders();
+  initLandingPageLayout();
+  initLandingPageTransitions();
+  
+  // Start the landing page intro animation sequence
+  initLandingAnimation();
+  
+  // Add resize listener for live responsive video layout
+  let landingResizeTimeout;
+  window.addEventListener('resize', () => {
+    clearTimeout(landingResizeTimeout);
+    landingResizeTimeout = setTimeout(() => {
+      updateLandingLayout();
+    }, 16); // ~60fps for smooth real-time updates
   });
   
-  // Ensure the wrapper logo has only white image and reset styles
-  const wrapperLogo = document.querySelector('.video-header-content-wrapper .video-header-logo');
-  if (wrapperLogo) {
-    wrapperLogo.style.cssText = '';
-    wrapperLogo.classList.remove('animating', 'at-top');
-    const whiteImg = wrapperLogo.querySelector('img[src*="White"]');
-    if (whiteImg) {
-      whiteImg.style.cssText = '';
-      whiteImg.style.display = 'block';
-      whiteImg.style.opacity = '1';
-    }
-  }
-  
-  initSectionSnapping();
   initSectionTransitions();
   initRotatingWords();
   initLazyScrollReveal();
   initLogoAnimation();
-  initVideoHeaderLayout();
   initScrollEffects();
   initFormHandling();
   initAnimations();
@@ -196,67 +194,17 @@ function initSectionSnapping() {
     }
     
     function completeVideoTransition() {
-      const nav = document.querySelector('.nav');
-      const videoHeaderLogo = videoHeader.querySelector('.video-header-logo');
-      
-      // FIX: Reset all fixed container styles BEFORE showing them (synchronous)
-      // This prevents stale opacity values from causing visual flash
-      const howContent = document.querySelector('.wwd-how-content-fixed');
-      const visionContent = document.querySelector('.wwd-vision-content-fixed');
-      const missionText = document.querySelector('.wwd-mission-text-fixed');
-      
-      [howContent, visionContent].forEach(el => {
-        if (el) {
-          el.style.cssText = 'opacity: 0; pointer-events: none; transition: none;';
-        }
-      });
-      if (missionText) {
-        missionText.style.cssText = 'opacity: 1; pointer-events: none; transition: none;';
-      }
-      
-      // Reset window scroll position BEFORE content becomes visible
-      window.scrollTo(0, 0);
-      
-      // NOW add video-complete class to show section pages and nav
+      // Video transition complete - show landing page instead of mission
+      // CSS rules using body.video-complete:not(.landing-complete) handle hiding
+      // sections, nav, footer, and mission content automatically
       document.body.classList.add('video-complete');
       
-      // After video-complete, init Decade photos (step is now visible with real dimensions)
+      // Initialize landing page placeholders
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          initDecadeBuilderPhotos();
+          initLandingPlaceholders();
         });
       });
-      
-      // Setup nav with logo - clear inline styles and set visibility
-      if (nav) {
-        nav.classList.add('logo-at-top');
-        nav.classList.remove('hidden-on-video');
-        nav.style.opacity = '1';
-        nav.style.visibility = 'visible';
-        nav.style.pointerEvents = 'auto';
-        
-        // Set "Our Work" (first section) as the active nav link
-        const navLinks = nav.querySelectorAll('.nav-links a');
-        const visionLink = nav.querySelector('a[href="#our-vision"]');
-        if (visionLink && navLinks) {
-          navLinks.forEach(link => link.classList.remove('active'));
-          visionLink.classList.add('active');
-        }
-      }
-      
-      // Move logo OUT of video-header to body so it stays visible when video-header is hidden
-      if (videoHeaderLogo) {
-        // Change logo from white to black version
-        const logoImg = videoHeaderLogo.querySelector('img');
-        if (logoImg && logoImg.src.includes('White')) {
-          logoImg.src = logoImg.src.replace('White', 'Black');
-        }
-        
-        videoHeaderLogo.classList.remove('animating');
-        videoHeaderLogo.classList.add('at-top');
-        // Move to body to escape hidden parent
-        document.body.appendChild(videoHeaderLogo);
-      }
       
       // Reset everything
       isAnimating = false;
@@ -266,40 +214,8 @@ function initSectionSnapping() {
         contentWrapper.style.transition = '';
       }
       
-      // Re-enable transitions after a frame (styles were reset synchronously above)
-      requestAnimationFrame(() => {
-        [howContent, visionContent, missionText].forEach(el => {
-          if (el) el.style.transition = '';
-        });
-        
-        // Reset ALL WWD step inline styles (they may have stale opacity from previous visit)
-        document.querySelectorAll('.wwd-step').forEach((step, index) => {
-          // Step 1 should be visible, others hidden (scroll logic will show them)
-          if (index === 0) {
-            step.style.opacity = '1';
-            step.style.transform = 'translateY(0)';
-          } else {
-            step.style.opacity = '';
-            step.style.transform = '';
-          }
-        });
-        
-        // Set mission text visible explicitly
-        const missionTextEl = document.querySelector('.wwd-mission-text-fixed');
-        if (missionTextEl) {
-          missionTextEl.style.opacity = '1';
-          missionTextEl.style.transform = 'translateY(-50%)';
-          missionTextEl.style.pointerEvents = 'auto';
-          missionTextEl.classList.add('visible');
-        }
-        
-        // Use 50ms delay so layout is stable before scroll handlers run
-        setTimeout(() => {
-          updatePageTransitions();
-          // Trigger scroll handlers to init content
-          window.dispatchEvent(new Event('scroll'));
-        }, 50);
-      });
+      // Initialize landing page wheel-based transitions
+      initLandingPageTransitions();
     }
     
     requestAnimationFrame(animatePhase1);
@@ -678,6 +594,12 @@ function initLogoAnimation() {
       return;
     }
     
+    // Skip if landing page transition is complete - logo is already at top in black,
+    // no scroll-progress animation needed. This prevents re-hiding the nav at scrollY=0.
+    if (document.body.classList.contains('landing-complete')) {
+      return;
+    }
+    
     // After video complete, ensure nav stays visible
     nav.classList.remove('hidden-on-video');
     nav.classList.add('logo-at-top');
@@ -855,6 +777,863 @@ function initVideoHeaderLayout() {
       });
     } else {
       text.style.fontSize = '';
+    }
+  }
+  
+  checkLayout();
+  
+  let resizeTimeout;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(checkLayout, 50);
+  });
+  
+  const logoImg = logo.querySelector('img');
+  if (logoImg) {
+    logoImg.addEventListener('load', checkLayout);
+    if (logoImg.complete) checkLayout();
+  }
+}
+
+/**
+ * Landing Page Intro Animation
+ * Sequential: 1) tagline word-by-word, 2) logo fade, 3) video frames radiate from center
+ */
+function initLandingAnimation() {
+  const WORD_DELAY = 250;       // ms between each word
+  const WORD_DURATION = 400;    // ms for each word's fade
+  const TEXT_EXIT_DELAY = 200;  // ms pause after last word before tagline exits
+  const TEXT_EXIT_DURATION = 400; // ms for tagline fade-out + move-up
+  const LOGO_DELAY = 200;       // ms pause after tagline exits before logo enters
+  const LOGO_DURATION = 600;    // ms for logo fade + slide-up
+  const FRAMES_DELAY = 200;     // ms pause after logo before frames start
+  const FRAME_STAGGER = 100;    // ms between each frame's animation start
+  
+  const ARROW_DELAY = 300;      // ms after radiate finishes before arrow appears
+  
+  const words = document.querySelectorAll('.landing-word');
+  const tagline = document.querySelector('.landing-text');
+  const logo = document.querySelector('.landing-logo');
+  const subtext = document.querySelector('.landing-subtext');
+  const subtextWords = document.querySelectorAll('.landing-subtext-word');
+  const placeholders = document.querySelectorAll('.landing-bg .video-placeholder');
+  const scrollArrow = document.getElementById('landing-swipe-btn');
+  
+  // Phase 1: Tagline word-by-word fade in
+  let currentDelay = 300; // initial delay before sequence starts
+  
+  words.forEach((word, i) => {
+    setTimeout(() => {
+      word.classList.add('anim-visible');
+    }, currentDelay + (i * WORD_DELAY));
+  });
+  
+  // Calculate when the last word finishes appearing
+  const lastWordStart = currentDelay + ((words.length - 1) * WORD_DELAY);
+  const afterWords = lastWordStart + WORD_DURATION;
+  
+  // Phase 2: Tagline fades out + moves up 30px
+  const textExitStart = afterWords + TEXT_EXIT_DELAY;
+  setTimeout(() => {
+    if (tagline) tagline.classList.add('anim-fade-out');
+  }, textExitStart);
+  
+  const afterTextExit = textExitStart + TEXT_EXIT_DURATION;
+  
+  // Phase 3: Logo fades in + slides up 30px to lock at center
+  // Subtext words animate in 500ms after logo starts
+  const logoStart = afterTextExit + LOGO_DELAY;
+  setTimeout(() => {
+    if (logo) logo.classList.add('anim-visible');
+  }, logoStart);
+  
+  // Subtext words fade in word-by-word starting 500ms after logo
+  // Line animates from top to bottom at the same time
+  const subtextStart = logoStart + 500;
+  setTimeout(() => {
+    if (subtext) subtext.classList.add('anim-line');
+  }, subtextStart);
+  
+  subtextWords.forEach((word, i) => {
+    setTimeout(() => {
+      word.classList.add('anim-visible');
+    }, subtextStart + (i * WORD_DELAY));
+  });
+  
+  const afterLogo = logoStart + LOGO_DURATION;
+  
+  // Phase 4: Video frames appear one by one at center, then radiate out
+  // Start frames at the same time as logo (not after)
+  const framesStart = logoStart;
+  const FRAME_APPEAR_STAGGER = 60; // ms between each video appearing at center
+  const RADIATE_PAUSE = 300;        // ms pause after last video appears before radiating
+  
+  if (placeholders.length === 0) return;
+  
+  // Calculate viewport center
+  const viewportCenterX = window.innerWidth / 2;
+  const viewportCenterY = window.innerHeight / 2;
+  
+  // Position all frames at center (hidden initially via opacity: 0 in CSS)
+  placeholders.forEach((el) => {
+    const left = parseFloat(el.style.left) || 0;
+    const top = parseFloat(el.style.top) || 0;
+    const width = parseFloat(el.style.width) || 0;
+    const height = parseFloat(el.style.height) || 0;
+    
+    const frameCenterX = left + width / 2;
+    const frameCenterY = top + height / 2;
+    const translateX = viewportCenterX - frameCenterX;
+    const translateY = viewportCenterY - frameCenterY;
+    
+    el.style.transform = `translate(${translateX}px, ${translateY}px)`;
+  });
+  
+  // Convert to array for ordering
+  const placeholderArray = Array.from(placeholders);
+  
+  // Appear one by one at center (stacking on top of each other)
+  placeholderArray.forEach((el, i) => {
+    setTimeout(() => {
+      el.classList.add('anim-at-center');
+    }, framesStart + (i * FRAME_APPEAR_STAGGER));
+  });
+  
+  // After all have appeared, radiate them all out to final positions
+  const allAppearedTime = framesStart + (placeholderArray.length * FRAME_APPEAR_STAGGER);
+  const RADIATE_TRANSITION_DURATION = 800; // matches CSS transition: 0.8s
+  setTimeout(() => {
+    placeholderArray.forEach((el) => {
+      el.classList.remove('anim-at-center');
+      el.classList.add('anim-radiate');
+    });
+    // Enable parallax after radiate transition finishes
+    setTimeout(() => {
+      landingParallaxReady = true;
+      placeholderArray.forEach((el) => {
+        el.style.transform = 'translate(0, 0)'; // clear old center-stack transform
+        el.classList.remove('anim-radiate');
+        el.classList.add('parallax-ready');
+      });
+      // Phase 4: Scroll arrow fades in as the last element
+      setTimeout(() => {
+        if (scrollArrow) scrollArrow.classList.add('anim-visible');
+      }, ARROW_DELAY);
+    }, RADIATE_TRANSITION_DURATION);
+  }, allAppearedTime + RADIATE_PAUSE);
+  
+  // Scroll arrow click: scroll to the next section
+  if (scrollArrow) {
+    scrollArrow.addEventListener('click', () => {
+      const landing = document.querySelector('.landing');
+      if (landing && landing.nextElementSibling) {
+        landing.nextElementSibling.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  }
+}
+
+/**
+ * Landing Page - Video Placeholder Positioning
+ * Adapts the Decade of Work organic layout algorithm for landing page rectangles
+ */
+const LANDING_PLACEHOLDER_COUNT = 12;
+const LANDING_PLACEHOLDER_BASE_WIDTH = 300;
+const LANDING_PLACEHOLDER_BASE_HEIGHT = 200;
+const LANDING_SLOT_ROWS = 3;
+const LANDING_SLOT_COLS = 4;
+
+// Landing page videos - fixed order with custom adjustments per slot
+const LANDING_VIDEO_FILES = [
+  'AIJI_Website_Video_Landing_01.mp4',
+  'AIJI_Website_Video_Landing_02.mp4',
+  'AIJI_Website_Video_Landing_03.mp4',
+  'AIJI_Website_Video_Landing_04.mp4',
+  'AIJI_Website_Video_Landing_05.mp4',
+  'AIJI_Website_Video_Landing_06.mp4',
+  'AIJI_Website_Video_Landing_07.mp4',
+  'AIJI_Website_Video_Landing_Cherice.mp4',
+  'AIJI_Website_Video_Landing_Jay.mp4',
+  'AIJI_Website_Video_Landing_Lee.mp4',
+  'AIJI_Website_Video_Landing_Ruth.mp4'
+];
+const LANDING_VIDEOS_BASE_PATH = 'assets/videos/';
+
+// Custom adjustments per rectangle (1-indexed to match your numbering)
+// videoIndex is 0-indexed (0 = Video_01, 1 = Video_02, etc.)
+// Video array: [01, 02, 03, 04, 05, 06, 07, Cherice, Jay, Lee, Ruth]
+//              [0,  1,  2,  3,  4,  5,  6,  7,       8,   9,   10]
+const LANDING_CUSTOM_ADJUSTMENTS = {
+  1: { scaleMultiplier: 0.8, offsetX: 400, offsetY: 250 }, // Visible frame 1 - moved 400px right, 250px down (300-50)
+  2: { scaleMultiplier: 1.44, offsetX: -400, offsetY: 60, videoIndex: 1 }, // Visible frame 2 - Video 02, moved 400px left, 60px down (110-50)
+  3: { scaleMultiplier: 1.2552, offsetX: 0, offsetY: 110, videoIndex: 9 }, // Visible frame 3 - video Lee, down 110px, scaled to 125.52% (1.046×1.2)
+  4: { scaleMultiplier: 1.1, offsetX: 50, offsetY: -5 }, // Visible frame 4 - moved up 10px (5-10=-5)
+  5: { scaleMultiplier: 2.0, offsetX: -150, offsetY: -225, videoIndex: 1, transformOrigin: 'bottom right' }, // Video 02, 80% of 2.5 = 2.0 scale
+  6: { scaleMultiplier: 1.656, offsetX: 175, offsetY: 100, videoIndex: 7, transformOrigin: 'top right' }, // Visible frame 5 - video Cherice, moved right 175px (225-50), down 100px, scaled 165.6% (1.44×1.15)
+  7: { scaleMultiplier: 1.1, offsetX: 50, offsetY: 0, videoIndex: 99 }, // Gray (no video) - skipped
+  8: { scaleMultiplier: 1.4, offsetX: 100, offsetY: 25, videoIndex: 6 }, // Visible frame 6 - video 07, right 100px, 25px down (75-50), scaled to 140%
+  9: { scaleMultiplier: 1.44, offsetX: -25, offsetY: 0 }, // Visible frame 7 - Jay, moved left 75px (50-75=-25), scaled to 144% (1.2×1.2)
+  10: { scaleMultiplier: 1.0, offsetX: 100, offsetY: 15, videoIndex: 2 }, // Visible frame 8 - Video 03, moved right 100px (150-50), up 35px (25-10=15)
+  11: { scaleMultiplier: 1.44, offsetX: 300, offsetY: 0 }, // Visible frame 9 - scaled to 144% (1.2×1.2)
+  12: { scaleMultiplier: 1.0, offsetX: 0, offsetY: 0, videoIndex: 5 }  // video 06 (swapped with 7)
+};
+
+let landingPlaceholdersInitialized = false;
+let landingPlaceholderElements = [];
+let landingParallaxReady = false;
+
+function initLandingPlaceholders() {
+  const container = document.getElementById('landing-bg');
+  const landing = document.querySelector('.landing');
+  
+  if (!container || !landing || landingPlaceholdersInitialized) return;
+  
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+  
+  if (viewportHeight < 100 || viewportWidth < 100) return;
+  
+  // Reference viewport dimensions (where the current layout was designed)
+  const REFERENCE_WIDTH = 1440;
+  const REFERENCE_HEIGHT = 900;
+  
+  // Calculate proportional scale factor based on viewport size
+  const scaleFactorX = viewportWidth / REFERENCE_WIDTH;
+  const scaleFactorY = viewportHeight / REFERENCE_HEIGHT;
+  const viewportScaleFactor = Math.min(scaleFactorX, scaleFactorY);
+  
+  const ROW_GAP = 20 * viewportScaleFactor;
+  const MIN_HORIZONTAL_GAP = 15 * viewportScaleFactor;
+  const PADDING = 0; // No padding - fill to edges
+  
+  // Available space for the grid = full viewport
+  const gridAvailableWidth = viewportWidth;
+  const gridAvailableHeight = viewportHeight;
+  
+  // Fixed base scales per rectangle (no randomization)
+  const FIXED_SCALES = [0.75, 0.85, 0.95, 0.80, 0.70, 0.90, 0.85, 0.75, 0.95, 0.80, 0.90, 0.85];
+  
+  // First pass: calculate all rectangle sizes with fixed scales
+  const allRects = [];
+  
+  for (let row = 0; row < LANDING_SLOT_ROWS; row++) {
+    const rowRects = [];
+    
+    for (let col = 0; col < LANDING_SLOT_COLS; col++) {
+      const i = row * LANDING_SLOT_COLS + col;
+      if (i >= LANDING_PLACEHOLDER_COUNT) break;
+      
+      const scale = FIXED_SCALES[i]; // Fixed scale per rectangle
+      const width = LANDING_PLACEHOLDER_BASE_WIDTH * scale * viewportScaleFactor;
+      const height = LANDING_PLACEHOLDER_BASE_HEIGHT * scale * viewportScaleFactor;
+      rowRects.push({ index: i, scale, width, height });
+    }
+    
+    allRects.push(rowRects);
+  }
+  
+  // Divide viewport height evenly into row slots
+  const rowSlotHeight = gridAvailableHeight / LANDING_SLOT_ROWS;
+  
+  // Place rectangles row by row, filling the full viewport
+  for (let row = 0; row < LANDING_SLOT_ROWS; row++) {
+    const rowRects = allRects[row];
+    if (!rowRects || rowRects.length === 0) continue;
+    
+    // Each row occupies a vertical band of the viewport
+    const rowTopBand = row * rowSlotHeight;
+    
+    // Calculate available width per rectangle
+    const totalGapWidth = (rowRects.length - 1) * MIN_HORIZONTAL_GAP;
+    const availableWidth = gridAvailableWidth - totalGapWidth;
+    const maxRectWidth = availableWidth / rowRects.length;
+    
+    // Horizontal offset to center the row
+    const rowLeftOffset = (viewportWidth - gridAvailableWidth) / 2;
+    
+    // Place rectangles
+    let currentLeft = rowLeftOffset;
+    for (let col = 0; col < rowRects.length; col++) {
+      const rectData = rowRects[col];
+      const rectNumber = rectData.index + 1; // 1-12
+      
+      // Calculate slot width for position tracking
+      const slotWidthForRect = maxRectWidth;
+      
+      // Skip frames #5, #7 and #12 (not used) but still advance position
+      if (rectNumber === 5 || rectNumber === 7 || rectNumber === 12) {
+        currentLeft += slotWidthForRect + MIN_HORIZONTAL_GAP;
+        continue;
+      }
+      
+      // Get custom adjustments for this rectangle
+      const adjustments = LANDING_CUSTOM_ADJUSTMENTS[rectNumber] || { scaleMultiplier: 1.0, offsetX: 0, offsetY: 0 };
+      
+      // viewportScaleFactor already handles proportional scaling across all viewport sizes
+      // No additional responsive multiplier needed — it caused overlap on larger screens
+      const finalScaleMultiplier = adjustments.scaleMultiplier;
+      
+      // Use fixed base dimensions with custom scale multiplier
+      let height = rectData.height * finalScaleMultiplier; // Apply custom scale with responsive adjustment
+      let width = rectData.width * finalScaleMultiplier; // Apply custom scale with responsive adjustment
+      
+      // Cap width to fit within allocated horizontal space (but allow overflow for custom scales > 1.0)
+      if (width > maxRectWidth && adjustments.scaleMultiplier <= 1.0) {
+        width = maxRectWidth;
+        height = (width / (rectData.width * scaleFactor)) * height;
+      }
+      
+      const rect = document.createElement('div');
+      rect.className = 'video-placeholder';
+      rect.setAttribute('data-rect-number', rectNumber);
+      
+      // Determine which video to use (handle swaps)
+      const videoIndex = adjustments.videoIndex !== undefined ? adjustments.videoIndex : rectData.index;
+      const videoFile = videoIndex < LANDING_VIDEO_FILES.length ? LANDING_VIDEO_FILES[videoIndex] : null;
+      
+      // Add video if available
+      if (videoFile) {
+        const video = document.createElement('video');
+        video.className = 'video-placeholder-video';
+        video.autoplay = true;
+        video.muted = true;
+        video.loop = true;
+        video.playsInline = true;
+        const source = document.createElement('source');
+        source.src = LANDING_VIDEOS_BASE_PATH + videoFile;
+        source.type = 'video/mp4';
+        video.appendChild(source);
+        rect.appendChild(video);
+      }
+      
+      // // Add number label to rectangle
+      // const label = document.createElement('div');
+      // label.className = 'video-placeholder-label';
+      // label.textContent = rectNumber;
+      // rect.appendChild(label);
+      
+      // Horizontal position: X offsets scale by scaleFactorX to match column widths
+      const baseLeft = currentLeft;
+      const left = baseLeft + (adjustments.offsetX * scaleFactorX);
+      
+      // Vertical position: Y offsets scale by scaleFactorY to match row heights
+      let baseTop;
+      const isFirstRow = row === 0;
+      const isLastRow = row === LANDING_SLOT_ROWS - 1;
+      
+      if (isFirstRow) {
+        // First row: align to top edge
+        baseTop = rowTopBand;
+      } else if (isLastRow) {
+        // Last row: align to bottom edge
+        baseTop = rowTopBand + rowSlotHeight - height;
+      } else {
+        // Middle rows: center within band
+        const verticalCenter = rowTopBand + (rowSlotHeight - height) / 2;
+        baseTop = verticalCenter;
+      }
+      
+      const top = baseTop + (adjustments.offsetY * scaleFactorY);
+      
+      rect.style.left = left + 'px';
+      rect.style.top = top + 'px';
+      rect.style.width = width + 'px';
+      rect.style.height = height + 'px';
+      
+      // Apply transform origin if specified
+      if (adjustments.transformOrigin) {
+        rect.style.transformOrigin = adjustments.transformOrigin;
+      }
+      
+      container.appendChild(rect);
+      
+      // Store reference for live resize updates
+      landingPlaceholderElements.push({ rect, rectData, rectNumber });
+      
+      // Move to next slot position
+      currentLeft += slotWidthForRect + MIN_HORIZONTAL_GAP;
+    }
+  }
+  
+  // // Renumber visible frames sequentially (animation is handled by initLandingAnimation)
+  // const allPlaceholders = container.querySelectorAll('.video-placeholder');
+  // let visibleIndex = 1;
+  // allPlaceholders.forEach((el) => {
+  //   const label = el.querySelector('.video-placeholder-label');
+  //   if (label) {
+  //     label.textContent = visibleIndex;
+  //   }
+  //   visibleIndex++;
+  // });
+  
+  landingPlaceholdersInitialized = true;
+}
+
+/**
+ * Update landing placeholder positions/sizes on resize (no DOM rebuild)
+ */
+function updateLandingLayout() {
+  if (landingPlaceholderElements.length === 0) return;
+  
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+  
+  if (viewportHeight < 100 || viewportWidth < 100) return;
+  
+  // Same scale factor logic as initLandingPlaceholders
+  const REFERENCE_WIDTH = 1440;
+  const REFERENCE_HEIGHT = 900;
+  const scaleFactorX = viewportWidth / REFERENCE_WIDTH;
+  const scaleFactorY = viewportHeight / REFERENCE_HEIGHT;
+  const viewportScaleFactor = Math.min(scaleFactorX, scaleFactorY);
+  
+  const MIN_HORIZONTAL_GAP = 15 * viewportScaleFactor;
+  const gridAvailableWidth = viewportWidth;
+  const rowSlotHeight = viewportHeight / LANDING_SLOT_ROWS;
+  
+  const FIXED_SCALES = [0.75, 0.85, 0.95, 0.80, 0.70, 0.90, 0.85, 0.75, 0.95, 0.80, 0.90, 0.85];
+  
+  // Recalculate grid layout (same logic as init)
+  const allRects = [];
+  for (let row = 0; row < LANDING_SLOT_ROWS; row++) {
+    const rowRects = [];
+    for (let col = 0; col < LANDING_SLOT_COLS; col++) {
+      const i = row * LANDING_SLOT_COLS + col;
+      if (i >= LANDING_PLACEHOLDER_COUNT) break;
+      const scale = FIXED_SCALES[i];
+      const width = LANDING_PLACEHOLDER_BASE_WIDTH * scale * viewportScaleFactor;
+      const height = LANDING_PLACEHOLDER_BASE_HEIGHT * scale * viewportScaleFactor;
+      rowRects.push({ index: i, scale, width, height });
+    }
+    allRects.push(rowRects);
+  }
+  
+  // Update each stored element's position and size
+  let elementIdx = 0;
+  for (let row = 0; row < LANDING_SLOT_ROWS; row++) {
+    const rowRects = allRects[row];
+    if (!rowRects || rowRects.length === 0) continue;
+    
+    const rowTopBand = row * rowSlotHeight;
+    const totalGapWidth = (rowRects.length - 1) * MIN_HORIZONTAL_GAP;
+    const availableWidth = gridAvailableWidth - totalGapWidth;
+    const maxRectWidth = availableWidth / rowRects.length;
+    const rowLeftOffset = (viewportWidth - gridAvailableWidth) / 2;
+    
+    let currentLeft = rowLeftOffset;
+    for (let col = 0; col < rowRects.length; col++) {
+      const rectData = rowRects[col];
+      const rectNumber = rectData.index + 1;
+      const slotWidthForRect = maxRectWidth;
+      
+      // Skip frames not used but still advance position (must match initLandingPlaceholders)
+      if (rectNumber === 5 || rectNumber === 7 || rectNumber === 12) {
+        currentLeft += slotWidthForRect + MIN_HORIZONTAL_GAP;
+        continue;
+      }
+      
+      // Get custom adjustments
+      const adjustments = LANDING_CUSTOM_ADJUSTMENTS[rectNumber] || { scaleMultiplier: 1.0, offsetX: 0, offsetY: 0 };
+      
+      // viewportScaleFactor already handles proportional scaling across all viewport sizes
+      // No additional responsive multiplier needed — it caused overlap on larger screens
+      const finalScaleMultiplier = adjustments.scaleMultiplier;
+      
+      let height = rectData.height * finalScaleMultiplier;
+      let width = rectData.width * finalScaleMultiplier;
+      
+      if (width > maxRectWidth && adjustments.scaleMultiplier <= 1.0) {
+        width = maxRectWidth;
+      }
+      
+      // Calculate positions
+      // X offsets scale by scaleFactorX to match column widths
+      // Y offsets scale by scaleFactorY to match row heights
+      const baseLeft = currentLeft;
+      const left = baseLeft + (adjustments.offsetX * scaleFactorX);
+      
+      let baseTop;
+      const isFirstRow = row === 0;
+      const isLastRow = row === LANDING_SLOT_ROWS - 1;
+      
+      if (isFirstRow) {
+        baseTop = rowTopBand;
+      } else if (isLastRow) {
+        baseTop = rowTopBand + rowSlotHeight - height;
+      } else {
+        baseTop = rowTopBand + (rowSlotHeight - height) / 2;
+      }
+      
+      const top = baseTop + (adjustments.offsetY * scaleFactorY);
+      
+      // Update existing element styles (no DOM rebuild)
+      if (elementIdx < landingPlaceholderElements.length) {
+        const el = landingPlaceholderElements[elementIdx].rect;
+        el.style.left = left + 'px';
+        el.style.top = top + 'px';
+        el.style.width = width + 'px';
+        el.style.height = height + 'px';
+        elementIdx++;
+      }
+      
+      currentLeft += slotWidthForRect + MIN_HORIZONTAL_GAP;
+    }
+  }
+}
+
+/**
+ * Landing Page Transitions - Handle wheel events between landing and mission
+ * Uses wheel events (not scroll) because the landing page is position:fixed
+ * and doesn't generate scroll events. Same pattern as the video header.
+ */
+let landingTransitionInitialized = false;
+let isLandingAnimating = false;
+let hasDetectedLandingSwipe = false;
+
+function initLandingPageTransitions() {
+  if (landingTransitionInitialized) return;
+  landingTransitionInitialized = true;
+  
+  const landing = document.querySelector('.landing');
+  const landingContentWrapper = document.querySelector('.landing-content-wrapper');
+  
+  if (!landing || !landingContentWrapper) return;
+  
+  // Use wheel event on the landing element (same pattern as video header)
+  landing.addEventListener('wheel', (e) => {
+    // If landing is already hidden, allow natural scroll
+    if (document.body.classList.contains('landing-complete')) {
+      return;
+    }
+    
+    if (isLandingAnimating || hasDetectedLandingSwipe) {
+      e.preventDefault();
+      return;
+    }
+    
+    // Detect scroll down to transition to mission
+    if (e.deltaY > 0) {
+      e.preventDefault();
+      hasDetectedLandingSwipe = true;
+      transitionLandingToMission();
+    }
+  }, { passive: false });
+  
+  // Also listen for touch events on mobile
+  let touchStartY = 0;
+  landing.addEventListener('touchstart', (e) => {
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+  
+  landing.addEventListener('touchmove', (e) => {
+    if (document.body.classList.contains('landing-complete')) return;
+    if (isLandingAnimating || hasDetectedLandingSwipe) return;
+    
+    const touchDelta = touchStartY - e.touches[0].clientY;
+    // Swipe up (finger moves up) = scroll down
+    if (touchDelta > 30) {
+      hasDetectedLandingSwipe = true;
+      transitionLandingToMission();
+    }
+  }, { passive: true });
+  
+  // Listen for scroll up from mission to return to landing
+  window.addEventListener('scroll', () => {
+    if (isLandingAnimating) return;
+    
+    const isLandingComplete = document.body.classList.contains('landing-complete');
+    const isVideoComplete = document.body.classList.contains('video-complete');
+    
+    if (isLandingComplete && isVideoComplete && window.scrollY === 0) {
+      // User is at top of mission - listen for wheel up to go back to landing
+      // This is handled by a one-time wheel listener below
+    }
+  }, { passive: true });
+  
+  // Global wheel listener for returning to landing from mission
+  window.addEventListener('wheel', (e) => {
+    if (isLandingAnimating) return;
+    
+    const isLandingComplete = document.body.classList.contains('landing-complete');
+    const isVideoComplete = document.body.classList.contains('video-complete');
+    
+    // Only intercept at the very top of mission page, scrolling up
+    if (isLandingComplete && isVideoComplete && window.scrollY === 0 && e.deltaY < 0) {
+      e.preventDefault();
+      transitionMissionToLanding();
+    }
+  }, { passive: false });
+  
+  // Touch swipe-up support for returning from mission to landing
+  let missionTouchStartY = 0;
+  window.addEventListener('touchstart', (e) => {
+    missionTouchStartY = e.touches[0].clientY;
+  }, { passive: true });
+  
+  window.addEventListener('touchmove', (e) => {
+    if (isLandingAnimating) return;
+    
+    const isLandingComplete = document.body.classList.contains('landing-complete');
+    const isVideoComplete = document.body.classList.contains('video-complete');
+    
+    // Only intercept at the very top of mission page, swiping down (finger moves down = scroll up)
+    if (isLandingComplete && isVideoComplete && window.scrollY === 0) {
+      const touchDelta = e.touches[0].clientY - missionTouchStartY;
+      // Swipe down (finger moves down) = scroll up = go back to landing
+      if (touchDelta > 30) {
+        transitionMissionToLanding();
+      }
+    }
+  }, { passive: true });
+  
+  function transitionLandingToMission() {
+    if (isLandingAnimating) return;
+    isLandingAnimating = true;
+    
+    const landingLogo = document.querySelector('.landing-logo');
+    const landingBg = document.querySelector('.landing-bg');
+    const landingSwipeBtn = document.getElementById('landing-swipe-btn');
+    
+    // Disable CSS transition on swipe button so JS-driven fade isn't delayed
+    if (landingSwipeBtn) {
+      landingSwipeBtn.style.transition = 'none';
+    }
+    
+    // Fade out landing page content AND background rectangles
+    const fadeStartTime = performance.now();
+    const fadeDuration = 600;
+    
+    function animateFade(currentTime) {
+      const elapsed = currentTime - fadeStartTime;
+      const progress = Math.min(elapsed / fadeDuration, 1);
+      const easeProgress = 1 - Math.pow(1 - progress, 3);
+      
+      if (landingContentWrapper) {
+        landingContentWrapper.style.opacity = 1 - easeProgress;
+      }
+      if (landingBg) {
+        landingBg.style.opacity = 1 - easeProgress;
+      }
+      if (landingSwipeBtn) {
+        landingSwipeBtn.style.opacity = 1 - easeProgress;
+      }
+      
+      if (progress < 1) {
+        requestAnimationFrame(animateFade);
+      } else {
+        completeLandingTransition();
+      }
+    }
+    
+    function completeLandingTransition() {
+      // Pin scroll to 0 BEFORE making sections visible
+      window.scrollTo(0, 0);
+      
+      // Show mission section (CSS rules using :not(.landing-complete) will now allow content)
+      document.body.classList.add('landing-complete');
+      
+      // Pin scroll again after class change causes layout shift
+      window.scrollTo(0, 0);
+      
+      // Reset all fixed container styles
+      const howContent = document.querySelector('.wwd-how-content-fixed');
+      const visionContent = document.querySelector('.wwd-vision-content-fixed');
+      const missionText = document.querySelector('.wwd-mission-text-fixed');
+      const nav = document.querySelector('.nav');
+      
+      [howContent, visionContent].forEach(el => {
+        if (el) {
+          el.style.cssText = 'opacity: 0; pointer-events: none;';
+        }
+      });
+      if (missionText) {
+        missionText.style.cssText = 'opacity: 1; pointer-events: none;';
+      }
+      
+      // Setup navigation - force visible with all links
+      if (nav) {
+        nav.classList.remove('hidden-on-video');
+        nav.classList.add('logo-at-top');
+        document.body.classList.add('logo-at-top');
+        // Clear stale inline styles then explicitly set visible
+        nav.style.cssText = '';
+        nav.style.opacity = '1';
+        nav.style.visibility = 'visible';
+        nav.style.pointerEvents = 'auto';
+        
+        // Reset all nav link inline styles (stagger animation may have left them hidden)
+        const navLinks = nav.querySelectorAll('.nav-links a');
+        navLinks.forEach(link => {
+          link.style.opacity = '1';
+          link.style.transform = 'translateX(0)';
+          link.style.transition = '';
+          link.classList.remove('active');
+        });
+        
+        const visionLink = nav.querySelector('a[href="#our-vision"]');
+        if (visionLink) {
+          visionLink.classList.add('active');
+        }
+      }
+      
+      // Move landing logo to body (already black)
+      if (landingLogo) {
+        landingLogo.classList.add('at-top');
+        landingLogo.classList.remove('landing-logo');
+        landingLogo.classList.add('video-header-logo');
+        document.body.appendChild(landingLogo);
+      }
+      
+      // Let elements settle, then finalize state WITHOUT triggering scroll
+      requestAnimationFrame(() => {
+        // Pin scroll one more time after layout settles
+        window.scrollTo(0, 0);
+        
+        const howContent2 = document.querySelector('.wwd-how-content-fixed');
+        const visionContent2 = document.querySelector('.wwd-vision-content-fixed');
+        const missionText2 = document.querySelector('.wwd-mission-text-fixed');
+        
+        [howContent2, visionContent2, missionText2].forEach(el => {
+          if (el) el.style.transition = '';
+        });
+        
+        // Reset WWD step styles - step 1 visible, others hidden
+        document.querySelectorAll('.wwd-step').forEach((step, index) => {
+          if (index === 0) {
+            step.style.opacity = '1';
+            step.style.transform = 'translateY(0)';
+          } else {
+            step.style.opacity = '';
+            step.style.transform = '';
+          }
+        });
+        
+        // Set mission text visible
+        const missionTextEl = document.querySelector('.wwd-mission-text-fixed');
+        if (missionTextEl) {
+          missionTextEl.style.opacity = '1';
+          missionTextEl.style.transform = 'translateY(-50%)';
+          missionTextEl.style.pointerEvents = 'auto';
+          missionTextEl.classList.add('visible');
+        }
+        
+        // Initialize Decade photos (needs real dimensions from visible step)
+        requestAnimationFrame(() => {
+          initDecadeBuilderPhotos();
+        });
+        
+        // DO NOT call updatePageTransitions() or dispatchEvent('scroll') here.
+        // Let the page sit still. The user's own scroll will trigger everything naturally.
+        
+        // Block wheel events temporarily to prevent momentum from the swipe
+        // that triggered the transition from auto-scrolling the mission page
+        function blockWheel(e) {
+          e.preventDefault();
+          window.scrollTo(0, 0);
+        }
+        window.addEventListener('wheel', blockWheel, { passive: false });
+        
+        // Release animation lock after a longer delay to absorb wheel momentum
+        setTimeout(() => {
+          window.scrollTo(0, 0); // Final scroll pin
+          window.removeEventListener('wheel', blockWheel);
+          isLandingAnimating = false;
+          hasDetectedLandingSwipe = false;
+        }, 500);
+      });
+    }
+    
+    requestAnimationFrame(animateFade);
+  }
+  
+  function transitionMissionToLanding() {
+    if (isLandingAnimating) return;
+    isLandingAnimating = true;
+    
+    const nav = document.querySelector('.nav');
+    const bodyLogo = document.querySelector('body > .video-header-logo.at-top');
+    const landingBg = document.querySelector('.landing-bg');
+    
+    // Hide navigation
+    if (nav) {
+      nav.style.opacity = '0';
+      nav.style.visibility = 'hidden';
+      nav.style.pointerEvents = 'none';
+      nav.classList.remove('logo-at-top');
+    }
+    
+    // Move logo back to landing page (keep black logo)
+    if (bodyLogo) {
+      bodyLogo.classList.remove('at-top', 'video-header-logo');
+      bodyLogo.classList.add('landing-logo');
+      
+      const landingContentWrapperEl = document.querySelector('.landing-content-wrapper');
+      if (landingContentWrapperEl) {
+        landingContentWrapperEl.insertBefore(bodyLogo, landingContentWrapperEl.firstChild);
+      }
+    }
+    
+    // Show landing page (CSS handles hiding sections automatically via :not(.landing-complete))
+    document.body.classList.remove('landing-complete');
+    
+    // Fade in landing content and background
+    const swipeBtn = document.getElementById('landing-swipe-btn');
+    if (landingContentWrapper) {
+      landingContentWrapper.style.opacity = '0';
+    }
+    if (landingBg) {
+      landingBg.style.opacity = '0';
+    }
+    if (swipeBtn) {
+      swipeBtn.style.opacity = '0';
+    }
+    
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (landingContentWrapper) {
+          landingContentWrapper.style.transition = 'opacity 0.6s ease';
+          landingContentWrapper.style.opacity = '1';
+        }
+        if (landingBg) {
+          landingBg.style.transition = 'opacity 0.6s ease';
+          landingBg.style.opacity = '1';
+        }
+        if (swipeBtn) {
+          swipeBtn.style.transition = 'opacity 0.6s ease';
+          swipeBtn.style.opacity = '1';
+        }
+        
+        setTimeout(() => {
+          if (landingContentWrapper) landingContentWrapper.style.transition = '';
+          if (landingBg) landingBg.style.transition = '';
+          if (swipeBtn) swipeBtn.style.transition = '';
+          isLandingAnimating = false;
+          hasDetectedLandingSwipe = false;
+        }, 600);
+      });
+    });
+  }
+}
+
+/**
+ * Landing Page Layout - Responsive stacking for logo and text
+ */
+function initLandingPageLayout() {
+  const wrapper = document.querySelector('.landing-content-wrapper');
+  const logo = document.querySelector('.landing-logo');
+  const text = document.querySelector('.landing-text');
+  
+  if (!wrapper || !logo || !text) return;
+  
+  function checkLayout() {
+    wrapper.classList.remove('stacked');
+    void wrapper.offsetHeight;
+    
+    const logoRect = logo.getBoundingClientRect();
+    const textRect = text.getBoundingClientRect();
+    
+    if (logoRect.right + 20 >= textRect.left) {
+      wrapper.classList.add('stacked');
     }
   }
   
@@ -1255,6 +2034,39 @@ document.addEventListener('mousemove', (e) => {
 });
 
 /**
+ * Parallax effect for landing page video placeholders
+ * Uniform shift based on cursor position, active only after intro animation completes
+ */
+(function initLandingParallax() {
+  const PARALLAX_INTENSITY = 18; // max px shift in each axis
+  let rafId = null;
+  
+  document.addEventListener('mousemove', (e) => {
+    if (!landingParallaxReady) return;
+    
+    const landingSection = document.querySelector('.landing');
+    if (!landingSection) return;
+    
+    const rect = landingSection.getBoundingClientRect();
+    const isInView = rect.top < window.innerHeight && rect.bottom > 0;
+    if (!isInView) return;
+    
+    // Throttle to one update per frame
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(() => {
+      const offsetX = (e.clientX / window.innerWidth - 0.5) * PARALLAX_INTENSITY;
+      const offsetY = (e.clientY / window.innerHeight - 0.5) * PARALLAX_INTENSITY;
+      
+      const placeholders = landingSection.querySelectorAll('.video-placeholder.parallax-ready');
+      placeholders.forEach((el) => {
+        el.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+      });
+      rafId = null;
+    });
+  });
+})();
+
+/**
  * Active Nav Tracking - Highlights nav items when in their section
  */
 function initActiveNavTracking() {
@@ -1577,83 +2389,30 @@ function initBuilderArticleOverlay() {
 }
 
 /**
- * Logo Click Handler - Return to video header when logo is clicked
+ * Logo Click Handler - Return to landing page when logo is clicked
  */
 function initLogoClick() {
+  // Add cursor pointer style to logo when it has at-top class
+  const style = document.createElement('style');
+  style.textContent = `
+    .video-header-logo.at-top,
+    .video-header-logo.at-top * {
+      cursor: pointer !important;
+    }
+  `;
+  document.head.appendChild(style);
+  
   document.addEventListener('click', (e) => {
-    const logo = e.target.closest('.video-header-logo');
-    if (!logo || !logo.classList.contains('at-top')) return;
+    // Check if click is on logo or its children
+    const logo = e.target.closest('.video-header-logo.at-top');
+    
+    if (!logo) return;
     
     e.preventDefault();
+    e.stopPropagation();
     
-    // Get references
-    const videoHeader = document.querySelector('.video-header');
-    const nav = document.querySelector('.nav');
-    const videoHeaderContent = document.querySelector('.video-header-content-wrapper');
-    const videoPlayer = videoHeader ? videoHeader.querySelector('.video-header-player') : null;
-    
-    // Step 1: Remove video-complete class FIRST to allow video header to be visible
-    document.body.classList.remove('video-complete');
-    
-    // Step 2: Force video header to be visible (CSS no longer has !important blocking it)
-    if (videoHeader) {
-      videoHeader.style.opacity = '1';
-      videoHeader.style.visibility = 'visible';
-      videoHeader.style.pointerEvents = 'auto';
-      videoHeader.style.display = 'block';
-    }
-    
-    // Reset video player opacity if needed
-    if (videoPlayer) {
-      videoPlayer.style.opacity = '1';
-    }
-    
-    // Reset content wrapper opacity
-    if (videoHeaderContent) {
-      videoHeaderContent.style.opacity = '1';
-    }
-    
-    // Step 3: Reset logo to white version and move back to video header
-    const logoImg = logo.querySelector('img');
-    if (logoImg && logoImg.src.includes('Black')) {
-      logoImg.src = logoImg.src.replace('Black', 'White');
-    }
-    logo.classList.remove('at-top');
-    
-    // Clear all inline styles to restore CSS defaults (scale 1.6)
-    logo.style.cssText = '';
-    
-    if (videoHeaderContent) {
-      videoHeaderContent.insertBefore(logo, videoHeaderContent.firstChild);
-      // Reset content wrapper transform
-      videoHeaderContent.style.transform = '';
-      videoHeaderContent.style.transition = '';
-    }
-    
-    // Step 4: Hide nav
-    if (nav) {
-      nav.style.opacity = '0';
-      nav.style.visibility = 'hidden';
-      nav.classList.remove('logo-at-top');
-    }
-    
-    // Step 4b: Hide fixed overlays from Our Impact and What We Do so they don't stick on screen
-    hideImpactFixedContent();
-    hideWwdFixedContent();
-    
-    // Step 4c: Clear Our Impact background so next section (e.g. What We Do) shows correct color
-  const bgOverlay = document.getElementById('section-bg-overlay');
-  if (bgOverlay) {
-    bgOverlay.classList.remove('our-impact-active');
-    bgOverlay.classList.remove('urgency-active');
-    syncBodyBackgroundToOverlay();
-  }
-    
-    // Step 5: Scroll to top
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    
-    // Set cursor pointer for logo
-    logo.style.cursor = 'pointer';
+    // Reload the page to restart the landing animation sequence
+    window.location.reload();
   });
 }
 
@@ -1712,9 +2471,7 @@ function createBackgroundArtwork() {
     img.dataset.opacity = config.opacity;
     img.alt = 'Mission background artwork';
     
-    // Initial state - invisible at normal size
-    img.style.opacity = '0';
-    img.style.transform = 'translate(-50%, -50%) scale(1)';
+    // Don't set inline styles - let CSS handle initial state via stagger-item class
     
     // Append directly to body for true fixed positioning
     document.body.appendChild(img);
@@ -1730,6 +2487,11 @@ function initMissionBackgroundFade() {
   
   if (!images.length) return;
   
+  // Track when stagger animation completes for each image
+  const staggerCompleteTime = new Map();
+  // Track the scroll position when animation starts for linear scaling
+  const animationStartScroll = new Map();
+  
   function updateImageVisibility() {
     const viewportHeight = window.innerHeight;
     
@@ -1737,34 +2499,94 @@ function initMissionBackgroundFade() {
     if (!missionStep) return;
     const missionRect = missionStep.getBoundingClientRect();
     const missionHeight = missionStep.offsetHeight;
+    const currentScrollY = window.scrollY;
     
     // Check if Mission page is in view
     const missionInView = missionRect.top < viewportHeight && missionRect.bottom > 0;
     
-    images.forEach(img => {
-      // Hide if Mission page is not in view
+    images.forEach((img, index) => {
+      const hasStaggerRevealed = img.classList.contains('stagger-revealed');
+      
+      // Track when stagger-revealed was first added
+      if (hasStaggerRevealed && !staggerCompleteTime.has(img)) {
+        staggerCompleteTime.set(img, Date.now());
+        
+        // Schedule a forced update after CSS animation completes
+        // This ensures scroll animation activates immediately when ready
+        setTimeout(() => {
+          updateImageVisibility();
+        }, 850); // Slightly after the 800ms lock
+      }
+      
+      // If mission page is not in view
       if (!missionInView) {
-        img.style.opacity = '0';
-        img.style.transform = 'translate(-50%, -50%) scale(1)';
+        // If stagger has revealed, hide it when scrolling away
+        if (hasStaggerRevealed) {
+          img.style.opacity = '0';
+        }
+        // Otherwise, don't touch it - let CSS handle the initial hidden state
         return;
       }
       
-      // Calculate scroll progress through Mission page
-      // 0 = Mission page top is at viewport top (beginning)
-      // 1 = Mission page is 80% scrolled (fade out before next page)
-      const scrollableDistance = missionHeight - viewportHeight;
-      const scrolled = -missionRect.top;
+      // Mission page IS in view
+      // If stagger hasn't revealed yet, don't apply any inline styles
+      // Let the CSS stagger animation handle the entrance
+      if (!hasStaggerRevealed) {
+        return;
+      }
       
-      // Use 80% of scroll distance so image fades out before Vision page
-      const fadeOutPoint = scrollableDistance * 0.8;
-      const scrollProgress = Math.max(0, Math.min(1, scrolled / fadeOutPoint));
+      // Wait for CSS stagger animation to complete (600ms transition + small buffer)
+      // Then immediately enable scroll-based scaling
+      const timeSinceStaggerComplete = Date.now() - (staggerCompleteTime.get(img) || 0);
+      const targetOpacity = parseFloat(img.dataset.opacity) || 1.0;
       
-      // Scale grows as user scrolls down (1.0 → 1.5)
-      const scale = 1.0 + (scrollProgress * 0.5);
+      if (timeSinceStaggerComplete < 800) {
+        // During CSS entrance animation: force scale to 0.9, full opacity
+        // This prevents scroll position from affecting the entrance animation
+        img.style.opacity = targetOpacity;
+        img.style.transform = 'translate(-50%, -50%) scale(0.9)';
+        return;
+      }
+      
+      // Record the scroll position when animation first becomes active
+      // Subtract a buffer so animation starts with some initial progress
+      if (!animationStartScroll.has(img)) {
+        // Start the animation range from slightly before current position
+        // This ensures the image is already scaling when it first appears
+        animationStartScroll.set(img, currentScrollY - 100);
+      }
+      
+      // CSS animation complete - now apply scroll-based animation
+      // Calculate scroll progress based on absolute scroll distance from start
+      // This ensures linear, consistent scaling speed
+      const startScroll = animationStartScroll.get(img);
+      const scrolledDistance = Math.max(0, currentScrollY - startScroll);
+      
+      // Scale quickly over 600px, fade completely by 300px
+      // Image disappears quickly to make room for vision section
+      const scaleDistance = 600; // Pixels of scrolling for scale animation
+      const fadeDistance = 300; // Pixels of scrolling for fade animation
+      
+      const scaleProgress = Math.max(0, Math.min(1, scrolledDistance / scaleDistance));
+      const fadeProgress = Math.max(0, Math.min(1, scrolledDistance / fadeDistance));
+      
+      // Scale grows as user scrolls down (0.9 → 1.4)
+      const scale = 0.9 + (scaleProgress * 0.5);
       
       // Opacity fades out as user scrolls down (1.0 → 0)
-      const targetOpacity = parseFloat(img.dataset.opacity) || 1.0;
-      const opacity = (1.0 - scrollProgress) * targetOpacity;
+      const opacity = (1.0 - fadeProgress) * targetOpacity;
+      
+      // Debug logging (temporary)
+      console.log('Scroll animation:', {
+        timeSince: timeSinceStaggerComplete,
+        currentScrollY,
+        startScroll,
+        scrolledDistance,
+        scaleProgress: scaleProgress.toFixed(3),
+        fadeProgress: fadeProgress.toFixed(3),
+        scale: scale.toFixed(3),
+        opacity: opacity.toFixed(3)
+      });
       
       img.style.opacity = opacity;
       img.style.transform = `translate(-50%, -50%) scale(${scale})`;
@@ -1773,7 +2595,7 @@ function initMissionBackgroundFade() {
     // Fade mission text and logos based on mission step visibility
     if (missionTextFixed && missionStep) {
       const stepRect = missionStep.getBoundingClientRect();
-      const triggerPoint = viewportHeight * 0.6; // Trigger at 60% of viewport (earlier than center)
+      const triggerPoint = viewportHeight * 0.4; // Trigger at 40% of viewport (text fades out earlier)
       
       // Fade in when entering viewport, fade out when leaving
       if (stepRect.top < triggerPoint && stepRect.bottom > triggerPoint) {
@@ -1784,7 +2606,46 @@ function initMissionBackgroundFade() {
     }
   }
   
-  // Listen to window scroll (body now scrolls)
+  // Use requestAnimationFrame for smooth, continuous updates
+  let rafId = null;
+  let isAnimating = false;
+  
+  function startAnimation() {
+    if (isAnimating) return;
+    isAnimating = true;
+    
+    function animate() {
+      updateImageVisibility();
+      rafId = requestAnimationFrame(animate);
+    }
+    
+    animate();
+  }
+  
+  function stopAnimation() {
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+    isAnimating = false;
+  }
+  
+  // Start animation when mission page is in view
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        startAnimation();
+      } else {
+        stopAnimation();
+      }
+    });
+  }, { threshold: 0 });
+  
+  if (missionStep) {
+    observer.observe(missionStep);
+  }
+  
+  // Also listen to scroll for immediate updates
   window.addEventListener('scroll', updateImageVisibility, { passive: true });
   
   // Initial check
@@ -3431,7 +4292,7 @@ function initStaggerAnimations() {
     const missionLogos = document.querySelectorAll('.wwd-step-1 .wwd-mission-logo');
     missionLogos.forEach(logo => logo.classList.add('stagger-item', 'stagger-mission-logo'));
     
-    const missionBgImages = document.querySelectorAll('.wwd-step-1 .mission-bg-art');
+    const missionBgImages = document.querySelectorAll('.mission-bg-art');
     missionBgImages.forEach(img => img.classList.add('stagger-item', 'stagger-mission-bg'));
     
     // Step 3: How page elements (headline and pillar cards)

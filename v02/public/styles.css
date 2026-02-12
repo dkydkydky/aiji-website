@@ -170,46 +170,6 @@
   color: #333;
 }
 
-.footer-large-semibold {
-  font-family: "fractul-variable", sans-serif;
-  font-variation-settings: "wght" 600;
-  font-size: 30px; /* 50% increase from 20px */
-  font-weight: 600;
-  letter-spacing: 0;
-  color: #000000;
-  /* No text-transform - case controlled by input */
-}
-
-.footer-large-regular {
-  font-family: "fractul-variable", sans-serif;
-  font-variation-settings: "wght" 400;
-  font-size: 30px;
-  font-weight: 400;
-  letter-spacing: 0;
-  color: #000000;
-  /* No text-transform - case controlled by input */
-}
-
-.footer-medium-semibold {
-  font-family: "fractul-variable", sans-serif;
-  font-variation-settings: "wght" 600;
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: 0;
-  color: #000000;
-  /* No text-transform - case controlled by input */
-}
-
-.footer-medium-regular {
-  font-family: "fractul-variable", sans-serif;
-  font-variation-settings: "wght" 400;
-  font-size: 20px;
-  font-weight: 400;
-  letter-spacing: 0;
-  color: #000000;
-  /* No text-transform - case controlled by input */
-}
-
 .footer-small-semibold {
   font-family: "fractul-variable", sans-serif;
   font-variation-settings: "wght" 600;
@@ -321,49 +281,7 @@ body::-webkit-scrollbar {
 }
 
 /* --------------------------------------------------------------------------
-   Section Page - Independent scrollable sections
-   -------------------------------------------------------------------------- */
-.section-page {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100vh !important;
-  overflow-y: scroll !important; /* Use scroll instead of auto */
-  overflow-x: hidden !important;
-  display: none; /* Hidden by default */
-  z-index: 100;
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-  touch-action: pan-y; /* Allow vertical touch scrolling */
-  overscroll-behavior-y: none; /* Stop scrolling at content bottom - no rubber band past footer */
-}
-
-/* Section pages only visible after video intro is complete */
-body.video-complete .section-page.active {
-  display: block !important;
-}
-
-/* Before video-complete, keep section-pages hidden even if active */
-body:not(.video-complete) .section-page.active {
-  display: none !important;
-}
-
-/* Ensure containers inside section-page don't restrict scrolling */
-.section-page > .container {
-  min-height: auto;
-  height: auto;
-}
-
-/* Remove any conflicting position styles from child elements when in section-page */
-.section-page.builder-stories,
-.section-page.urgency {
-  position: fixed !important;
-  overflow-y: auto !important;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* --------------------------------------------------------------------------
-   Section Content - Continuous scroll sections (new architecture)
+   Section Content - Continuous scroll sections
    -------------------------------------------------------------------------- */
 .section-content {
   position: relative;
@@ -389,6 +307,11 @@ body.video-complete .section-content {
   display: block;
 }
 
+/* Hide sections while landing page is visible (before landing-complete) */
+body.video-complete:not(.landing-complete) .section-content {
+  display: none !important;
+}
+
 /* Site footer */
 .site-footer {
   position: relative;
@@ -404,13 +327,11 @@ body.video-complete .site-footer {
   display: block;
 }
 
-/* Ensure builder-stories content doesn't block scrolling */
-/* Impact Step 2: Builders */
-.section-page.builder-stories > .container {
-  height: auto;
-  min-height: 100vh;
-  padding: var(--content-padding-top) var(--container-padding) var(--content-padding-bottom);
+/* Hide footer while landing page is visible */
+body.video-complete:not(.landing-complete) .site-footer {
+  display: none !important;
 }
+
 
 /* WWD Step 6 (NYT Quote) - tall page for background image scroll */
 .wwd-step-6 {
@@ -517,9 +438,11 @@ body.video-complete .nav {
   visibility: visible;
 }
 
-body.video-complete .nav .nav-links a {
-  opacity: 1;
-  transform: translateX(0);
+/* Hide nav while landing page is visible */
+body.video-complete:not(.landing-complete) .nav {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 /* Hide nav when on video header */
@@ -558,16 +481,6 @@ body.logo-at-top .nav.hidden-on-video {
   width: 100%;
 }
 
-.nav-logo {
-  position: relative;
-  display: flex;
-  align-items: center;
-  height: auto;
-  min-height: 56px;
-  overflow: visible;
-  z-index: 10;
-}
-
 .logo-full {
   display: flex !important;
   align-items: center;
@@ -583,57 +496,6 @@ body.logo-at-top .nav.hidden-on-video {
   display: block;
   visibility: visible;
   opacity: 1;
-}
-
-.logo-short {
-  position: absolute;
-  left: 0;
-  display: none !important;
-  align-items: center;
-  opacity: 0;
-  transform: translateY(-10px);
-  transition: opacity var(--transition-base), transform var(--transition-base);
-  visibility: hidden !important;
-}
-
-.logo-short-svg {
-  height: auto;
-  width: auto;
-  display: block;
-}
-
-.nav.logo-short-active .logo-full,
-.nav .logo-full {
-  opacity: 1 !important;
-  transform: translateY(0) !important;
-  display: flex !important;
-  visibility: visible !important;
-}
-
-.nav.logo-short-active .logo-short,
-.nav .logo-short {
-  opacity: 0 !important;
-  display: none !important;
-  visibility: hidden !important;
-}
-
-.logo-pursuit {
-  font-weight: 800;
-  font-size: 0.875rem;
-  letter-spacing: 0.05em;
-  color: var(--color-gray);
-}
-
-.logo-divider {
-  color: var(--color-dark-border);
-  margin: 0 0.25rem;
-}
-
-.logo-aiji {
-  font-weight: 800;
-  font-size: 0.875rem;
-  letter-spacing: 0.02em;
-  color: var(--color-white);
 }
 
 .nav-links {
@@ -843,7 +705,7 @@ body.logo-at-top .nav.hidden-on-video {
   overflow: hidden;
   margin: 0;
   padding: 0;
-  z-index: 200; /* Above section-pages initially */
+  z-index: 200;
   display: block;
   visibility: visible;
   transition: opacity 0.6s ease, visibility 0.6s ease;
@@ -949,7 +811,7 @@ body > .video-header-logo:not(.animating):not(.at-top) {
 .video-header-logo.at-top {
   position: fixed !important;
   top: -2px !important;
-  left: 15px !important;
+  left: 25px !important;
   transform: scale(1) !important;
   transform-origin: top left;
   z-index: 1001 !important;
@@ -1030,6 +892,329 @@ body.video-complete .video-header-logo.at-top {
   opacity: 1;
   visibility: visible;
   display: block;
+}
+
+/* --------------------------------------------------------------------------
+   Landing Page Section
+   -------------------------------------------------------------------------- */
+
+.landing {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  min-height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  z-index: 150;
+  display: block;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+  background: 
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(255, 184, 182, 0.4) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 20% 80%,
+      rgba(174, 224, 229, 0.2) 0%,
+      transparent 60%
+    ),
+    #FFF3E9;
+  background-size: 400% 400%;
+  animation: landingGradientMove 12s ease-in-out infinite;
+}
+
+/* Show landing page after video completes */
+body.video-complete .landing {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Hide landing page after it completes */
+body.landing-complete .landing {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.landing-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-default);
+  opacity: 0;
+  z-index: 2;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.landing-bg {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.landing-bg .video-placeholder {
+  position: absolute;
+  background: rgba(200, 200, 200, 0.6);
+  border-radius: 0;
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.landing-bg .video-placeholder.anim-at-center {
+  /* Video appeared at center, stacked, no movement transition */
+  opacity: 1;
+  transition: none;
+}
+
+.landing-bg .video-placeholder.anim-radiate {
+  /* Slide from center to final position */
+  opacity: 1;
+  transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform: translate(0, 0) !important;
+}
+
+.landing-bg .video-placeholder.parallax-ready {
+  /* Smooth trailing movement for mouse parallax */
+  opacity: 1;
+  transition: transform 0.15s ease-out;
+}
+
+/* Landing "Swipe Up" pill button */
+.pill-btn.landing-swipe-btn {
+  position: absolute;
+  bottom: 32px;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  width: fit-content;
+  z-index: 10;
+  opacity: 0;
+  border: none;
+  outline: none;
+  background: rgba(255, 255, 255, 0.3);
+  background-image: none;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: opacity 0.5s ease;
+  cursor: default;
+  pointer-events: none;
+}
+
+.pill-btn.landing-swipe-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  background-image: none;
+  background-position: 0 0;
+  color: #000000;
+}
+
+.pill-btn.landing-swipe-btn.anim-visible {
+  opacity: 1;
+}
+
+.video-placeholder-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.video-placeholder-label {
+  position: relative;
+  z-index: 10;
+  font-family: "fractul-variable", sans-serif;
+  font-size: 48px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 1);
+  pointer-events: none;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.landing-content-wrapper {
+  position: absolute;
+  top: 0;
+  left: 30px;
+  width: auto;
+  height: 100%;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.landing-content-wrapper.stacked {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 5px;
+  left: 15px;
+  right: 15px;
+  width: calc(100% - 30px);
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+.landing-logo {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: scale(2) translateX(-5px) translateY(calc(-50% + 30px));
+  transform-origin: left top;
+  margin: 0 0 0 0;
+  pointer-events: auto;
+  z-index: 1001;
+  opacity: 0;
+  visibility: visible !important;
+  display: block !important;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.landing-logo.anim-visible {
+  opacity: 1;
+  transform: scale(2) translateX(-5px) translateY(-50%);
+}
+
+.landing-content-wrapper.stacked .landing-logo {
+  margin-left: -2px;
+  margin-right: 15px;
+}
+
+.landing-logo img {
+  height: auto;
+  width: auto;
+  display: block;
+  min-width: 200px;
+  min-height: 50px;
+  opacity: 1;
+  visibility: visible;
+}
+
+.landing-text {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  font-family: "fractul-variable", sans-serif;
+  font-variation-settings: "wght" 600;
+  font-size: 5rem;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--color-black);
+  margin: 0 0 0 -10px;
+  white-space: nowrap;
+  pointer-events: auto;
+  transition: opacity 0.4s ease, transform 0.4s ease, font-size 0.3s ease;
+  z-index: 1;
+}
+
+.landing-text.anim-fade-out {
+  opacity: 0;
+  transform: translateY(calc(-50% - 30px));
+}
+
+.landing-word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.landing-word.anim-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.landing-content-wrapper.stacked .landing-text {
+  order: -1;
+  margin-bottom: 5px;
+  margin-left: -10px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding-left: 19px;
+  padding-right: 19px;
+  overflow: visible;
+  white-space: nowrap;
+  word-wrap: break-word;
+  z-index: 1000;
+}
+
+.landing-subtext {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(calc(-50% + 100px));
+  margin: 0;
+  padding-left: 20px;
+  color: var(--color-black);
+  pointer-events: auto;
+  z-index: 1;
+  line-height: 1;
+}
+
+.landing-subtext::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 0;
+  width: 3px;
+  height: 0;
+  background-color: #000000;
+  transition: height 0.6s ease;
+}
+
+.landing-subtext.anim-line {
+  &::before {
+    height: 100%;
+  }
+}
+
+.landing-subtext-word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.landing-subtext-word.anim-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Landing gradient animation */
+@keyframes landingGradientMove {
+  0% {
+    background-position: 0% 50%, 0% 100%;
+  }
+  
+  33% {
+    background-position: 100% 100%, 50% 0%;
+  }
+  
+  66% {
+    background-position: 50% 0%, 100% 100%;
+  }
+  
+  100% {
+    background-position: 0% 50%, 0% 100%;
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -1147,7 +1332,6 @@ body.video-complete .video-header-logo.at-top {
   color: #000000;
   box-sizing: border-box;
   margin: 0;
-  /* height, overflow, position handled by .section-page */
 }
 
 /* Base class for all wwd elements - allows easy targeting */
@@ -1156,24 +1340,6 @@ body.video-complete .video-header-logo.at-top {
 }
 
 /* Light pink horizontal band */
-
-/* WWD Label (Our Purpose) - Left side, vertically centered - HIDDEN */
-.wwd-label,
-.label-meta-wwd {
-  position: absolute;
-  top: 50%;
-  left: 25px;
-  transform: translateY(-50%);
-  font-family: var(--font-label);
-  font-weight: 600;
-  font-size: 0.75rem;
-  color: #000000;
-  z-index: 10;
-  opacity: 0;
-  visibility: hidden;
-  transition: var(--wwd-label-transition);
-  transition-delay: var(--wwd-label-delay);
-}
 
 .wwd-content {
   position: relative;
@@ -1241,11 +1407,24 @@ body.video-complete .wwd-step {
   display: flex !important;
 }
 
+/* Hide wwd-steps while landing page is visible */
+body.video-complete:not(.landing-complete) .wwd-step {
+  display: none !important;
+}
+
 /* Progress bar removed - now using continuous scroll with active nav state */
 
 /* Hide all fixed WWD containers until video transition is complete */
 body:not(.video-complete) .wwd-vision-content-fixed,
 body:not(.video-complete) .wwd-how-content-fixed {
+  display: none !important;
+  pointer-events: none;
+}
+
+/* Hide all fixed WWD containers while landing page is visible */
+body.video-complete:not(.landing-complete) .wwd-vision-content-fixed,
+body.video-complete:not(.landing-complete) .wwd-how-content-fixed,
+body.video-complete:not(.landing-complete) .wwd-mission-text-fixed {
   display: none !important;
   pointer-events: none;
 }
@@ -2265,6 +2444,11 @@ body:not(.video-complete) .wwd-how-content-fixed {
   height: 38px; /* 80% of 48px */
 }
 
+/* Scale down QBPO logo */
+.wwd-mission-logo[alt="Queens Borough President's Office"] {
+  height: 34px; /* 70% of 48px */
+}
+
 /* Responsive logo sizing */
 @media (max-width: 900px) {
   .wwd-mission-logos {
@@ -2279,6 +2463,10 @@ body:not(.video-complete) .wwd-how-content-fixed {
   .wwd-mission-logo[alt="NYC EDC"],
   .wwd-mission-logo[alt="Partnership for NYC"] {
     height: 32px;
+  }
+  
+  .wwd-mission-logo[alt="Queens Borough President's Office"] {
+    height: 28px; /* 70% of 40px */
   }
 }
 
@@ -2296,6 +2484,10 @@ body:not(.video-complete) .wwd-how-content-fixed {
   .wwd-mission-logo[alt="NYC EDC"],
   .wwd-mission-logo[alt="Partnership for NYC"] {
     height: 26px;
+  }
+  
+  .wwd-mission-logo[alt="Queens Borough President's Office"] {
+    height: 22px; /* 70% of 32px */
   }
 }
 
@@ -2445,15 +2637,6 @@ body:not(.video-complete) .wwd-how-content-fixed {
   z-index: 10;
 }
 
-.label-partner-section {
-  display: block;
-  font-family: var(--font-label);
-  font-weight: 600;
-  font-size: 0.75rem;
-  color: #000000;
-  margin-bottom: var(--space-md);
-}
-
 .partner-logos {
   display: flex;
   flex-direction: column;
@@ -2468,18 +2651,6 @@ body:not(.video-complete) .wwd-how-content-fixed {
   padding: 0;
   background: none;
   border: none;
-}
-
-/* Salary Journey Section - Impact Step 3: Transformation */
-.salary-journey-section {
-  min-height: 100vh;
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--content-padding-top) var(--space-2xl) var(--content-padding-bottom);
-  overflow: visible;
-  box-sizing: border-box;
 }
 
 .salary-journey {
@@ -2509,14 +2680,6 @@ body:not(.video-complete) .wwd-how-content-fixed {
 
 .salary-amount.accent {
   color: var(--color-accent);
-}
-
-.label-salary {
-  font-family: var(--font-label);
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: var(--color-gray);
-  letter-spacing: 0.02em;
 }
 
 .salary-arrow {
@@ -2656,7 +2819,6 @@ body:not(.video-complete) .wwd-how-content-fixed {
   padding: 0;
   background-color: transparent; /* Site background shows through */
   box-sizing: border-box;
-  /* height, overflow, position handled by .section-page */
 }
 
 /* Impact step 1: Decade of Work - scroll spacer only; copy is in fixed container.
@@ -2708,7 +2870,7 @@ body:not(.video-complete) .wwd-how-content-fixed {
   animation-delay: 0.25s;
 }
 
-/* Fixed Decade of Work content - same pattern as Vision page. Above section-page (z 100). */
+/* Fixed Decade of Work content - same pattern as Vision page. */
 .impact-decade-content-fixed {
   position: fixed;
   top: calc(50vh - 75px);
@@ -2784,11 +2946,6 @@ body:not(.video-complete) .wwd-how-content-fixed {
 }
 
 /* WWD steps 5–9: Impact content moved into What We Do – site background shows through */
-.wwd .wwd-step-5,
-.wwd .wwd-step-6,
-.wwd .wwd-step-7,
-.wwd .wwd-step-8,
-.wwd .wwd-step-9,
 .wwd-step-5,
 .wwd-step-6,
 .wwd-step-7,
@@ -2798,14 +2955,12 @@ body:not(.video-complete) .wwd-how-content-fixed {
   box-sizing: border-box;
 }
 
-.wwd .wwd-step-5.impact-step.impact-decade,
 .wwd-step-5.impact-step.impact-decade {
   /* Fallback until JS sets min-height = lowest image bottom + 150px */
   min-height: 150vh;
   position: relative;
 }
 
-.wwd .wwd-step-5 .impact-decade-bg,
 .wwd-step-5 .impact-decade-bg {
   position: absolute;
   inset: 0;
@@ -2814,7 +2969,6 @@ body:not(.video-complete) .wwd-how-content-fixed {
   z-index: 0;
 }
 
-.wwd .wwd-step-6 .press-quote,
 .wwd-step-6 .press-quote {
   min-height: 150vh;
   width: 100%;
@@ -2823,8 +2977,6 @@ body:not(.video-complete) .wwd-how-content-fixed {
   position: relative;
 }
 
-.wwd .wwd-step-7 .real-people,
-.wwd .wwd-step-8 .real-people,
 .wwd-step-7 .real-people,
 .wwd-step-8 .real-people {
   min-height: 100vh;
@@ -2832,7 +2984,6 @@ body:not(.video-complete) .wwd-how-content-fixed {
   background-color: transparent; /* Site background shows through */
 }
 
-.wwd .wwd-step-9 .builder-stories-step,
 .wwd-step-9 .builder-stories-step {
   padding-top: 250px;
   padding-bottom: 250px;
@@ -2860,16 +3011,12 @@ body:not(.video-complete) .wwd-how-content-fixed {
   min-height: 150vh !important;
 }
 
-.wwd .wwd-step-6 .press-quote-bg,
-.wwd .wwd-step-6 .nyt-bg-image,
 .wwd-step-6 .press-quote-bg,
 .wwd-step-6 .nyt-bg-image {
   opacity: 1 !important;
 }
 
 /* Ensure builder photos container (Step 5) is fully visible */
-.wwd .wwd-step-5 #impact-decade-bg,
-.wwd .wwd-step-5 .impact-decade-bg,
 .wwd-step-5 #impact-decade-bg,
 .wwd-step-5 .impact-decade-bg {
   opacity: 1 !important;
@@ -3527,45 +3674,6 @@ body:not(.video-complete) .wwd-how-content-fixed {
   margin-bottom: var(--space-2xl);
 }
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: var(--space-lg);
-}
-
-.stat-card {
-  text-align: center;
-  padding: var(--space-lg) var(--space-sm);
-}
-
-.stat-number {
-  display: block;
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 800;
-  color: var(--color-white);
-  line-height: 1;
-  margin-bottom: var(--space-sm);
-}
-
-.label-stat {
-  font-family: var(--font-label);
-  font-weight: 600;
-  font-size: 0.8rem;
-  color: var(--color-gray);
-  line-height: 1.4;
-}
-
-@media (max-width: 1024px) {
-  .stats-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (max-width: 600px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
 
 /* --------------------------------------------------------------------------
    Press Quote Section
@@ -3724,12 +3832,6 @@ body:not(.video-complete) .wwd-how-content-fixed {
   left: 0;
 }
 
-.section-title-left {
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
-  font-weight: 800;
-  margin-bottom: var(--space-2xl);
-}
-
 .demographics-grid {
   display: grid;
   grid-template-columns: repeat(3, auto);
@@ -3754,14 +3856,6 @@ body:not(.video-complete) .wwd-how-content-fixed {
   margin-bottom: var(--space-sm);
 }
 
-.label-demo {
-  font-family: var(--font-label);
-  font-weight: 600;
-  font-size: 0.8rem;
-  color: var(--color-gray);
-  line-height: 1.4;
-}
-
 @media (max-width: 1024px) {
   .demographics-grid {
     grid-template-columns: repeat(2, auto);
@@ -3782,17 +3876,6 @@ body:not(.video-complete) .wwd-how-content-fixed {
   margin-bottom: var(--space-3xl);
 }
 
-.label-section-title {
-  display: inline-block;
-  font-family: var(--font-label);
-  font-weight: 600;
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--color-accent);
-  margin-bottom: var(--space-md);
-}
-
 .section-title {
   font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 800;
@@ -3810,18 +3893,10 @@ body:not(.video-complete) .wwd-how-content-fixed {
 /* --------------------------------------------------------------------------
    Urgency Section (standalone – legacy; also used when Urgency is inside WWD step 4)
    -------------------------------------------------------------------------- */
-.urgency,
-.wwd .wwd-step-urgency {
+.urgency {
   padding: 0;
   background: transparent; /* Site background shows through */
   box-sizing: border-box;
-  /* height, overflow, position handled by .section-page (or .wwd-step) */
-}
-
-/* Urgency content inside What We Do (step 4) – keep same look and background */
-.wwd .wwd-step-urgency {
-  min-height: 100vh;
-  padding: var(--content-padding-top) 0 var(--content-padding-bottom);
 }
 
 /* Urgency steps – each step is a full "page" within the section */
@@ -3912,31 +3987,22 @@ body:not(.video-complete) .wwd-how-content-fixed {
   margin: 0 auto var(--space-3xl) auto;
 }
 
-.urgency .urgency-quote,
-.wwd .wwd-step-urgency .urgency-quote {
+.urgency .urgency-quote {
   border-top-color: rgba(0, 0, 0, 0.15);
 }
-.urgency .urgency-quote .quote-text,
-.wwd .wwd-step-urgency .urgency-quote .quote-text {
+.urgency .urgency-quote .quote-text {
   color: #000000;
 }
-.urgency .urgency-quote .quote-source,
-.wwd .wwd-step-urgency .urgency-quote .quote-source {
+.urgency .urgency-quote .quote-source {
   color: #555;
 }
 
-.urgency .footer,
-.wwd .wwd-step-urgency .footer {
+.urgency .footer {
   background: transparent; /* Site background shows through */
-}
-.wwd .wwd-step-urgency .footer.urgency-footer-fullwidth {
-  padding-top: 150px;
-  padding-bottom: 30px;
 }
 
 /* Gap Visual - Urgency section (light background) */
-.urgency .gap-visual,
-.wwd .wwd-step-urgency .gap-visual {
+.urgency .gap-visual {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   gap: var(--space-xl);
@@ -3949,8 +4015,7 @@ body:not(.video-complete) .wwd-how-content-fixed {
   text-align: center;
 }
 
-.urgency .gap-number,
-.wwd .wwd-step-urgency .gap-number {
+.urgency .gap-number {
   display: block;
   line-height: 1.1;
   margin-bottom: var(--space-md);
@@ -3968,14 +4033,12 @@ body:not(.video-complete) .wwd-how-content-fixed {
   line-height: 1.5;
 }
 
-.urgency .gap-divider,
-.wwd .wwd-step-urgency .gap-divider {
+.urgency .gap-divider {
   text-align: center;
   /* Typography via .body-medium-semibold class on child span */
 }
 
-.urgency .gap-label,
-.wwd .wwd-step-urgency .gap-label {
+.urgency .gap-label {
   /* Typography via .body-medium-regular class */
   color: #333;
 }
@@ -4000,7 +4063,6 @@ body:not(.video-complete) .wwd-how-content-fixed {
 
 /* Urgency section: 64% and 4% – semibold (600); selector must match without .wwd parent */
 .urgency .urgency-gap-percent,
-.wwd .wwd-step-urgency .urgency-gap-percent,
 .wwd-step-urgency .urgency-gap-percent {
   font-family: "fractul-variable", sans-serif;
   font-variation-settings: "wght" 600;
@@ -4008,16 +4070,6 @@ body:not(.video-complete) .wwd-how-content-fixed {
   font-weight: 600 !important;
   line-height: 1.2;
   color: #000000;
-}
-
-.label-gap {
-  font-family: var(--font-label);
-  font-weight: 600;
-  font-size: 1rem;
-  color: var(--color-gray);
-  max-width: 250px;
-  margin: 0 auto;
-  line-height: 1.5;
 }
 
 .gap-divider {
@@ -4066,45 +4118,6 @@ body:not(.video-complete) .wwd-how-content-fixed {
   line-height: 1.5;
 }
 
-/* Investment stats outside urgency - keep original */
-.investment-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-lg);
-}
-
-.investment-card {
-  padding: var(--space-xl);
-  background: var(--color-dark-elevated);
-  border: 1px solid var(--color-dark-border);
-  border-radius: var(--radius-md);
-  text-align: center;
-}
-
-.investment-card.highlight {
-  background: var(--color-accent-dim);
-  border-color: var(--color-accent);
-}
-
-.investment-number {
-  display: block;
-  font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 800;
-  margin-bottom: var(--space-sm);
-}
-
-.investment-card.highlight .investment-number {
-  color: var(--color-accent);
-}
-
-.label-investment {
-  font-family: var(--font-label);
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: var(--color-gray);
-  line-height: 1.5;
-}
-
 @media (max-width: 900px) {
   .urgency-grid {
     grid-template-columns: 1fr;
@@ -4131,70 +4144,6 @@ body:not(.video-complete) .wwd-how-content-fixed {
   width: 100%;
 }
 
-.form-group {
-  display: flex;
-  gap: var(--space-sm);
-}
-
-.form-input {
-  flex: 1;
-  padding: var(--space-md) var(--space-lg);
-  background: var(--color-dark-elevated);
-  border: 1px solid var(--color-dark-border);
-  border-radius: var(--radius-sm);
-  font-family: var(--font-body);
-  font-size: 1rem;
-  color: var(--color-white);
-  transition: all var(--transition-base);
-}
-
-.form-input::placeholder {
-  color: var(--color-gray);
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px var(--color-accent-dim);
-}
-
-.form-button {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-md) var(--space-lg);
-  background: var(--color-accent);
-  color: var(--color-black);
-  font-size: 0.875rem;
-  font-weight: 600;
-  border-radius: var(--radius-sm);
-  transition: all var(--transition-base);
-  white-space: nowrap;
-}
-
-.form-button:hover {
-  background: var(--color-white);
-  transform: translateX(4px);
-}
-
-.form-button svg {
-  transition: transform var(--transition-fast);
-}
-
-.form-button:hover svg {
-  transform: translateX(4px);
-}
-
-@media (max-width: 768px) {
-  .form-group {
-    flex-direction: column;
-  }
-  
-  .form-button {
-    justify-content: center;
-  }
-}
-
 /* --------------------------------------------------------------------------
    Initiatives Section
    -------------------------------------------------------------------------- */
@@ -4204,50 +4153,6 @@ body:not(.video-complete) .wwd-how-content-fixed {
   padding: var(--space-4xl) 0;
   overflow: visible;
   box-sizing: border-box;
-}
-
-.initiatives-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-lg);
-}
-
-.initiative-card {
-  position: relative;
-  background: var(--color-dark-elevated);
-  border: 1px solid var(--color-dark-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-xl);
-  transition: all var(--transition-base);
-}
-
-.initiative-card:hover {
-  border-color: var(--color-accent);
-  transform: translateY(-4px);
-}
-
-.initiative-number {
-  font-family: var(--font-mono);
-  font-size: 0.875rem;
-  color: var(--color-accent);
-  margin-bottom: var(--space-md);
-}
-
-.initiative-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin-bottom: var(--space-md);
-}
-
-.initiative-description {
-  color: var(--color-gray);
-  line-height: 1.7;
-}
-
-@media (max-width: 768px) {
-  .initiatives-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* --------------------------------------------------------------------------
@@ -4780,24 +4685,6 @@ body.video-complete .footer {
   }
 }
 
-@keyframes buttonGradientMove {
-  0% {
-    background-position: 0% 50%, 100% 0%, 0% 100%, 50% 50%;
-  }
-  
-  33% {
-    background-position: 100% 100%, 0% 100%, 50% 0%, 0% 100%;
-  }
-  
-  66% {
-    background-position: 50% 0%, 100% 50%, 100% 100%, 100% 0%;
-  }
-  
-  100% {
-    background-position: 0% 50%, 100% 0%, 0% 100%, 50% 50%;
-  }
-}
-
 /* --------------------------------------------------------------------------
    Utility Classes
    -------------------------------------------------------------------------- */
@@ -4811,14 +4698,6 @@ body.video-complete .footer {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border-width: 0;
-}
-
-/* Success state for forms */
-.form-success {
-  text-align: center;
-  padding: var(--space-lg);
-  color: var(--color-accent);
-  font-weight: 600;
 }
 
 /* --------------------------------------------------------------------------
@@ -4896,15 +4775,15 @@ body.video-complete .footer {
   transform: translateX(0);
 }
 
-/* Mission background image - fade in only (no scale on load) */
+/* Mission background image - fade in with subtle scale-up entrance */
 .mission-bg-art.stagger-item {
   opacity: 0;
-  transform: translate(-50%, -50%) scale(1);
+  transform: translate(-50%, -50%) scale(0.85);
 }
 
 .mission-bg-art.stagger-item.stagger-revealed {
   opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
+  transform: translate(-50%, -50%) scale(0.9);
 }
 
 /* Hub page elements - stagger animation */
@@ -5448,4 +5327,3 @@ body.video-complete .footer {
     height: 28px;
   }
 }
-
