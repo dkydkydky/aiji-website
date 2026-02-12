@@ -851,7 +851,7 @@ function initLandingAnimation() {
   // Line animates from top to bottom at the same time
   const subtextStart = logoStart + 500;
   setTimeout(() => {
-    if (subtext) subtext.classList.add('anim-line');
+    if (subtext) subtext.classList.add('anim-dot');
   }, subtextStart);
   
   subtextWords.forEach((word, i) => {
@@ -2157,13 +2157,20 @@ function initBuilderVideoOverlay() {
   const overlay = document.getElementById('builder-video-overlay');
   const iframe = document.getElementById('builder-video-iframe');
   const closeBtn = document.getElementById('builder-overlay-close');
+  const titleElement = document.getElementById('builder-video-title');
   const gallery = document.getElementById('builder-video-gallery');
 
-  if (!overlay || !iframe || !closeBtn || !gallery) return;
+  if (!overlay || !iframe || !closeBtn || !gallery || !titleElement) return;
 
   let vimeoPlayer = null;
   let lastFocusedElement = null;
+  let currentCard = null;
   const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
+  // Get all gallery items (videos + articles) in order
+  function getAllGalleryItems() {
+    return Array.from(gallery.querySelectorAll('.builder-video-card, .builder-article-card'));
+  }
 
   function getVideoIdFromCard(card) {
     const id = card.getAttribute('data-video-id');
@@ -2181,6 +2188,14 @@ function initBuilderVideoOverlay() {
     const card = triggerElement && triggerElement.closest ? triggerElement.closest('.builder-video-card') : null;
     const hash = card ? getVideoHashFromCard(card) : null;
     lastFocusedElement = triggerElement;
+    currentCard = card;
+    
+    // Set the title from the card's name
+    if (card) {
+      const nameElement = card.querySelector('.builder-video-name');
+      titleElement.textContent = nameElement ? nameElement.textContent.trim() : '';
+    }
+    
     let url = 'https://player.vimeo.com/video/' + videoId + '?autoplay=1';
     if (hash) url += '&h=' + encodeURIComponent(hash);
     iframe.src = url;
@@ -2244,6 +2259,30 @@ function initBuilderVideoOverlay() {
     }
   }
 
+  function navigateVideo(direction) {
+    const allItems = getAllGalleryItems();
+    if (allItems.length <= 1) return;
+    const currentIndex = allItems.indexOf(currentCard);
+    if (currentIndex === -1) return;
+    const nextIndex = (currentIndex + direction + allItems.length) % allItems.length;
+    const nextItem = allItems[nextIndex];
+
+    // Close current video overlay
+    closeOverlay();
+
+    // Open appropriate overlay based on item type
+    if (nextItem.classList.contains('builder-video-card')) {
+      const videoId = getVideoIdFromCard(nextItem);
+      if (videoId) {
+        openOverlay(videoId, nextItem);
+      }
+    } else if (nextItem.classList.contains('builder-article-card')) {
+      // Trigger article overlay via custom event
+      const event = new CustomEvent('openArticleOverlay', { detail: { card: nextItem, trigger: lastFocusedElement } });
+      document.dispatchEvent(event);
+    }
+  }
+
   gallery.addEventListener('click', (e) => {
     const card = e.target.closest('.builder-video-card');
     if (!card) return;
@@ -2255,6 +2294,16 @@ function initBuilderVideoOverlay() {
 
   closeBtn.addEventListener('click', () => closeOverlay());
 
+  // Wire up pill-style navigation buttons
+  overlay.addEventListener('click', (e) => {
+    const target = e.target;
+    if (target.matches('[data-action="prev-video"]')) {
+      navigateVideo(-1);
+    } else if (target.matches('[data-action="next-video"]')) {
+      navigateVideo(1);
+    }
+  });
+
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && overlay && !overlay.hidden) {
       closeOverlay();
@@ -2264,6 +2313,15 @@ function initBuilderVideoOverlay() {
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay || e.target.classList.contains('builder-video-overlay__backdrop')) {
       closeOverlay();
+    }
+  });
+
+  // Expose openOverlay for cross-overlay navigation
+  document.addEventListener('openVideoOverlay', (e) => {
+    const { card, trigger } = e.detail;
+    const videoId = getVideoIdFromCard(card);
+    if (videoId) {
+      openOverlay(videoId, trigger || card);
     }
   });
 }
@@ -2286,6 +2344,11 @@ function initBuilderArticleOverlay() {
   // Get all article cards in gallery order
   function getArticleCards() {
     return Array.from(gallery.querySelectorAll('.builder-article-card'));
+  }
+
+  // Get all gallery items (videos + articles) in order
+  function getAllGalleryItems() {
+    return Array.from(gallery.querySelectorAll('.builder-video-card, .builder-article-card'));
   }
 
   function openArticleOverlay(articleCard, triggerElement) {
@@ -2343,11 +2406,21 @@ function initBuilderArticleOverlay() {
   }
 
   function navigateArticle(direction) {
-    const cards = getArticleCards();
-    if (cards.length <= 1) return;
-    const currentIndex = cards.indexOf(currentArticleCard);
-    const nextIndex = (currentIndex + direction + cards.length) % cards.length;
-    openArticleOverlay(cards[nextIndex], lastFocusedElement);
+    const allItems = getAllGalleryItems();
+    if (allItems.length <= 1) return;
+    const currentIndex = allItems.indexOf(currentArticleCard);
+    if (currentIndex === -1) return;
+    const nextIndex = (currentIndex + direction + allItems.length) % allItems.length;
+    const nextItem = allItems[nextIndex];
+
+    if (nextItem.classList.contains('builder-article-card')) {
+      openArticleOverlay(nextItem, lastFocusedElement);
+    } else if (nextItem.classList.contains('builder-video-card')) {
+      closeArticleOverlay();
+      // Trigger video overlay via custom event
+      const event = new CustomEvent('openVideoOverlay', { detail: { card: nextItem, trigger: lastFocusedElement } });
+      document.dispatchEvent(event);
+    }
   }
 
   function closeArticleOverlay() {
@@ -2385,6 +2458,12 @@ function initBuilderArticleOverlay() {
     if (e.target === overlay || e.target.classList.contains('builder-article-overlay__backdrop')) {
       closeArticleOverlay();
     }
+  });
+
+  // Expose openArticleOverlay for cross-overlay navigation
+  document.addEventListener('openArticleOverlay', (e) => {
+    const { card, trigger } = e.detail;
+    openArticleOverlay(card, trigger || card);
   });
 }
 

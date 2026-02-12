@@ -518,22 +518,27 @@ body.logo-at-top .nav.hidden-on-video {
   position: relative;
   opacity: 0;
   transform: translateX(-10px);
+  padding-left: 14px;
 }
 
-/* Animated underline for active nav item - exclude pill buttons */
-.nav-links a:not(.pill-btn):not(.nav-cta-pill)::after {
+/* Square indicator for active nav item - exclude pill buttons */
+.nav-links a:not(.pill-btn):not(.nav-cta-pill)::before {
   content: '';
   position: absolute;
-  bottom: -4px;
   left: 0;
-  width: 0;
-  height: 2px;
-  background: #000000;
-  transition: width 0.3s ease;
+  top: calc(50% - 1px);
+  transform: translate(0, -50%) scale(0);
+  width: 10px;
+  height: 10px;
+  border-radius: 0;
+  background-color: #000000;
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-.nav-links a.active:not(.pill-btn):not(.nav-cta-pill)::after {
-  width: 100%;
+.nav-links a.active:not(.pill-btn):not(.nav-cta-pill)::before {
+  transform: translate(0, -50%) scale(1);
+  opacity: 1;
 }
 
 .nav.logo-at-top .nav-links a {
@@ -558,17 +563,6 @@ body.logo-at-top .nav.hidden-on-video {
 .nav-links a.active {
   color: #000000;
   font-weight: 600; /* semibold for active */
-}
-
-.nav-links a.active:not(.nav-cta):not(.nav-cta-pill):not(.pill-btn)::after {
-  content: '';
-  position: absolute;
-  bottom: -8px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: #000000;
-  border-radius: 2px;
 }
 
 .nav-links a.nav-cta.active:not(.nav-cta-pill) {
@@ -1159,8 +1153,8 @@ body.landing-complete .landing {
 .landing-subtext {
   position: absolute;
   top: 50%;
-  left: 10px;
-  transform: translateY(calc(-50% + 100px));
+  left: 15px;
+  transform: translateY(calc(-50% + 110px));
   margin: 0;
   padding-left: 20px;
   color: var(--color-black);
@@ -1173,16 +1167,20 @@ body.landing-complete .landing {
   content: '';
   position: absolute;
   left: 5px;
-  top: 0;
-  width: 3px;
-  height: 0;
+  top: calc(0.5em - 7px);
+  transform: translate(0, 0) scale(0);
+  width: 10px;
+  height: 10px;
+  border-radius: 0;
   background-color: #000000;
-  transition: height 0.6s ease;
+  opacity: 0;
+  transition: transform 0.6s ease, opacity 0.6s ease;
 }
 
-.landing-subtext.anim-line {
+.landing-subtext.anim-dot {
   &::before {
-    height: 100%;
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
   }
 }
 
@@ -3235,19 +3233,37 @@ body.video-complete:not(.landing-complete) .wwd-mission-text-fixed {
   position: relative;
   z-index: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 100%;
-  max-width: 1600px;
+  max-width: 1400px;
+  padding: var(--space-md) var(--space-md);
 }
 
 .builder-video-overlay__iframe-wrap {
   position: relative;
   width: 100%;
-  max-width: 100%;
   aspect-ratio: 16 / 9;
-  max-height: calc(100vh - 2 * var(--space-xl));
+  max-height: calc(100vh - 240px);
   background: #000;
+}
+
+/* Ensure video maintains aspect ratio */
+@media (max-height: 800px) {
+  .builder-video-overlay__iframe-wrap {
+    max-height: calc(100vh - 200px);
+  }
+}
+
+@media (max-width: 768px) {
+  .builder-video-overlay__content {
+    padding: var(--space-sm) var(--space-sm);
+  }
+  
+  .builder-video-overlay__iframe-wrap {
+    max-height: calc(100vh - 180px);
+  }
 }
 
 .builder-video-overlay__iframe-wrap iframe {
@@ -3257,6 +3273,53 @@ body.video-complete:not(.landing-complete) .wwd-mission-text-fixed {
   width: 100%;
   height: 100%;
   border: none;
+}
+
+/* Video overlay title */
+.video-overlay-title {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 0 var(--space-sm) 0;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.video-overlay-title .article-title-subtitle {
+  display: inline;
+}
+
+@media (max-width: 768px) {
+  .video-overlay-title {
+    margin-bottom: var(--space-xs);
+  }
+}
+
+/* Video navigation buttons below video */
+.video-nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+  width: 100%;
+  max-width: 100%;
+}
+
+.video-nav-buttons .pill-btn {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 768px) {
+  .video-nav-buttons {
+    margin-top: var(--space-sm);
+    gap: var(--space-sm);
+  }
+  
+  .video-nav-buttons .pill-btn {
+    font-size: 16px;
+    padding: 10px 20px;
+  }
 }
 
 /* Close button top right of overlay */
@@ -3301,6 +3364,68 @@ body.video-complete:not(.landing-complete) .wwd-mission-text-fixed {
 
 .builder-overlay-close:hover .builder-overlay-close-x {
   stroke: var(--bg-our-impact);
+}
+
+/* Navigation buttons (Previous/Next) for video overlay */
+.builder-overlay-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.builder-overlay-nav svg {
+  width: 24px;
+  height: 24px;
+  color: #000000;
+}
+
+.builder-overlay-nav--prev {
+  left: 24px;
+}
+
+.builder-overlay-nav--next {
+  right: 24px;
+}
+
+.builder-overlay-nav:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.builder-overlay-nav:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+@media (max-width: 768px) {
+  .builder-overlay-nav {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .builder-overlay-nav svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .builder-overlay-nav--prev {
+    left: 12px;
+  }
+  
+  .builder-overlay-nav--next {
+    right: 12px;
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -4511,7 +4636,7 @@ body.video-complete .footer {
   transform: translate(0, -50%) scale(0);
   width: 8px;
   height: 8px;
-  border-radius: 50%;
+  border-radius: 0;
   background-color: #000000;
   opacity: 0;
   transition: transform 0.3s ease, opacity 0.3s ease;
