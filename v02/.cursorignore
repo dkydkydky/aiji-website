@@ -1,0 +1,7 @@
+# Large images that exceed dimension limits
+private/
+public/assets/images/AIJI_Image_OurPurpose_01.png
+
+# To add more large images in the future:
+# - Add specific files: path/to/large-image.png
+# - Or create a folder for large images and ignore it: public/assets/images/large/
